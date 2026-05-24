@@ -95,6 +95,9 @@ const COPY = {
     nextLabel: 'Next',
     photoSwitcherLabel: 'Photo',
     photoSwitcherAria: id => `Switch to photo ${id}`,
+    zoomOutLabel: 'Zoom out',
+    zoomInLabel: 'Zoom in',
+    zoomResetLabel: 'Fit to screen',
     multiTagline: 'Generated alternatives — pick a favorite and download.'
   },
   zh: {
@@ -113,6 +116,9 @@ const COPY = {
     nextLabel: '下一个',
     photoSwitcherLabel: '换照片',
     photoSwitcherAria: id => `切换到照片 ${id}`,
+    zoomOutLabel: '缩小',
+    zoomInLabel: '放大',
+    zoomResetLabel: '适应屏幕',
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。'
   }
 }[lang];
@@ -335,6 +341,78 @@ const DETAIL_CSS = `
     object-position: center 22%;
     display: block;
     pointer-events: none;
+  }
+  /* Zoom controls (PC only).
+     The hover zone sits OUTSIDE the card (below the photo switcher), so
+     moving onto the design itself does NOT show the controls — only
+     hovering the strip immediately below them triggers them. Default
+     state is semi-transparent so they don't obscure the design behind. */
+  .zoom-zone {
+    position: absolute;
+    bottom: -56px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .zoom-controls {
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    background: rgba(14, 11, 7, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(42, 34, 24, 0.6);
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .zoom-zone:hover .zoom-controls,
+  .zoom-controls:focus-within {
+    opacity: 0.55;
+    pointer-events: auto;
+  }
+  .zoom-controls:hover {
+    opacity: 0.95;
+  }
+  .zoom-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+  }
+  .zoom-btn:hover { background: rgba(212, 184, 150, 0.12); color: #f0d8b0; }
+  .zoom-btn:active { background: rgba(212, 184, 150, 0.2); }
+  .zoom-btn.reset { font-size: 14px; }
+  .zoom-level {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    min-width: 42px;
+    justify-content: center;
+  }
+  @media (max-width: 960px) {
+    .zoom-zone { display: none; }
   }
   .preview .frame {
     width: calc(var(--tpl-w) * var(--iframe-scale));
@@ -648,6 +726,14 @@ function detailHtml(design, index, isMulti) {
         <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
       </div>
       ${switcherHtml}
+      <div class="zoom-zone">
+        <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+          <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
+          <span class="zoom-level" id="zoom-level">100%</span>
+          <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
+          <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
+        </div>
+      </div>
     </div>
 
     <div class="detail-info">
@@ -721,6 +807,56 @@ function detailHtml(design, index, isMulti) {
           b.classList.toggle('active', b === btn);
         });
         send(url);
+      });
+    })();
+  </script>
+  <script>
+    // Zoom controls — operate on the same --iframe-scale custom property used
+    // by the preview frame's calc() sizing. Persist per-tab via sessionStorage.
+    (function () {
+      var ZOOM_KEY = 'wis-gallery-zoom';
+      var root = document.documentElement;
+      var levelEl = document.getElementById('zoom-level');
+      if (!levelEl) return;
+      function currentDefault() {
+        var v = getComputedStyle(root).getPropertyValue('--iframe-scale-default').trim();
+        return parseFloat(v) || 1;
+      }
+      function currentScale() {
+        var v = getComputedStyle(root).getPropertyValue('--iframe-scale').trim();
+        return parseFloat(v) || 1;
+      }
+      function fmtPct(s) { return Math.round((s / currentDefault()) * 100) + '%'; }
+      function applyZoom(level) {
+        if (level === null) {
+          root.style.removeProperty('--iframe-scale-override');
+          sessionStorage.removeItem(ZOOM_KEY);
+        } else {
+          level = Math.max(0.4, Math.min(level, 4.0));
+          root.style.setProperty('--iframe-scale-override', String(level));
+          sessionStorage.setItem(ZOOM_KEY, String(level));
+        }
+        levelEl.textContent = fmtPct(currentScale());
+      }
+      document.querySelectorAll('.zoom-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var op = b.dataset.zoom;
+          if (op === 'reset') { applyZoom(null); return; }
+          var cur = currentScale();
+          applyZoom(op === 'in' ? cur * 1.15 : cur * 0.87);
+        });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.target.matches('input, textarea')) return;
+        if (e.key === '+' || e.key === '=') { applyZoom(currentScale() * 1.15); e.preventDefault(); }
+        else if (e.key === '-' || e.key === '_') { applyZoom(currentScale() * 0.87); e.preventDefault(); }
+        else if (e.key === '0') { applyZoom(null); e.preventDefault(); }
+      });
+      var restored = parseFloat(sessionStorage.getItem(ZOOM_KEY));
+      if (restored && !isNaN(restored)) applyZoom(restored);
+      else levelEl.textContent = '100%';
+      window.addEventListener('resize', function () {
+        levelEl.textContent = fmtPct(currentScale());
       });
     })();
   </script>
