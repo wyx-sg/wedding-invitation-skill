@@ -244,8 +244,9 @@ const GALLERY_CSS = `
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(auto-fill, 240px);
+    gap: 24px;
+    justify-content: center;
   }
   .card {
     background: var(--bg-card);
