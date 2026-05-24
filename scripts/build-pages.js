@@ -38,6 +38,7 @@ const COPY = {
     fontsLabel: 'Typography',
     motifsLabel: 'Decorative Motifs',
     cultureLabel: 'Cultural Origin',
+    inspirationLabel: 'Design Inspiration',
     backToGallery: 'All Examples',
     prevLabel: 'Previous',
     nextLabel: 'Next',
@@ -59,6 +60,7 @@ const COPY = {
     fontsLabel: '字体',
     motifsLabel: '装饰元素',
     cultureLabel: '文化起源',
+    inspirationLabel: '设计灵感',
     backToGallery: '所有样例',
     prevLabel: '上一个',
     nextLabel: '下一个',
@@ -347,12 +349,23 @@ const DETAIL_CSS = `
     border-radius: 8px;
     border: 1px solid var(--border-soft);
   }
-  .preview iframe {
+  /* Fixed-size wrapper that clips the iframe so it can never expand
+     beyond the card's logical 420 px width regardless of inner CSS. */
+  .preview .frame {
     width: 420px;
-    border: none;
+    flex: 0 0 420px;
+    overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     background: white;
     display: block;
+    border-radius: 2px;
+  }
+  .preview .frame iframe {
+    width: 420px !important;
+    max-width: 420px !important;
+    display: block;
+    border: 0;
+    margin: 0;
   }
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
@@ -362,6 +375,28 @@ const DETAIL_CSS = `
     max-width: 640px;
     margin: 0 auto 40px;
     text-align: center;
+    font-style: italic;
+    text-wrap: balance;
+  }
+  .inspiration {
+    margin: 40px 0;
+    padding: 28px 32px;
+    background: var(--bg-card);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 4px;
+  }
+  .inspiration .insp-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .inspiration .insp-text {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text);
     font-style: italic;
     text-wrap: balance;
   }
@@ -476,7 +511,6 @@ const DETAIL_CSS = `
   @media (max-width: 600px) {
     main { padding: 32px 16px 48px; }
     .preview { padding: 16px; }
-    .preview iframe { width: 100%; max-width: 420px; }
     .style-name { font-size: 36px; letter-spacing: 2px; }
     .pager { grid-template-columns: 1fr; }
     .pager .step.next { flex-direction: row; text-align: left; }
@@ -652,10 +686,17 @@ function detailHtml(templateId, prevId, nextId, height) {
     </div>
 
     <div class="preview">
-      <iframe src="invitations/${templateId}.html" width="420" height="${height}" loading="lazy" title="${meta.name} invitation preview"></iframe>
+      <div class="frame" style="height: ${height}px;">
+        <iframe src="invitations/${templateId}.html" width="420" height="${height}" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
+      </div>
     </div>
 
     <p class="style-long" data-i18n data-en="${(meta.long?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.long?.zh || '').replace(/"/g, '&quot;')}">${meta.long?.en || ''}</p>
+
+    <div class="inspiration">
+      <div class="insp-label" data-i18n data-en="${COPY.en.inspirationLabel}" data-zh="${COPY.zh.inspirationLabel}">${COPY.en.inspirationLabel}</div>
+      <p class="insp-text" data-i18n data-en="${(meta.inspiration?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.inspiration?.zh || '').replace(/"/g, '&quot;')}">${meta.inspiration?.en || ''}</p>
+    </div>
 
     <div class="specs">
       <div>

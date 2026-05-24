@@ -9,6 +9,7 @@
 ![hero](./docs/hero.png)
 
 <p align="center">
+  <a href="https://wyx-sg.github.io/wedding-invitation-skill/index.zh.html"><img alt="在线 Gallery" src="https://img.shields.io/badge/%F0%9F%8E%A8%20%E5%9C%A8%E7%BA%BF%20Gallery-d4af37?labelColor=2a2218"></a>
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Works with Claude Code" src="https://img.shields.io/badge/Claude%20Code-compatible-d4af37">
   <img alt="Node 18+" src="https://img.shields.io/badge/node-%E2%89%A518-339933">

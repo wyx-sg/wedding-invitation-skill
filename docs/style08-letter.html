@@ -142,12 +142,23 @@
     border-radius: 8px;
     border: 1px solid var(--border-soft);
   }
-  .preview iframe {
+  /* Fixed-size wrapper that clips the iframe so it can never expand
+     beyond the card's logical 420 px width regardless of inner CSS. */
+  .preview .frame {
     width: 420px;
-    border: none;
+    flex: 0 0 420px;
+    overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     background: white;
     display: block;
+    border-radius: 2px;
+  }
+  .preview .frame iframe {
+    width: 420px !important;
+    max-width: 420px !important;
+    display: block;
+    border: 0;
+    margin: 0;
   }
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
@@ -157,6 +168,28 @@
     max-width: 640px;
     margin: 0 auto 40px;
     text-align: center;
+    font-style: italic;
+    text-wrap: balance;
+  }
+  .inspiration {
+    margin: 40px 0;
+    padding: 28px 32px;
+    background: var(--bg-card);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 4px;
+  }
+  .inspiration .insp-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .inspiration .insp-text {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text);
     font-style: italic;
     text-wrap: balance;
   }
@@ -271,7 +304,6 @@
   @media (max-width: 600px) {
     main { padding: 32px 16px 48px; }
     .preview { padding: 16px; }
-    .preview iframe { width: 100%; max-width: 420px; }
     .style-name { font-size: 36px; letter-spacing: 2px; }
     .pager { grid-template-columns: 1fr; }
     .pager .step.next { flex-direction: row; text-align: left; }
@@ -302,10 +334,17 @@
     </div>
 
     <div class="preview">
-      <iframe src="invitations/style08-letter.html" width="420" height="560" loading="lazy" title="letter invitation preview"></iframe>
+      <div class="frame" style="height: 560px;">
+        <iframe src="invitations/style08-letter.html" width="420" height="560" frameborder="0" scrolling="no" loading="lazy" title="letter invitation preview"></iframe>
+      </div>
     </div>
 
     <p class="style-long" data-i18n data-en="Cream paper, intimate close-up of rings, &quot;Dear you&quot; opening, signature at bottom. Personal hand-written letter aesthetic." data-zh="米色信纸、戒指特写、&quot;亲爱的你&quot;开篇、底部署名。亲笔信式的私密感。">Cream paper, intimate close-up of rings, "Dear you" opening, signature at bottom. Personal hand-written letter aesthetic.</p>
+
+    <div class="inspiration">
+      <div class="insp-label" data-i18n data-en="Design Inspiration" data-zh="设计灵感">Design Inspiration</div>
+      <p class="insp-text" data-i18n data-en="Wartime letters home and Jane Austen-era private correspondence — the wedding announced as if writing to the person who matters most." data-zh="战时家书 + Jane Austen 时代的私人书信 — 像写给最在意的那个人一样宣告婚讯。">Wartime letters home and Jane Austen-era private correspondence — the wedding announced as if writing to the person who matters most.</p>
+    </div>
 
     <div class="specs">
       <div>
