@@ -85,7 +85,14 @@ This is the **first** content decision. Don't assume Chinese (or any language).
    - Bilingual zh+en → `["zh", "en"]` (primary first)
    - Other → use ISO 639-1 codes: `["es"]`, `["ja"]`, `["ko"]`, `["fr"]`, etc.
 
-3. **Gather the seed fields** — ask one at a time, in the language(s) chosen:
+3. **Pick font CDN** (Tier 2 or 3). This is a one-line question that determines which Google Fonts mirror the rendered HTML loads from:
+   > "Where will you preview this invitation from?"
+   > - mainland China (use `fonts.font.im` — the CN mirror)
+   > - elsewhere (use `fonts.googleapis.com` — official, faster)
+
+   Write the answer into `data/wedding.json` as `font_cdn`: `"fontim"` for CN, `"googleapis"` for everywhere else. Default to `"googleapis"` if the user isn't sure.
+
+4. **Gather the seed fields** — ask one at a time, in the language(s) chosen:
 
    | Field | Question | When required |
    |---|---|---|
@@ -120,17 +127,23 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
 
 1. **Read the user's photos** (use the Read tool — they're images). Note dominant colors, formality of pose, whether outfits are traditional / western / casual.
 
-2. **Pick 3-5 aesthetic directions** from `design-principles.md` that fit the photos + any user hints. Aesthetic names you can choose from:
-   - `new-chinese`, `red-gold`, `palace`, `ink-flower` — Chinese cultural
-   - `wabi-sabi` — Japanese
-   - `morandi`, `modern-minimal`, `mediterranean` — soft contemporary
-   - `art-deco`, `vogue` — editorial / formal
-   - `newspaper`, `letter`, `retro-poster`, `vintage-stars` — narrative / themed
+2. **Pick 3-5 aesthetic directions** from `design-principles.md` that fit the photos + any user hints. Aesthetic names you can choose from, grouped by cultural origin:
+   - **Chinese**: `new-chinese`, `red-gold`, `palace`, `ink-flower`
+   - **Japanese**: `wabi-sabi`
+   - **Korean**: `korean-hanbok`
+   - **South Asian**: `indian`
+   - **Middle Eastern**: `arabic`
+   - **Latin / Mexican**: `latin`
+   - **European**: `french-provence`, `art-deco`, `vogue`, `newspaper`, `letter`
+   - **Soft contemporary** (culturally neutral): `morandi`, `modern-minimal`, `mediterranean`
+   - **Themed**: `retro-poster`, `vintage-stars`
 
    Examples of pairing:
-   - Indoor formal portraits, traditional dress → `new-chinese`, `red-gold`, `palace`
-   - Outdoor casual / nature → `morandi`, `wabi-sabi`, `mediterranean`
+   - Indoor formal portraits, traditional dress → `new-chinese`, `red-gold`, `palace`, `indian`, `korean-hanbok`
+   - Outdoor casual / nature → `morandi`, `wabi-sabi`, `mediterranean`, `french-provence`
    - Editorial / fashion-y → `vogue`, `art-deco`, `modern-minimal`
+   - Ornate / ceremonial → `indian`, `arabic`, `red-gold`, `palace`
+   - Festive / colorful → `latin`, `red-gold`
 
 3. **Build a visual gallery** using `examples/thumbnails/<aesthetic>.png` for each candidate. These thumbnails are pre-rendered Chinese examples — they show the *aesthetic*, not what the final invitation will look like. Tell the user this.
 

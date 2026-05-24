@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{site.title}}</title>
+<link href="https://fonts.font.im/css2?family=Allura&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cormorant+Garamond:wght@300;400&family=Noto+Serif+SC:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #2a2438; font-family: 'EB Garamond', 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: linear-gradient(180deg, #f5f1e8 0%, #ece4d4 100%);
+    color: #4a3a4a;
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+  }
+  /* Soft subtle frame */
+  .frame {
+    position: absolute; inset: 16px;
+    border: 1px solid #a08fbf;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  /* Lavender sprigs top — arched over names */
+  .lavender-top {
+    position: absolute;
+    top: 32px; left: 50%;
+    transform: translateX(-50%);
+    width: 240px; height: 60px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .lavender-top svg { width: 100%; height: 100%; }
+  /* Botanical line art around photo */
+  .botanical-l, .botanical-r {
+    position: absolute;
+    top: 200px;
+    width: 60px; height: 180px;
+    pointer-events: none;
+    opacity: 0.65;
+  }
+  .botanical-l { left: 12px; }
+  .botanical-r { right: 12px; transform: scaleX(-1); }
+  .botanical-l svg, .botanical-r svg { width: 100%; height: 100%; }
+
+  .content {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding-top: 96px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-script {
+    font-family: 'Allura', cursive;
+    font-size: 26px;
+    color: #a08fbf;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .top-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px;
+    letter-spacing: 8px;
+    color: #8a9882;
+  }
+  .photo-wrap {
+    width: 158px; height: 200px;
+    margin: 14px auto 14px;
+    border-radius: 50% 50% 4px 4px / 30% 30% 4px 4px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(74, 58, 74, 0.18);
+    border: 1px solid #d4c8d8;
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+  .monogram {
+    font-family: 'Allura', cursive;
+    font-size: 60px;
+    color: #a08fbf;
+    line-height: 0.9;
+    margin: 4px 0 2px;
+  }
+  .names-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: #4a3a4a;
+    margin-top: 2px;
+  }
+  .names-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #8a7a8a;
+    margin-top: 4px;
+  }
+  .divider {
+    margin: 12px auto;
+    width: 80px;
+    height: 8px;
+    background-image:
+      radial-gradient(circle at 8px 4px, #a08fbf 1.5px, transparent 1.5px),
+      radial-gradient(circle at 40px 4px, #c8a040 2px, transparent 2px),
+      radial-gradient(circle at 72px 4px, #a08fbf 1.5px, transparent 1.5px);
+    background-size: 80px 8px;
+    background-repeat: no-repeat;
+  }
+  .info {
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #4a3a4a;
+    line-height: 1.7;
+    margin-top: auto;
+    padding-bottom: 8px;
+  }
+  .info .date {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #a08fbf;
+    letter-spacing: 4px;
+    display: block;
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="frame"></div>
+
+  <!-- Lavender sprigs arched at top -->
+  <div class="lavender-top">
+    <svg viewBox="0 0 240 60" fill="none">
+      <g stroke="#8a9882" stroke-width="1" fill="none">
+        <path d="M40 56 Q120 18 200 56"/>
+      </g>
+      <g fill="#a08fbf">
+        <ellipse cx="50" cy="46" rx="2.5" ry="6" transform="rotate(20 50 46)"/>
+        <ellipse cx="62" cy="38" rx="2.5" ry="6" transform="rotate(15 62 38)"/>
+        <ellipse cx="78" cy="30" rx="2.5" ry="6" transform="rotate(8 78 30)"/>
+        <ellipse cx="98" cy="24" rx="2.5" ry="6" transform="rotate(2 98 24)"/>
+        <ellipse cx="120" cy="20" rx="2.5" ry="7"/>
+        <ellipse cx="142" cy="24" rx="2.5" ry="6" transform="rotate(-2 142 24)"/>
+        <ellipse cx="162" cy="30" rx="2.5" ry="6" transform="rotate(-8 162 30)"/>
+        <ellipse cx="178" cy="38" rx="2.5" ry="6" transform="rotate(-15 178 38)"/>
+        <ellipse cx="190" cy="46" rx="2.5" ry="6" transform="rotate(-20 190 46)"/>
+      </g>
+      <g fill="#8a9882" opacity="0.7">
+        <ellipse cx="44" cy="54" rx="4" ry="1.5" transform="rotate(20 44 54)"/>
+        <ellipse cx="196" cy="54" rx="4" ry="1.5" transform="rotate(-20 196 54)"/>
+        <ellipse cx="120" cy="14" rx="5" ry="1.5"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Botanical sides -->
+  <div class="botanical-l">
+    <svg viewBox="0 0 60 180" fill="none">
+      <g stroke="#8a9882" stroke-width="1" fill="none">
+        <path d="M40 5 Q24 60 32 120 Q40 160 30 178"/>
+        <path d="M40 30 Q26 32 18 30"/>
+        <path d="M38 50 Q26 54 16 60"/>
+        <path d="M32 80 Q22 86 14 96"/>
+        <path d="M32 110 Q24 112 16 110"/>
+        <path d="M34 140 Q24 144 18 156"/>
+      </g>
+      <g fill="#8a9882" opacity="0.7">
+        <ellipse cx="24" cy="32" rx="4" ry="2"/>
+        <ellipse cx="22" cy="56" rx="4" ry="2"/>
+        <ellipse cx="20" cy="92" rx="4" ry="2"/>
+        <ellipse cx="22" cy="112" rx="4" ry="2"/>
+        <ellipse cx="22" cy="148" rx="4" ry="2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="botanical-r">
+    <svg viewBox="0 0 60 180" fill="none">
+      <g stroke="#8a9882" stroke-width="1" fill="none">
+        <path d="M40 5 Q24 60 32 120 Q40 160 30 178"/>
+        <path d="M40 30 Q26 32 18 30"/>
+        <path d="M38 50 Q26 54 16 60"/>
+        <path d="M32 80 Q22 86 14 96"/>
+        <path d="M32 110 Q24 112 16 110"/>
+      </g>
+      <g fill="#8a9882" opacity="0.7">
+        <ellipse cx="24" cy="32" rx="4" ry="2"/>
+        <ellipse cx="22" cy="56" rx="4" ry="2"/>
+        <ellipse cx="20" cy="92" rx="4" ry="2"/>
+        <ellipse cx="22" cy="112" rx="4" ry="2"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="content">
+    <div class="top-script">amour</div>
+    <div class="top-label">— SAVE THE DATE —</div>
+
+    <div class="photo-wrap">
+      <img src="{{design.primary_photo_url}}" alt="couple">
+    </div>
+
+    <div class="monogram">{{names.groom_en.0}}&amp;{{names.bride_en.0}}</div>
+    <div class="names-zh">{{names.groom_zh}} · {{names.bride_zh}}</div>
+    <div class="names-en">{{names.groom_en}} &nbsp; & &nbsp; {{names.bride_en}}</div>
+
+    <div class="divider"></div>
+
+    <div class="info">
+      <span class="date">{{date.en_long}}</span>
+      {{date.weekday_en}} · {{time.value}}<br>
+      {{venue.city_zh}} · {{venue.lines_zh.0}}
+    </div>
+  </div>
+</div>
+</body>
+</html>

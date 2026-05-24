@@ -77,12 +77,18 @@ const FIXTURE = {
   }
 };
 
-// Placeholder photo for thumbnails: a sunset shot bundled into the repo.
-// Embedded as a base64 data URI so the temp HTML written to /tmp can find it
+// Per-template placeholder photo. Each example template has its own AI-generated
+// wedding photo tailored to its aesthetic (examples/photos/<style-id>.jpg).
+// Falls back to placeholder-couple.jpg if a per-template image is missing.
+// Embedded as base64 data URI so the temp HTML written to /tmp can resolve it
 // regardless of the user's filesystem layout.
-const PLACEHOLDER_PHOTO = path.join(ROOT, 'examples', 'photos', 'placeholder-couple.jpg');
-const PLACEHOLDER_URL = 'data:image/jpeg;base64,' +
-  fs.readFileSync(PLACEHOLDER_PHOTO).toString('base64');
+const FALLBACK_PHOTO = path.join(ROOT, 'examples', 'photos', 'placeholder-couple.jpg');
+
+function photoUrlFor(templateId) {
+  const specific = path.join(ROOT, 'examples', 'photos', `${templateId}.jpg`);
+  const chosen = fs.existsSync(specific) ? specific : FALLBACK_PHOTO;
+  return 'data:image/jpeg;base64,' + fs.readFileSync(chosen).toString('base64');
+}
 
 function findChrome() {
   const env = process.env.CHROME;
@@ -132,11 +138,11 @@ function main() {
     const heightMatch = tpl.match(/\.card\s*\{[^}]*?height:\s*(\d+)px/);
     const height = heightMatch ? parseInt(heightMatch[1], 10) : 560;
 
-    // Render with fixture data; inject placeholder for the photo URL so we
-    // don't need any photo files on disk.
+    // Render with fixture data; inject the per-template photo so each
+    // thumbnail shows an aesthetic-matched wedding photo.
     const designCtx = {
       id, name_zh: '', name_en: '', primary_photo: '_placeholder',
-      primary_photo_url: PLACEHOLDER_URL,
+      primary_photo_url: photoUrlFor(id),
       width: 420, height
     };
     let html = render(tpl, { ...FIXTURE, design: designCtx });

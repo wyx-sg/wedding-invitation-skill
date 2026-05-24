@@ -25,11 +25,21 @@ When bilingual: pick a **primary** (usually `languages[0]`) and a **secondary**.
 
 ## Typography
 
-Pick fonts that match the language(s) AND the aesthetic. All fonts loaded via:
+Pick fonts that match the language(s) AND the aesthetic.
+
+**Font CDN selection is region-aware.** Read `data/wedding.json` → `font_cdn`:
+- `"fontim"` — user is in mainland China; load from `https://fonts.font.im/css?family=...`
+- `"googleapis"` (default) — load from `https://fonts.googleapis.com/css?family=...`
+
 ```html
-<link rel="stylesheet" href="https://fonts.font.im/css?family=...">
+<!-- China mainland -->
+<link rel="stylesheet" href="https://fonts.font.im/css?family=Cormorant+Garamond:ital,wght@0,400;0,500&display=swap">
+
+<!-- Everywhere else -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:ital,wght@0,400;0,500&display=swap">
 ```
-`fonts.font.im` is a Google-Fonts mirror reachable from mainland China. Never use `fonts.googleapis.com` directly (slow / blocked in CN).
+
+`fonts.font.im` is a Google-Fonts mirror reachable from CN; `fonts.googleapis.com` is the official Google CDN (faster outside CN, partially blocked inside CN). The skill asks the user at Stage 2; if `font_cdn` is missing, default to `googleapis`.
 
 ### Chinese (zh)
 Always include the system fallback chain:
@@ -83,6 +93,11 @@ Pick **one** palette per design. Don't mix.
 | Wabi-sabi | `#fafafa` rice paper | `#1a1a1a` ink | `#888` sumi grey | `#2c2c2c` | Japanese restraint |
 | Art-deco | `#1a1a1a` black | `#d4af37` gold | `#b8956a` brass | `#f4ede0` ivory | Gatsby glamour |
 | Vintage stars | midnight `#0e1428` | brass `#c8a154` | star-white `#f0e8d4` | `#e0d8c8` | celestial / night |
+| Indian regal | maroon `#7a1f2e` | gold `#d4a02a` | saffron `#e8a042` | `#f4d8a0` ivory | Indian wedding regal |
+| Arabic geometric | teal `#1d6160` | gold `#c8a040` | ivory `#f0e0c0` | `#f0e0c0` | Islamic geometric |
+| Latin folk | cream `#faf2e4` | coral `#e7665a` | turquoise `#3aa39a` + marigold `#e8a330` | `#3a2a20` | Mexican folk vibrant |
+| French Provence | ivory `#f5f1e8` | lavender `#a08fbf` | sage `#8a9882` | `#4a3a4a` | French countryside |
+| Korean royal | cream `#f5ede0` | emerald `#326b3c` | gold `#c8a040` + rose `#c9817e` | `#2a4a32` | Joseon traditional |
 
 ## Visual vocabulary by aesthetic
 
@@ -129,6 +144,21 @@ Old travel-poster aesthetic. Palette: mustard `#d4a02a` / teal `#3a7060` / cream
 
 ### ink-flower (水墨花卉)
 Chinese ink-painting feel. Palette: rice paper background, ink black, single accent color (peach pink or plum red). Typography: ZH = `Ma Shan Zheng` (brush) for headlines, `Noto Serif SC` for body. Decorative: a single ink-flower painting at corner (SVG line art or PNG), red seal stamp (could be `{{names.groom_zh.0}}` in a square red box), splashes of ink as wash effects. Asymmetric, soft.
+
+### indian (印度)
+Regal traditional Indian wedding. Palette: *Indian regal*. Typography: `Cinzel` for English caps headers, `Cormorant Garamond` for body; for Hindi/Devanagari `Tiro Devanagari Hindi` or `Noto Serif Devanagari`. Decorative: a large mandala SVG at top (concentric rings with 8 petals + gold lines), paisley flourishes on the sides (curved drop shapes with inner detail), a row of stylized lotus / marigolds at bottom. Heavy gold-on-maroon palette. Multi-layered ornate frame around photo (gold rings, double border). Mood: regal, abundant, ceremonial.
+
+### arabic (阿拉伯 / Islamic geometric)
+Middle Eastern formal. Palette: *Arabic geometric*. Typography: `Amiri` for Arabic script lines, `Cormorant Garamond` for English; ZH = `Noto Serif SC`. Decorative: photo wrapped in an arched (mihrab-style) frame — flat bottom, curved arch top. Subtle 8-point star tile pattern as background. Arabesque corner ornaments (curling vine + small star at each corner). 8-point star or "✦" as section dividers. Heavy symmetry, gold-on-teal palette.
+
+### latin (拉美 / Mexican folk)
+Vibrant Latin folk art. Palette: *Latin folk*. Typography: `Cinzel` decorative for headers, `Cormorant Garamond` italic for romance lines. Decorative: papel picado-style cut-paper banner at top (rectangle with cut-out shapes in different colors), marigold flower clusters at corners (orange petals + red center, with green stem), Talavera-tile striped border at bottom (alternating coral / turquoise / marigold blocks). Photo with double-color border (gold outer + turquoise inner). Mood: festive, warm, joyful.
+
+### french-provence (法式普罗旺斯)
+French countryside romance. Palette: *French Provence*. Typography: `Allura` cursive for monograms / `amour` script, `Cormorant Garamond` for headlines, `EB Garamond` for body. Decorative: lavender sprigs arching over the top (curved branch + small purple ellipse flowers), botanical line-art running down the sides (vine + small leaves), subtle gold dot dividers. Photo with vintage rounded-top frame (50% 50% 4px 4px border-radius). Mood: soft, romantic, countryside elegance.
+
+### korean-hanbok (韩式)
+Traditional Korean Joseon-era formal. Palette: *Korean royal*. Typography: `Nanum Myeongjo` for Korean characters (e.g. 결혼, 신랑, 신부), `Cormorant Garamond` italic for English; ZH = `Noto Serif SC`. Decorative: solid emerald top band, traditional Korean knot (kkwaegi) ornament centered in the band (a 4-loop knot drawn as overlapping curves), persimmon / lotus motifs in vertical strips on the sides (red circles with gold petals), thin rose-gold bottom band. Photo with arched-top frame (matches royal portrait conventions). Mood: ceremonial, jewel-toned, traditional.
 
 ### Adapting any aesthetic to non-CJK languages
 The aesthetic is the **palette + decorative motifs**, not the language. For an English-only morandi invitation: drop the Chinese fonts, use Inter/Manrope throughout, but keep the morandi palette and the asymmetric layout. The cultural aesthetics (`new-chinese`, `red-gold`, `palace`, `wabi-sabi`) have stronger cultural baggage — use them only when the language matches OR the couple explicitly wants that aesthetic.

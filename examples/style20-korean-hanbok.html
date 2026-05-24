@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{site.title}}</title>
+<link href="https://fonts.font.im/css2?family=Nanum+Myeongjo:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0e1f12; font-family: 'Nanum Myeongjo', 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: #f5ede0;
+    color: #2a4a32;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Top emerald band with traditional Korean motif */
+  .top-band {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 96px;
+    background: linear-gradient(180deg, #326b3c 0%, #285030 100%);
+  }
+  /* Korean traditional knot (kkwaegi) at center top */
+  .knot {
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 64px; height: 64px;
+    z-index: 2;
+  }
+  .knot svg { width: 100%; height: 100%; }
+  /* Side panels with persimmon/lotus motifs */
+  .side-l, .side-r {
+    position: absolute;
+    top: 130px;
+    width: 38px; height: 280px;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .side-l { left: 16px; }
+  .side-r { right: 16px; transform: scaleX(-1); }
+  .side-l svg, .side-r svg { width: 100%; height: 100%; }
+
+  /* Bottom rose-band */
+  .bottom-band {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 22px;
+    background: linear-gradient(90deg, #c9817e 0%, #c8a040 100%);
+    opacity: 0.85;
+  }
+
+  .content {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 110px 56px 40px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-label {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 18px;
+    letter-spacing: 14px;
+    color: #2a4a32;
+    margin-bottom: 2px;
+  }
+  .top-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: #c8a040;
+    margin-bottom: 10px;
+  }
+  /* Photo with gold-bordered arched top (traditional Korean royal portrait frame) */
+  .photo-wrap {
+    width: 160px; height: 196px;
+    margin: 4px auto 14px;
+    border-radius: 80px 80px 4px 4px;
+    overflow: hidden;
+    border: 2px solid #c8a040;
+    box-shadow:
+      0 0 0 4px #f5ede0,
+      0 0 0 5px #326b3c,
+      0 6px 14px rgba(0,0,0,0.18);
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+
+  .names-zh {
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #2a4a32;
+    margin-top: 6px;
+  }
+  .names-zh .amp {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: #c8a040;
+    margin: 0 5px;
+  }
+  .names-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #c9817e;
+    margin-top: 3px;
+  }
+  .divider {
+    width: 80px;
+    height: 1px;
+    margin: 12px auto;
+    background: linear-gradient(90deg, transparent, #c8a040, transparent);
+  }
+  .info {
+    font-size: 11px;
+    color: #2a4a32;
+    letter-spacing: 3px;
+    line-height: 1.8;
+    margin-top: auto;
+    padding-bottom: 8px;
+  }
+  .info .date {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #326b3c;
+    letter-spacing: 3px;
+    display: block;
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-band"></div>
+
+  <!-- Korean traditional knot at top center -->
+  <div class="knot">
+    <svg viewBox="0 0 64 64" fill="none">
+      <g stroke="#c8a040" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <!-- 4-loop knot -->
+        <path d="M32 8 Q16 16 16 32 Q16 48 32 56 Q48 48 48 32 Q48 16 32 8 Z"/>
+        <path d="M32 8 Q44 22 32 32 Q20 22 32 8"/>
+        <path d="M32 56 Q44 42 32 32 Q20 42 32 56"/>
+        <path d="M8 32 Q22 20 32 32 Q22 44 8 32"/>
+        <path d="M56 32 Q42 20 32 32 Q42 44 56 32"/>
+      </g>
+      <circle cx="32" cy="32" r="3" fill="#c9817e"/>
+      <line x1="32" y1="56" x2="32" y2="62" stroke="#c8a040" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- Side motifs: stylized persimmon/lotus pattern -->
+  <div class="side-l">
+    <svg viewBox="0 0 38 280" fill="none">
+      <g stroke="#326b3c" stroke-width="0.8" fill="none">
+        <path d="M19 4 L19 276"/>
+      </g>
+      <g fill="#c9817e">
+        <circle cx="19" cy="30" r="6"/>
+        <circle cx="19" cy="100" r="6"/>
+        <circle cx="19" cy="170" r="6"/>
+        <circle cx="19" cy="240" r="6"/>
+      </g>
+      <g fill="#c8a040" opacity="0.7">
+        <path d="M19 24 Q14 30 19 36 Q24 30 19 24" />
+        <path d="M19 94 Q14 100 19 106 Q24 100 19 94" />
+        <path d="M19 164 Q14 170 19 176 Q24 170 19 164" />
+        <path d="M19 234 Q14 240 19 246 Q24 240 19 234" />
+      </g>
+      <g fill="#2a4a32" opacity="0.5">
+        <ellipse cx="19" cy="65" rx="4" ry="2"/>
+        <ellipse cx="19" cy="135" rx="4" ry="2"/>
+        <ellipse cx="19" cy="205" rx="4" ry="2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="side-r">
+    <svg viewBox="0 0 38 280" fill="none">
+      <g stroke="#326b3c" stroke-width="0.8" fill="none">
+        <path d="M19 4 L19 276"/>
+      </g>
+      <g fill="#c9817e">
+        <circle cx="19" cy="30" r="6"/>
+        <circle cx="19" cy="100" r="6"/>
+        <circle cx="19" cy="170" r="6"/>
+        <circle cx="19" cy="240" r="6"/>
+      </g>
+      <g fill="#c8a040" opacity="0.7">
+        <path d="M19 24 Q14 30 19 36 Q24 30 19 24" />
+        <path d="M19 94 Q14 100 19 106 Q24 100 19 94" />
+        <path d="M19 164 Q14 170 19 176 Q24 170 19 164" />
+        <path d="M19 234 Q14 240 19 246 Q24 240 19 234" />
+      </g>
+    </svg>
+  </div>
+
+  <div class="content">
+    <div class="top-label">결 혼</div>
+    <div class="top-sub">— WEDDING DAY —</div>
+
+    <div class="photo-wrap">
+      <img src="{{design.primary_photo_url}}" alt="couple">
+    </div>
+
+    <div class="names-zh">{{names.groom_zh}}<span class="amp">&</span>{{names.bride_zh}}</div>
+    <div class="names-en">{{names.groom_en}} · {{names.bride_en}}</div>
+
+    <div class="divider"></div>
+
+    <div class="info">
+      <span class="date">{{date.en_long}}</span>
+      {{date.weekday_en}} · {{time.value}}<br>
+      {{venue.city_zh}} · {{venue.lines_zh.0}}
+    </div>
+  </div>
+
+  <div class="bottom-band"></div>
+</div>
+</body>
+</html>

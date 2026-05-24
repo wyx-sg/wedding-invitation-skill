@@ -44,7 +44,11 @@ Wedding data (photos, names, dates, venues, family info) is **highly sensitive**
 
 Never suggest external services (image hosting, online editors, cloud rendering, web-based invitation builders) for any step.
 
-The only network egress is at preview time: the browser loads webfonts from `fonts.font.im` (a Google-Fonts CN mirror). If the user is offline, the templates degrade to system fonts; the PNG export still works.
+The only network egress is at preview time: the browser loads webfonts from a Google Fonts CDN. The skill asks the user at Stage 2 which to use:
+- `fonts.font.im` if the user is in mainland China (CN mirror, reachable from inside the GFW)
+- `fonts.googleapis.com` everywhere else (official, faster, partially blocked in CN)
+
+If the user is offline, the templates degrade to system fonts; the PNG export still works.
 
 ## Workflow
 

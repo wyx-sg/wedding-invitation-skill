@@ -16,43 +16,92 @@
     position: relative;
     overflow: hidden;
   }
-  .frame-outer { position: absolute; inset: 16px; border: 2px solid #d4af37; }
-  .frame-inner { position: absolute; inset: 22px; border: 1px solid #8b6e3a; }
-  .corner-fan {
-    position: absolute;
-    width: 30px; height: 30px;
-    background: conic-gradient(from 0deg, #d4af37 0deg 20deg, transparent 20deg 40deg, #d4af37 40deg 60deg, transparent 60deg 80deg, #d4af37 80deg 90deg);
+  /* Stepped pyramidal frame — signature deco shape */
+  .frame-outer {
+    position: absolute; inset: 14px;
+    border: 2px solid #d4af37;
+    clip-path: polygon(
+      0 24px, 24px 0,
+      calc(100% - 24px) 0, 100% 24px,
+      100% calc(100% - 24px), calc(100% - 24px) 100%,
+      24px 100%, 0 calc(100% - 24px)
+    );
   }
-  .corner-fan.tl { top: 16px; left: 16px; }
-  .corner-fan.tr { top: 16px; right: 16px; transform: rotate(90deg); }
-  .corner-fan.bl { bottom: 16px; left: 16px; transform: rotate(-90deg); }
-  .corner-fan.br { bottom: 16px; right: 16px; transform: rotate(180deg); }
-  .content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; padding: 30px 16px; }
+  .frame-inner {
+    position: absolute; inset: 24px;
+    border: 1px solid #8b6e3a;
+    clip-path: polygon(
+      0 18px, 18px 0,
+      calc(100% - 18px) 0, 100% 18px,
+      100% calc(100% - 18px), calc(100% - 18px) 100%,
+      18px 100%, 0 calc(100% - 18px)
+    );
+  }
+  /* Big sunburst fan at top — Art Deco signature */
+  .sunburst {
+    position: absolute;
+    top: 30px; left: 50%;
+    transform: translateX(-50%);
+    width: 220px; height: 110px;
+    pointer-events: none;
+  }
+  .sunburst svg { width: 100%; height: 100%; }
+  /* Bottom deco ornament — small fan mirror of top sunburst */
+  .bottom-fan {
+    position: absolute;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    width: 90px; height: 36px;
+    pointer-events: none;
+  }
+  .bottom-fan svg { width: 100%; height: 100%; }
+  .content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; padding: 28px 28px 24px; }
   .top-label {
     text-align: center;
     font-family: 'Playfair Display', serif;
     font-size: 10px;
     letter-spacing: 10px;
     color: #b8956a;
-    margin-bottom: 8px;
+    margin-top: 88px;
+    margin-bottom: 4px;
   }
   .monogram {
     text-align: center;
     font-family: 'Bodoni Moda', serif;
     font-style: italic;
-    font-size: 56px;
+    font-size: 44px;
     line-height: 1;
     color: #d4af37;
   }
-  .monogram .amp { font-style: normal; color: #b8956a; font-size: 36px; vertical-align: 10px; margin: 0 6px; }
+  .monogram .amp { font-style: normal; color: #b8956a; font-size: 28px; vertical-align: 8px; margin: 0 4px; }
+  /* Octagonal photo — chamfered corners */
   .photo-wrap {
-    width: 130px; height: 170px;
-    margin: 16px auto;
-    border: 2px solid #d4af37;
+    width: 150px; height: 190px;
+    margin: 14px auto 10px;
     overflow: hidden;
-    box-shadow: 0 0 0 4px #0a0a0a, 0 0 0 5px #8b6e3a;
+    position: relative;
+    clip-path: polygon(
+      18px 0, calc(100% - 18px) 0,
+      100% 18px, 100% calc(100% - 18px),
+      calc(100% - 18px) 100%, 18px 100%,
+      0 calc(100% - 18px), 0 18px
+    );
+    background: #d4af37;
   }
-  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+  .photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    clip-path: polygon(
+      16px 0, calc(100% - 16px) 0,
+      100% 16px, 100% calc(100% - 16px),
+      calc(100% - 16px) 100%, 16px 100%,
+      0 calc(100% - 16px), 0 16px
+    );
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px #8b6e3a;
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; position: relative; z-index: 0; }
   .names {
     text-align: center;
     font-family: 'Noto Serif SC', serif;
@@ -75,10 +124,11 @@
   .venue {
     text-align: center;
     margin-top: auto;
-    font-size: 11px;
+    margin-bottom: 56px;
+    font-size: 10px;
     color: #b8956a;
-    letter-spacing: 3px;
-    line-height: 1.8;
+    letter-spacing: 2px;
+    line-height: 1.7;
   }
 </style>
 </head>
@@ -86,10 +136,53 @@
 <div class="card">
   <div class="frame-outer"></div>
   <div class="frame-inner"></div>
-  <div class="corner-fan tl"></div>
-  <div class="corner-fan tr"></div>
-  <div class="corner-fan bl"></div>
-  <div class="corner-fan br"></div>
+
+  <!-- Big sunburst fan at top — Art Deco signature motif -->
+  <div class="sunburst">
+    <svg viewBox="0 0 220 110" fill="none">
+      <defs>
+        <linearGradient id="rayGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4af37"/>
+          <stop offset="100%" stop-color="#8b6e3a"/>
+        </linearGradient>
+      </defs>
+      <!-- center disc -->
+      <circle cx="110" cy="100" r="8" fill="#d4af37"/>
+      <!-- 11 rays of varying length -->
+      <g stroke="url(#rayGrad)" stroke-width="2" stroke-linecap="round">
+        <line x1="110" y1="100" x2="110" y2="8"/>
+        <line x1="110" y1="100" x2="86" y2="14"/>
+        <line x1="110" y1="100" x2="134" y2="14"/>
+        <line x1="110" y1="100" x2="62" y2="22"/>
+        <line x1="110" y1="100" x2="158" y2="22"/>
+        <line x1="110" y1="100" x2="40" y2="38"/>
+        <line x1="110" y1="100" x2="180" y2="38"/>
+        <line x1="110" y1="100" x2="22" y2="58"/>
+        <line x1="110" y1="100" x2="198" y2="58"/>
+        <line x1="110" y1="100" x2="8" y2="82"/>
+        <line x1="110" y1="100" x2="212" y2="82"/>
+      </g>
+      <!-- inner arc -->
+      <path d="M 30 100 A 80 80 0 0 1 190 100" stroke="#b8956a" stroke-width="1" fill="none" opacity="0.8"/>
+      <path d="M 50 100 A 60 60 0 0 1 170 100" stroke="#8b6e3a" stroke-width="0.6" fill="none" opacity="0.6"/>
+    </svg>
+  </div>
+
+  <!-- Bottom mirror fan -->
+  <div class="bottom-fan">
+    <svg viewBox="0 0 90 36" fill="none">
+      <g stroke="#8b6e3a" stroke-width="1" stroke-linecap="round" opacity="0.7">
+        <line x1="45" y1="32" x2="45" y2="4"/>
+        <line x1="45" y1="32" x2="30" y2="8"/>
+        <line x1="45" y1="32" x2="60" y2="8"/>
+        <line x1="45" y1="32" x2="16" y2="16"/>
+        <line x1="45" y1="32" x2="74" y2="16"/>
+        <line x1="45" y1="32" x2="4" y2="26"/>
+        <line x1="45" y1="32" x2="86" y2="26"/>
+      </g>
+      <circle cx="45" cy="32" r="3" fill="#d4af37"/>
+    </svg>
+  </div>
 
   <div class="content">
     <div class="top-label">— {{date.roman_year}} —</div>

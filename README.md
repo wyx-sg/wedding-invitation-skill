@@ -4,8 +4,6 @@
 
 > An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
-![hero](./docs/hero.png)
-
 <p align="center">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Works with Claude Code" src="https://img.shields.io/badge/Claude%20Code-compatible-d4af37">
@@ -20,11 +18,13 @@ git clone https://github.com/wyx-sg/wedding-invitation-skill \
   ~/.claude/skills/wedding-invitation
 ```
 
-Then in [Claude Code](https://claude.ai/code), say:
+Then in [Claude Code](https://claude.ai/code), invoke the skill:
 
-> Help me make a wedding invitation.
+```
+/wedding-invitation
+```
 
-Claude takes it from there. No restart needed — Claude Code picks up new skills in the current session.
+Or just tell Claude: "Help me make a wedding invitation." Either way works — Claude takes it from there. No restart needed.
 
 ## What you'll get
 
@@ -33,33 +33,19 @@ Claude takes it from there. No restart needed — Claude Code picks up new skill
 - Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, or any combination
 - Your photos, names, and address **never leave your machine**
 
-## Gallery
+The 20 examples in the image above span world cultures and contemporary aesthetics:
 
-The 15 invitations below are **Chinese examples** showing what aesthetics this skill can produce. They are not templates you pick from — each one was designed from scratch for a different aesthetic. Your invitation will be designed fresh in your chosen language.
+- **Chinese** — `new-chinese`, `red-gold`, `gugong`, `ink-flower`
+- **Japanese** — `wabi-sabi`
+- **Korean** — `korean-hanbok`
+- **South Asian** — `indian`
+- **Middle Eastern** — `arabic`
+- **Latin / Mexican** — `latin`
+- **European** — `french-provence`, `art-deco`, `vogue`, `newspaper`, `letter`
+- **Contemporary** — `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
+- **Themed** — `retro-poster`, `vintage-stars`
 
-<table>
-  <tr>
-    <td align="center"><img src="examples/thumbnails/style01-new-chinese.png" width="160"><br><sub><b>new-chinese</b><br>refined traditional</sub></td>
-    <td align="center"><img src="examples/thumbnails/style02-modern-minimal.png" width="160"><br><sub><b>modern-minimal</b><br>scandi minimalism</sub></td>
-    <td align="center"><img src="examples/thumbnails/style03-morandi.png" width="160"><br><sub><b>morandi</b><br>soft contemporary</sub></td>
-    <td align="center"><img src="examples/thumbnails/style04-red-gold.png" width="160"><br><sub><b>red-gold</b><br>traditional banquet</sub></td>
-    <td align="center"><img src="examples/thumbnails/style05-vogue.png" width="160"><br><sub><b>vogue</b><br>editorial / fashion</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="examples/thumbnails/style06-black-gold.png" width="160"><br><sub><b>black-gold</b><br>monogram / formal</sub></td>
-    <td align="center"><img src="examples/thumbnails/style07-newspaper.png" width="160"><br><sub><b>newspaper</b><br>old-print broadsheet</sub></td>
-    <td align="center"><img src="examples/thumbnails/style08-letter.png" width="160"><br><sub><b>letter</b><br>handwritten note</sub></td>
-    <td align="center"><img src="examples/thumbnails/style09-gugong.png" width="160"><br><sub><b>gugong</b><br>palace / museum</sub></td>
-    <td align="center"><img src="examples/thumbnails/style10-mediterranean.png" width="160"><br><sub><b>mediterranean</b><br>destination / outdoor</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="examples/thumbnails/style11-wabi-sabi.png" width="160"><br><sub><b>wabi-sabi</b><br>japanese restraint</sub></td>
-    <td align="center"><img src="examples/thumbnails/style12-art-deco.png" width="160"><br><sub><b>art-deco</b><br>gatsby glamour</sub></td>
-    <td align="center"><img src="examples/thumbnails/style13-ink-flower.png" width="160"><br><sub><b>ink-flower</b><br>chinese ink painting</sub></td>
-    <td align="center"><img src="examples/thumbnails/style14-retro-poster.png" width="160"><br><sub><b>retro-poster</b><br>travel-poster</sub></td>
-    <td align="center"><img src="examples/thumbnails/style15-vintage-stars.png" width="160"><br><sub><b>vintage-stars</b><br>celestial / night</sub></td>
-  </tr>
-</table>
+These are not templates you pick from — each is a one-off, designed from scratch. Your invitation will be designed fresh in your chosen language, with your aesthetic direction.
 
 ## How it works
 
@@ -89,32 +75,46 @@ Some interactions use Claude Code's `AskUserQuestion` tool for visual picking; o
 
 ## Privacy
 
-Your photos, names, and address never leave your machine.
+Your photos, names, and address stay on your laptop. No uploads. No cloud accounts. No telemetry. No third-party services.
 
-- The skill itself makes **zero network requests**.
-- At preview time, the rendered HTML loads webfonts from `fonts.font.im` (a Google Fonts mirror) — only your browser sees that, and only the font URLs. You can pre-download fonts to go fully offline.
-- The project directory's `.gitignore` excludes `photos/`, `data/wedding.json`, and `dist/` by default — so even if you `git init` your wedding project, your data won't be tracked.
-- No telemetry, no analytics, no third-party services.
+The skill makes zero network requests of its own. The only thing that hits the network is your browser loading webfonts from Google Fonts during HTML preview — and that's just font URLs, nothing about you.
 
 ## FAQ
 
-**Can I use this without Claude Code?**
+<details>
+<summary><b>Can I use this without Claude Code?</b></summary>
+
 Yes. Any coding agent that reads markdown works — you just need to manually point it at `SKILL.md`. Auto-discovery is Claude Code specific.
 
-**Is this a website?**
+</details>
+
+<details>
+<summary><b>Is this a website?</b></summary>
+
 No. It produces a static PNG you can print, share, attach to email, or send via messaging apps.
 
-**What languages does it support?**
+</details>
+
+<details>
+<summary><b>What languages does it support?</b></summary>
+
 Anything. The skill asks at the start. Chinese, English, Spanish, Japanese, Korean, French, bilingual combinations — `design-principles.md` has typography guidance for the major scripts.
 
-**Can I use my own photos?**
+</details>
+
+<details>
+<summary><b>Can I use my own photos?</b></summary>
+
 Yes. The skill asks where they live on your machine and copies them into the project.
 
-**Will my data appear anywhere online?**
-No. The project directory is `.gitignore`'d by default. Your photos and details stay local.
+</details>
 
-**What if I'm on Windows?**
-Works. `render.js` shells out to whichever Chrome / Chromium / Edge you have installed. The skill's documentation includes Windows commands alongside macOS/Linux.
+<details>
+<summary><b>What if I'm on Windows?</b></summary>
+
+Works. `render.js` shells out to whichever Chrome / Chromium / Edge you have installed. Bash-only commands in the skill docs all have Windows PowerShell equivalents.
+
+</details>
 
 ## License
 

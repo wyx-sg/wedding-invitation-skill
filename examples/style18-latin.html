@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{site.title}}</title>
+<link href="https://fonts.font.im/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #2a1a14; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: #faf2e4;
+    color: #3a2a20;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Papel picado strip at top */
+  .papel {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: #e7665a;
+    overflow: hidden;
+  }
+  .papel::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 18px;
+    background-image:
+      radial-gradient(circle at 14px 18px, #faf2e4 7px, transparent 7px),
+      radial-gradient(circle at 42px 18px, #faf2e4 9px, transparent 9px),
+      radial-gradient(circle at 70px 18px, #faf2e4 7px, transparent 7px);
+    background-size: 56px 18px;
+    background-repeat: repeat-x;
+  }
+  .papel-pattern {
+    position: absolute;
+    top: 6px; left: 0; right: 0;
+    height: 36px;
+    background-image:
+      radial-gradient(circle at 28px 18px, transparent 4px, #faf2e4 4px, #faf2e4 5px, transparent 5px),
+      radial-gradient(circle at 28px 18px, transparent 9px, #faf2e4 9px, #faf2e4 10px, transparent 10px);
+    background-size: 56px 36px;
+    background-repeat: repeat-x;
+  }
+  /* Marigold cluster top-left */
+  .marigold {
+    position: absolute;
+    top: 70px; left: 12px;
+    width: 80px; height: 80px;
+    z-index: 2;
+  }
+  .marigold svg { width: 100%; height: 100%; }
+  .marigold-r {
+    position: absolute;
+    top: 70px; right: 12px;
+    width: 80px; height: 80px;
+    z-index: 2;
+    transform: scaleX(-1);
+  }
+  .marigold-r svg { width: 100%; height: 100%; }
+
+  /* Bottom Talavera-style border */
+  .talavera {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 36px;
+    background:
+      repeating-linear-gradient(90deg,
+        #3aa39a 0 18px,
+        #e8a330 18px 36px,
+        #e7665a 36px 54px,
+        #3aa39a 54px 72px);
+    opacity: 0.85;
+  }
+  .talavera::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 0; right: 0;
+    height: 12px;
+    background:
+      radial-gradient(circle at 18px 12px, #faf2e4 6px, transparent 6px);
+    background-size: 36px 12px;
+    background-repeat: repeat-x;
+  }
+
+  .content {
+    position: relative; z-index: 1;
+    padding: 100px 30px 64px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #c84d3a;
+    margin-bottom: 6px;
+  }
+  /* Scalloped photo border — Mexican folk shape */
+  .photo-wrap {
+    width: 170px; height: 170px;
+    margin: 8px auto 12px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #e8a330;
+    box-shadow: 0 0 0 6px #faf2e4, 0 0 0 7px #3aa39a, 0 4px 18px rgba(0,0,0,0.15);
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+
+  .names-zh {
+    font-size: 22px;
+    letter-spacing: 5px;
+    color: #3a2a20;
+    margin-top: 6px;
+  }
+  .names-zh .amp {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: #c84d3a;
+    margin: 0 6px;
+  }
+  .names-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #c84d3a;
+    margin-top: 3px;
+  }
+  .info {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #3a2a20;
+    letter-spacing: 2px;
+    line-height: 1.8;
+  }
+  .info .date {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #3aa39a;
+    letter-spacing: 3px;
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- Papel picado banner -->
+  <div class="papel">
+    <div class="papel-pattern"></div>
+  </div>
+
+  <!-- Marigold flowers each side -->
+  <div class="marigold">
+    <svg viewBox="0 0 80 80" fill="none">
+      <g fill="#e8a330" opacity="0.85">
+        <ellipse cx="40" cy="22" rx="6" ry="14"/>
+        <ellipse cx="58" cy="32" rx="6" ry="14" transform="rotate(40 58 32)"/>
+        <ellipse cx="58" cy="56" rx="6" ry="14" transform="rotate(140 58 56)"/>
+        <ellipse cx="40" cy="66" rx="6" ry="14"/>
+        <ellipse cx="22" cy="56" rx="6" ry="14" transform="rotate(40 22 56)"/>
+        <ellipse cx="22" cy="32" rx="6" ry="14" transform="rotate(140 22 32)"/>
+      </g>
+      <circle cx="40" cy="44" r="9" fill="#c84d3a"/>
+      <circle cx="40" cy="44" r="4" fill="#e8a330"/>
+      <g stroke="#3aa39a" stroke-width="1.4" fill="none">
+        <path d="M40 70 Q34 76 28 80"/>
+        <ellipse cx="30" cy="76" rx="3" ry="1.5" transform="rotate(-30 30 76)" fill="#3aa39a"/>
+      </g>
+    </svg>
+  </div>
+  <div class="marigold-r">
+    <svg viewBox="0 0 80 80" fill="none">
+      <g fill="#e8a330" opacity="0.85">
+        <ellipse cx="40" cy="22" rx="6" ry="14"/>
+        <ellipse cx="58" cy="32" rx="6" ry="14" transform="rotate(40 58 32)"/>
+        <ellipse cx="58" cy="56" rx="6" ry="14" transform="rotate(140 58 56)"/>
+        <ellipse cx="40" cy="66" rx="6" ry="14"/>
+        <ellipse cx="22" cy="56" rx="6" ry="14" transform="rotate(40 22 56)"/>
+        <ellipse cx="22" cy="32" rx="6" ry="14" transform="rotate(140 22 32)"/>
+      </g>
+      <circle cx="40" cy="44" r="9" fill="#c84d3a"/>
+      <circle cx="40" cy="44" r="4" fill="#e8a330"/>
+    </svg>
+  </div>
+
+  <div class="content">
+    <div class="top-label">— AMOR ETERNO —</div>
+
+    <div class="photo-wrap">
+      <img src="{{design.primary_photo_url}}" alt="couple">
+    </div>
+
+    <div class="names-zh">{{names.groom_zh}}<span class="amp">&</span>{{names.bride_zh}}</div>
+    <div class="names-en">{{names.groom_en}} · {{names.bride_en}}</div>
+
+    <div class="info">
+      <div class="date">{{date.en_long}}</div>
+      {{date.weekday_en}} · {{time.value}}<br>
+      {{venue.city_zh}} · {{venue.lines_zh.0}}
+    </div>
+  </div>
+
+  <div class="talavera"></div>
+</div>
+</body>
+</html>
