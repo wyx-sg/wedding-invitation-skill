@@ -192,6 +192,7 @@ const GALLERY_CSS = `
     max-width: 680px;
     margin: 0 auto 32px;
     line-height: 1.6;
+    text-wrap: balance;
   }
   .actions {
     display: flex;
@@ -221,6 +222,7 @@ const GALLERY_CSS = `
     font-size: 13px;
     color: var(--text-muted);
     font-style: italic;
+    text-wrap: balance;
   }
   main {
     max-width: 1400px;
@@ -361,6 +363,7 @@ const DETAIL_CSS = `
     margin: 0 auto 40px;
     text-align: center;
     font-style: italic;
+    text-wrap: balance;
   }
   .specs {
     display: grid;
