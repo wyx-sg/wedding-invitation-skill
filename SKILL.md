@@ -26,7 +26,7 @@ Your job:
 3. Design **fresh** HTML template(s) tailored to them, using `design-principles.md` as your visual vocabulary
 4. Render them locally and present in a local gallery page with download buttons
 
-**The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of Chinese examples used in the README gallery. Reading those files is forbidden — they bias you toward copying, and they are all in Chinese (the user's invitation may be in any language). Use `design-principles.md` as your sole visual reference.
+**The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of reference invitations used in the README gallery — each in its own native cultural language. Most are Chinese, but the culturally-specific ones (`indian`, `arabic`, `latin`, `french-provence`, `korean-hanbok`, etc.) are in their respective native languages. Reading those files is forbidden — they bias you toward copying, and their language may not match the user's chosen language. Use `design-principles.md` as your sole visual reference. The thumbnails in `examples/thumbnails/` may be referenced by URL (as `<img src>`) for the Stage 3 style picker — that's fine; the user sees them only as visual direction, not as copy.
 
 ## Language
 

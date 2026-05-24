@@ -196,8 +196,10 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - Don't propose tight circle / oval frames if the photo's subject is full-length or off-center — heads will get clipped.
 
 2. **Pick aesthetic directions** from `design-principles.md` that fit the photos + any user hints. The number depends on mode:
-   - **Single mode**: pick 3-5 candidates → user picks one → you design that one
+   - **Single mode**: pick **3-4 candidates** → user picks one → you design that one. **Cap at 4** so the follow-up pick fits in a single AskUserQuestion modal (the tool only allows 4 options).
    - **Multi mode**: pick exactly `multi_count` candidates (no overlap), each will become a separate design
+
+   If you really want to surface 5-6 candidates for comparison, you must commit to Tier 3 (open text) for the follow-up pick — tell the user explicitly: "type the name you like (e.g. `morandi`)" — because AskUserQuestion cannot show more than 4 options.
 
    Aesthetic names you can choose from, grouped by cultural origin:
    - **Chinese**: `new-chinese`, `red-gold`, `gugong`, `ink-flower`
@@ -217,9 +219,10 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - Ornate / ceremonial → `indian`, `arabic`, `red-gold`, `gugong`
    - Festive / colorful → `latin`, `red-gold`
 
-3. **Build a visual gallery** using `examples/thumbnails/<aesthetic>.png` for each candidate. These thumbnails are pre-rendered Chinese examples — they show the *aesthetic*, not what the final invitation will look like. Tell the user this.
+3. **Build a visual gallery** using `examples/thumbnails/<aesthetic>.png` for each candidate. These thumbnails are pre-rendered reference invitations — they show the *aesthetic*, not what the final invitation will look like. The thumbnails are in **various languages** (most are Chinese, but the culturally-specific ones — `indian`, `arabic`, `latin`, `french-provence`, `korean-hanbok`, etc. — are in their native cultural language). The user's actual invitation will be designed fresh in their chosen language(s). Tell the user this, in their primary language, and don't claim "these are all Chinese examples" — it's not true.
 
-   Save the gallery to the user's working directory as `_style-preview.html`:
+   Use the gallery template, also localizing the headline + note to the user's primary language (the snippet below has English placeholders; translate before writing the file):
+
    ```html
    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
      body{margin:0;background:#1a1a1a;color:#e0d8c8;font-family:system-ui;padding:24px}
@@ -230,9 +233,9 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
      .card .name{margin-top:10px;font-size:13px;letter-spacing:1px;color:#d4af37}
    </style></head><body>
      <h1 style="text-align:center;font-weight:300">Pick an aesthetic direction</h1>
-     <p class="note">These are Chinese examples showing what each aesthetic looks like.
+     <p class="note">Reference examples — each in its native cultural language (Chinese / English / French / Hindi / Korean / etc.).
        Your invitation will be designed fresh in <strong>{{your-languages}}</strong> —
-       only the visual direction (color, typography, decoration) carries over.</p>
+       only the visual feel (color, typography, decoration) carries over.</p>
      <div class="grid">
        <!-- one .card per candidate; use absolute file:// path to skill's examples/thumbnails/ -->
        <div class="card"><img src="file:///path/to/skill/examples/thumbnails/style03-morandi.png"><div class="name">morandi</div></div>

@@ -90,36 +90,57 @@ for (const d of designs) {
   const ctx = { ...wedding, design: designCtx };
   const html = render(tpl, ctx);
 
-  // Inject a frame that behaves differently for preview vs screenshot:
-  //   - Browser preview (viewport ≥ 421 px wide): center the card on dark bg
-  //   - Screenshot (Chrome --window-size=420,560): no centering, card sits
-  //     at 0,0 so the PNG is the card exactly with zero bleed
+  // Inject a frame that behaves differently for preview vs screenshot. The
+  // signal is an explicit URL hash (#render), set by scripts/render.js when
+  // capturing PNGs — NOT a viewport media query (those are unreliable at
+  // high force-device-scale-factor, where Chrome's effective CSS viewport
+  // can drift past 420 px and bake a centered-on-dark-bg layout into the
+  // print PNG).
+  //
+  // Modes:
+  //   - Standalone preview in a browser tab (no hash):
+  //       html gets .preview-mode → dark page bg, card centered.
+  //   - Embedded in the gallery's <iframe> (parent !== self, also no hash):
+  //       html gets .preview-mode but the styles below are also safe for
+  //       the iframe — the iframe's intrinsic 420×height clips anyway.
+  //   - PNG screenshot via render.js (hash === '#render'):
+  //       no class added → body transparent, card at 0,0, zero bleed.
   //
   // Also inject a tiny postMessage listener so the gallery's photo-switcher
   // can swap #main-photo without reloading the iframe. Templates that follow
   // design-principles.md will have <img id="main-photo">; if a template
   // doesn't, the listener is a no-op.
-  const frameCss = `<style>
-    html,body{margin:0;padding:0}
-    body{background:transparent}
-    body>.card,body .card{margin:0}
-    @media (min-width: 421px){
-      body{background:#222;display:flex;align-items:center;justify-content:center;min-height:100vh}
-    }
-  </style>
-  <script>
+  const frameCss = `<script>
     (function () {
+      // Add the dark "preview" frame only when this page is the top-level
+      // tab being viewed standalone. Skip it for:
+      //   - PNG screenshots (render.js loads the URL with #render)
+      //   - Gallery iframe embeds (window.self !== window.top — the gallery's
+      //     own frame styling does the centering)
+      if (location.hash !== '#render' && window.self === window.top) {
+        document.documentElement.classList.add('preview-mode');
+      }
       window.addEventListener('message', function (e) {
         var d = e && e.data;
         if (!d || d.type !== 'set-photo' || !d.url) return;
         var img = document.getElementById('main-photo');
         if (img) img.setAttribute('src', d.url);
       });
-      // Tell the parent we're ready; parent may apply the user's last
-      // selection immediately (so refreshing the detail page preserves it).
       try { parent.postMessage({ type: 'photo-iframe-ready', id: ${JSON.stringify(d.id)} }, '*'); } catch (_) {}
     })();
-  </script></head>`;
+  </script>
+  <style>
+    html,body{margin:0;padding:0}
+    body{background:transparent}
+    body>.card,body .card{margin:0}
+    html.preview-mode body{
+      background:#222;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+    }
+  </style></head>`;
   const framed = html.replace(/<\/head>/, frameCss);
 
   const outPath = path.join(DIST_DIR, `${d.id}.html`);
