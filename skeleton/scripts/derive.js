@@ -224,7 +224,9 @@ function main() {
   const venue = seed.venue;
   const site = deriveSite(seed.site || {}, names, date, venue, languages);
 
-  const out = { languages, names, date, time, venue, site };
+  // Preserve any other top-level fields the agent wrote (font_cdn, mode,
+  // multi_count, custom flags). Spread seed first so derived fields win.
+  const out = { ...seed, languages, names, date, time, venue, site };
   fs.writeFileSync(FILE, JSON.stringify(out, null, 2) + '\n');
 
   console.log(`[derive] Wrote ${FILE}`);

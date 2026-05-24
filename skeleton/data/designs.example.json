@@ -3,9 +3,16 @@
     "id": "my-design",
     "name_zh": "我的请帖",
     "name_en": "MY INVITATION",
-    "template": "style01-new-chinese.html",
+    "template": "my-design.html",
     "primary_photo": "photo-01",
     "width": 420,
-    "height": 560
+    "height": 560,
+    "meta": {
+      "short": "Short subtitle for the design (1 line)",
+      "long": "Optional longer description shown in the gallery / detail page.",
+      "palette": ["#f6efe1", "#b8362b", "#d4af37", "#1a1a1a"],
+      "fonts": ["Songti SC", "Cormorant Garamond"],
+      "motifs": "Decorative motifs (comma separated, optional)"
+    }
   }
 ]

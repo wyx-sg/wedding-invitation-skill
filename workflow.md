@@ -1,6 +1,15 @@
 # Workflow — how to drive the conversation
 
-This file teaches the agent (you) how to take a user from "I want to make a wedding invitation" to a finished PNG. The flow has 6 stages. Do not skip stages. Do not start writing HTML before Stage 4.
+This file teaches the agent (you) how to take a user from "I want to make a wedding invitation" to a finished PNG. The flow has **7 stages** (Stages 1-6 plus Stage 2.5 mode selection). Do not skip stages. Do not start writing HTML before Stage 4.
+
+## The two modes
+
+After collecting wedding data (Stage 2) but before the aesthetic stage, the user picks a mode:
+
+- **Single mode (default)** — design 1 custom template, iterate 3-5 rounds, export PNG. Best when the user knows roughly what they want.
+- **Multi mode** — generate N variants in parallel (3 / 5 / 8, or user-specified), present in a gallery, user picks favorite. Either download as-is, or "iterate on this one" → drops back into single-mode flow with the chosen variant as the starting point.
+
+The end of both modes is a local `dist/index.html` gallery page with download buttons for two PNG sizes (social 1080×1440 + print 2160×2880).
 
 ## How to interact with the user — 3-tier degradation
 
@@ -121,28 +130,57 @@ This is the **first** content decision. Don't assume Chinese (or any language).
 
    If derive fails, the seed is incomplete or malformed for the declared languages — fix the seed and re-run.
 
+## Stage 2.5 — Pick a mode
+
+Right after Stage 2 (language + couple details collected), ask the user which mode they prefer.
+
+**Use AskUserQuestion (Tier 2)** with these options:
+
+> "How would you like to design this?"
+> - **One design, iterated to perfection** — I'll design one template tailored to you and refine with your feedback. ~30 minutes, 3-5 rounds.
+> - **Compare a few alternatives** — I'll generate 3 different aesthetics side-by-side. You pick the favorite (or iterate on one).
+> - **See many alternatives** — I'll generate 8 different aesthetics for broad comparison.
+> - **A specific number** — tell me how many (2-10).
+
+If the user picks single: proceed to Stage 3 normally (pick one aesthetic).
+If multi: proceed to Stage 3 but pick N aesthetic directions, then in Stage 4 generate all N variants.
+
+Write the mode + count into `data/wedding.json`:
+```json
+{
+  "mode": "single" | "multi",
+  "multi_count": 1 | 3 | 5 | 8 | <user-specified>
+}
+```
+
+The downstream scripts (`build-gallery.js`) inspect `designs.json.length` to determine output structure — `length == 1` → single-mode gallery (no wrap), `length > 1` → multi-mode gallery (grid + detail pages).
+
 ## Stage 3 — Aesthetic direction (Tier 1 visual preview)
 
 This is the most important interaction. **Do not ask "do you want minimal or vintage?" in plain text** — show, don't tell.
 
 1. **Read the user's photos** (use the Read tool — they're images). Note dominant colors, formality of pose, whether outfits are traditional / western / casual.
 
-2. **Pick 3-5 aesthetic directions** from `design-principles.md` that fit the photos + any user hints. Aesthetic names you can choose from, grouped by cultural origin:
-   - **Chinese**: `new-chinese`, `red-gold`, `palace`, `ink-flower`
+2. **Pick aesthetic directions** from `design-principles.md` that fit the photos + any user hints. The number depends on mode:
+   - **Single mode**: pick 3-5 candidates → user picks one → you design that one
+   - **Multi mode**: pick exactly `multi_count` candidates (no overlap), each will become a separate design
+
+   Aesthetic names you can choose from, grouped by cultural origin:
+   - **Chinese**: `new-chinese`, `red-gold`, `gugong`, `ink-flower`
    - **Japanese**: `wabi-sabi`
    - **Korean**: `korean-hanbok`
    - **South Asian**: `indian`
    - **Middle Eastern**: `arabic`
    - **Latin / Mexican**: `latin`
    - **European**: `french-provence`, `art-deco`, `vogue`, `newspaper`, `letter`
-   - **Soft contemporary** (culturally neutral): `morandi`, `modern-minimal`, `mediterranean`
+   - **Soft contemporary** (culturally neutral): `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
    - **Themed**: `retro-poster`, `vintage-stars`
 
    Examples of pairing:
-   - Indoor formal portraits, traditional dress → `new-chinese`, `red-gold`, `palace`, `indian`, `korean-hanbok`
+   - Indoor formal portraits, traditional dress → `new-chinese`, `red-gold`, `gugong`, `indian`, `korean-hanbok`
    - Outdoor casual / nature → `morandi`, `wabi-sabi`, `mediterranean`, `french-provence`
    - Editorial / fashion-y → `vogue`, `art-deco`, `modern-minimal`
-   - Ornate / ceremonial → `indian`, `arabic`, `red-gold`, `palace`
+   - Ornate / ceremonial → `indian`, `arabic`, `red-gold`, `gugong`
    - Festive / colorful → `latin`, `red-gold`
 
 3. **Build a visual gallery** using `examples/thumbnails/<aesthetic>.png` for each candidate. These thumbnails are pre-rendered Chinese examples — they show the *aesthetic*, not what the final invitation will look like. Tell the user this.
@@ -172,15 +210,17 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
 4. Tell the user:
    > "I've prepared some aesthetic directions for you to compare. Open this file in your browser: `file://<absolute-path>/_style-preview.html`"
 
-5. After the user picks (AskUserQuestion or open text with the aesthetic name), move to Stage 4.
+5. After the user picks (AskUserQuestion or open text):
+   - **Single mode**: user picks 1 aesthetic name → move to Stage 4 to design that one
+   - **Multi mode**: user can either confirm all `multi_count` candidates or trim/swap a few. Move to Stage 4 to design all of them.
 
 **You are NOT going to copy any reference HTML.** The thumbnail shows what `morandi` looks like as an aesthetic; you will design a fresh template in the user's language using `design-principles.md`'s spec for that aesthetic.
 
 ## Stage 4 — Design from scratch
 
-This is the creative stage.
+This is the creative stage. In single mode you design 1 template; in multi mode you design N (one per chosen aesthetic).
 
-1. **Open `design-principles.md`**. Find the section for the chosen aesthetic. Internalize:
+1. **Open `design-principles.md`**. For each chosen aesthetic, internalize:
    - Color palette (exact hex values)
    - Typography for the user's language(s)
    - Decorative motifs (seal stamps, line art, geometric frames, etc.)
@@ -188,23 +228,35 @@ This is the creative stage.
 
 2. **Do NOT read `examples/*.html`.** They are frozen Chinese showcase artifacts. Reading them biases you toward copying and toward Chinese typography. Design fresh from prose.
 
-3. **Write `templates/<your-design-id>.html` from scratch:**
+3. **Write each template from scratch** as `templates/<design-id>.html`:
    - Use placeholders matching the fields actually present in `data/wedding.json` (e.g. `{{names.groom_en}}` if `en` in languages, `{{names.groom_es}}` if `es` etc.)
    - Apply hard constraints from `design-principles.md` (canvas size, photo wrap, mobile-first)
    - Bring in user-specific requests ("add a small icon of our dog", "make the date the most prominent element") that no aesthetic prescribes
+   - In **multi mode**: each variant must look meaningfully different from the others. Don't write 3 templates that all turn into "minimalist serif + photo + name". Push range.
 
-4. **Update `data/designs.json`:**
+4. **Update `data/designs.json`** — one entry per design, with an optional `meta` block used by the gallery page:
    ```json
-   [{
-     "id": "their-design-id",
-     "name_zh": "...",
-     "name_en": "...",
-     "template": "their-design-id.html",
-     "primary_photo": "photo-01",
-     "width": 420,
-     "height": 560
-   }]
+   [
+     {
+       "id": "morandi-v1",
+       "name_zh": "莫兰迪柔和",
+       "name_en": "MORANDI",
+       "template": "morandi-v1.html",
+       "primary_photo": "photo-01",
+       "width": 420,
+       "height": 560,
+       "meta": {
+         "short": "soft contemporary · muted palette",
+         "long": "Optional longer description shown in the gallery / detail page.",
+         "palette": ["#e8e4dc", "#7a8a6d", "#a59585", "#2c2c2c"],
+         "fonts": ["Inter", "Cormorant Garamond"],
+         "motifs": "oval photo · hairline dividers"
+       }
+     }
+   ]
    ```
+
+   In single mode the array has length 1. In multi mode it has length N. All other downstream behavior is automatic from the array length.
 
 ## Stage 5 — Build, preview, iterate
 
@@ -212,9 +264,13 @@ This is the creative stage.
 npm run build
 ```
 
-Then open `dist/their-design-id.html` in the user's browser (macOS: `open`; Linux: `xdg-open`; Windows: `start`).
+This renders every design in `data/designs.json` into `dist/<id>.html` (the raw invitation HTML, used as iframe source by the gallery).
 
-Feedback patterns and what they map to:
+**Single mode**: open `dist/<your-design-id>.html` in the user's browser (macOS: `open`; Linux: `xdg-open`; Windows: `start`).
+
+**Multi mode**: skip live preview — go straight to Stage 6. The user will see all variants in the gallery at once.
+
+Feedback patterns (single mode iteration) and what they map to:
 
 | User says | You change |
 |---|---|
@@ -230,32 +286,34 @@ For visual choices ("square / round / oval photo frame?"), build all three and u
 
 Average iterations: 3-5 rounds.
 
-## Stage 6 — Export PNG
+## Stage 6 — Render + open gallery
 
-When the user is satisfied:
+When the user is satisfied (single mode) or after all variants are designed (multi mode):
 
-1. **Run render**:
+1. **Render PNGs + build gallery** in one shot:
    ```bash
-   npm run render
+   npm run render && npm run gallery
    ```
-   `render.js` is cross-platform (macOS / Linux / Windows) and zero-dependency — it shells out to whatever Chrome / Chromium / Edge is on the machine. Output: `dist/png/<your-design-id>.png` at 1080×1440 (or 1080×1920 for 9:16).
+
+   - `render.js` shells out to Chrome / Chromium / Edge and outputs **two sizes per design**:
+     - `dist/png/social/<id>.png` — 1080×1440 (for messaging, email, social)
+     - `dist/png/print/<id>.png`  — 2160×2880 at 300 DPI (for physical printing)
+   - `build-gallery.js` reads `designs.json` and writes `dist/index.html`:
+     - **Single mode** (1 design): the detail page directly — iframe preview + palette/typography meta + two download buttons
+     - **Multi mode** (N designs): a grid landing + per-design `dist/<id>-page.html` with prev/next/back
 
    If Chrome isn't found, `render.js` prints install instructions for the user's OS.
 
-2. **Ask where to save the final PNG** via AskUserQuestion (or plain text fallback):
-   > "Where should I save the final image?"
-   > 1. Leave it in `dist/png/<id>.png` (inside the project)
-   > 2. Copy to Desktop `~/Desktop/<id>.png`
-   > 3. Copy to a custom path (have user specify)
+2. **Open the gallery** so the user sees the final result(s):
+   - macOS: `open dist/index.html`
+   - Linux: `xdg-open dist/index.html`
+   - Windows: `start dist/index.html`
 
-   Do **not** silently put it on Desktop — it's a privacy artifact.
+3. **The user takes it from there.** They click "Social" or "Print" to download. They can pick where to save (browser's native download UI handles this — no need to ask).
 
-3. **Open the PNG** so the user sees the final result:
-   - macOS: `open <path>`
-   - Linux: `xdg-open <path>`
-   - Windows: `start <path>`
+   **In multi mode**, the user can also reply "let me iterate on #3" → drop back into single-mode Stage 5 flow with that variant as the working template, then come back to Stage 6 when refined.
 
-That's the deliverable. The user takes the PNG wherever they want (messaging app, email, AirDrop, print) — outside the skill's scope.
+That's the deliverable. PNGs are saved via browser download into the user's chosen location, then sent (messaging app, email, AirDrop, print) — outside the skill's scope.
 
 ## Anti-patterns
 
@@ -263,8 +321,9 @@ That's the deliverable. The user takes the PNG wherever they want (messaging app
 - ❌ **Defaulting to Chinese** — always ask language first
 - ❌ Asking style choices in plain text ("traditional or modern?") — always show visuals
 - ❌ Suggesting upload to any cloud / online editor / SaaS
-- ❌ Defaulting to `~/Desktop/` for final output without asking
-- ❌ Generating 5 designs upfront for the user to "pick from" — converge on one with feedback, don't shotgun
+- ❌ Skipping Stage 2.5 — always ask single vs multi explicitly
+- ❌ **In multi mode**, generating N similar designs — they must look meaningfully different, not 3 minor variants of the same template
+- ❌ **In single mode**, shotgun-generating multiple drafts to "pick from" — converge with iteration, not selection
 - ❌ Hardcoding any user data in a template (always `{{path}}` placeholders)
 - ❌ Continuing past Stage 1 without confirmed photos on disk
 - ❌ Using bash-only commands when the user is on Windows

@@ -42,6 +42,11 @@ const COPY = {
     backToGallery: 'All Examples',
     prevLabel: 'Previous',
     nextLabel: 'Next',
+    downloadGroupLabel: 'Download',
+    downloadSocialLabel: 'Social',
+    downloadSocialHint: '1080 × 1440 · messaging, email',
+    downloadPrintLabel: 'Print',
+    downloadPrintHint: '2160 × 2880 · 300 DPI for printing',
     footerLead: 'Built with the',
     footerLink: 'wedding-invitation skill',
     footerTail: '· MIT License · No data leaves your machine.'
@@ -64,6 +69,11 @@ const COPY = {
     backToGallery: '所有样例',
     prevLabel: '上一个',
     nextLabel: '下一个',
+    downloadGroupLabel: '下载',
+    downloadSocialLabel: '社交版',
+    downloadSocialHint: '1080 × 1440 · 微信 / 邮件',
+    downloadPrintLabel: '印刷版',
+    downloadPrintHint: '2160 × 2880 · 300 DPI 印刷',
     footerLead: '由',
     footerLink: 'wedding-invitation skill',
     footerTail: '生成 · MIT 许可 · 数据不出本机。'
@@ -550,6 +560,80 @@ const DETAIL_CSS = `
     font-style: italic;
   }
 
+  /* Download — two size variants side by side. */
+  .download-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .download-group-label {
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .download-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .download-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(212,184,150,0.10), rgba(184,149,106,0.04));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.2s;
+    min-width: 0;
+  }
+  .download-cta:hover {
+    background: linear-gradient(135deg, rgba(212,184,150,0.20), rgba(184,149,106,0.10));
+    border-color: var(--accent-warm);
+    transform: translateY(-1px);
+  }
+  .download-cta:active { transform: translateY(0); }
+  .download-cta .download-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(212,184,150,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'Inter', system-ui, sans-serif;
+    border: 1px solid rgba(212,184,150,0.3);
+  }
+  .download-cta:hover .download-icon {
+    background: rgba(212,184,150,0.25);
+    border-color: var(--accent);
+  }
+  .download-cta .download-text { flex: 1; min-width: 0; overflow: hidden; }
+  .download-cta .download-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .download-cta .download-hint {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   /* Pager — minimal text + thumbnail, no box. */
   .pager {
     display: grid;
@@ -862,6 +946,26 @@ function detailHtml(templateId, prevId, nextId, height) {
         <div class="spec-value fonts-row">${fonts}</div>
         <div class="spec-label" data-i18n data-en="${COPY.en.motifsLabel}" data-zh="${COPY.zh.motifsLabel}">${COPY.en.motifsLabel}</div>
         <div class="spec-value motifs-row" data-i18n data-en="${(meta.motifs?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.motifs?.zh || '').replace(/"/g, '&quot;')}">${meta.motifs?.en || ''}</div>
+      </div>
+
+      <div class="download-group">
+        <div class="download-group-label" data-i18n data-en="${COPY.en.downloadGroupLabel}" data-zh="${COPY.zh.downloadGroupLabel}">${COPY.en.downloadGroupLabel}</div>
+        <div class="download-row">
+          <a class="download-cta" href="png/social/${templateId}.png" download="${templateId}-social.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label" data-i18n data-en="${COPY.en.downloadSocialLabel}" data-zh="${COPY.zh.downloadSocialLabel}">${COPY.en.downloadSocialLabel}</div>
+              <div class="download-hint" data-i18n data-en="${COPY.en.downloadSocialHint}" data-zh="${COPY.zh.downloadSocialHint}">${COPY.en.downloadSocialHint}</div>
+            </span>
+          </a>
+          <a class="download-cta" href="png/print/${templateId}.png" download="${templateId}-print.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label" data-i18n data-en="${COPY.en.downloadPrintLabel}" data-zh="${COPY.zh.downloadPrintLabel}">${COPY.en.downloadPrintLabel}</div>
+              <div class="download-hint" data-i18n data-en="${COPY.en.downloadPrintHint}" data-zh="${COPY.zh.downloadPrintHint}">${COPY.en.downloadPrintHint}</div>
+            </span>
+          </a>
+        </div>
       </div>
 
       <nav class="pager">

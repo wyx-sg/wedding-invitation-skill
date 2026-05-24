@@ -376,6 +376,80 @@
     font-style: italic;
   }
 
+  /* Download — two size variants side by side. */
+  .download-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .download-group-label {
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .download-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .download-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(212,184,150,0.10), rgba(184,149,106,0.04));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.2s;
+    min-width: 0;
+  }
+  .download-cta:hover {
+    background: linear-gradient(135deg, rgba(212,184,150,0.20), rgba(184,149,106,0.10));
+    border-color: var(--accent-warm);
+    transform: translateY(-1px);
+  }
+  .download-cta:active { transform: translateY(0); }
+  .download-cta .download-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(212,184,150,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'Inter', system-ui, sans-serif;
+    border: 1px solid rgba(212,184,150,0.3);
+  }
+  .download-cta:hover .download-icon {
+    background: rgba(212,184,150,0.25);
+    border-color: var(--accent);
+  }
+  .download-cta .download-text { flex: 1; min-width: 0; overflow: hidden; }
+  .download-cta .download-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .download-cta .download-hint {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   /* Pager — minimal text + thumbnail, no box. */
   .pager {
     display: grid;
@@ -524,6 +598,26 @@
         <div class="spec-value fonts-row">Playfair Display · Bodoni Moda</div>
         <div class="spec-label" data-i18n data-en="Decorative Motifs" data-zh="装饰元素">Decorative Motifs</div>
         <div class="spec-value motifs-row" data-i18n data-en="oversized headline · vertical rules · figure captions" data-zh="巨型标题 · 垂直分隔 · 图注样式">oversized headline · vertical rules · figure captions</div>
+      </div>
+
+      <div class="download-group">
+        <div class="download-group-label" data-i18n data-en="Download" data-zh="下载">Download</div>
+        <div class="download-row">
+          <a class="download-cta" href="png/social/style05-vogue.png" download="style05-vogue-social.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label" data-i18n data-en="Social" data-zh="社交版">Social</div>
+              <div class="download-hint" data-i18n data-en="1080 × 1440 · messaging, email" data-zh="1080 × 1440 · 微信 / 邮件">1080 × 1440 · messaging, email</div>
+            </span>
+          </a>
+          <a class="download-cta" href="png/print/style05-vogue.png" download="style05-vogue-print.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label" data-i18n data-en="Print" data-zh="印刷版">Print</div>
+              <div class="download-hint" data-i18n data-en="2160 × 2880 · 300 DPI for printing" data-zh="2160 × 2880 · 300 DPI 印刷">2160 × 2880 · 300 DPI for printing</div>
+            </span>
+          </a>
+        </div>
       </div>
 
       <nav class="pager">

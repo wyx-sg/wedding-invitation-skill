@@ -11,12 +11,20 @@ The user asks for help making a wedding invitation, save-the-date, or a similar 
 
 ## Core principle: design, don't pick
 
-This skill **does not** have a template gallery the user picks from. Every invitation is **designed from scratch** for the specific couple — in the language(s) they want, with the visual direction they want.
+This skill **does not** have a generic template gallery the user picks from. Whatever the mode, every invitation is **designed from scratch for this specific couple** in the language(s) they want.
+
+The user picks one of two **modes** (see Stage 2.5 in workflow.md):
+
+- **Single mode (default)** — design 1 custom template, iterate with feedback to perfection. Fastest path when the user has a strong direction.
+- **Multi mode** — generate N variants in parallel (3 / 5 / 8, or user-specified), each a different aesthetic but all using the user's actual data. The user browses them in a local gallery and either downloads a favorite or picks one to keep iterating (drops back into single-mode flow).
+
+Even in multi mode, **each variant is custom-designed**, not pulled from a frozen template library.
 
 Your job:
 1. Talk with the user to learn who they are, what language(s), and what aesthetic
-2. Design a unique HTML template tailored to them, using `design-principles.md` as your visual vocabulary
-3. Render it locally and iterate
+2. Have them pick a mode
+3. Design **fresh** HTML template(s) tailored to them, using `design-principles.md` as your visual vocabulary
+4. Render them locally and present in a local gallery page with download buttons
 
 **The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of Chinese examples used in the README gallery. Reading those files is forbidden — they bias you toward copying, and they are all in Chinese (the user's invitation may be in any language). Use `design-principles.md` as your sole visual reference.
 
@@ -93,7 +101,7 @@ SKILL.md                  ← you are here
 workflow.md               ← 6-stage dialogue and decision guide
 design-principles.md      ← visual / technical constraints + per-aesthetic vocabulary
 examples/                 ← frozen Chinese showcase artifacts; DO NOT READ at runtime
-  *.html                    (15 example invitations — README gallery use only)
+  *.html                    (20 example invitations — README gallery use only)
   thumbnails/*.png          (rendered thumbnails for README + inspiration display)
   photos/                   (stock placeholder images bundled for thumbnails)
 skeleton/                 ← starting project copied into the user's workspace
@@ -101,12 +109,13 @@ skeleton/                 ← starting project copied into the user's workspace
   scripts/
     derive.js               (expands seed → all required fields per declared languages)
     build.js                (renders templates with user data into dist/<id>.html)
-    render.js               (cross-platform headless-Chrome → PNG, zero npm deps)
+    render.js               (cross-platform headless-Chrome → PNGs at 2 sizes)
+    build-gallery.js        (generates dist/index.html + per-design detail pages)
     template-engine.js      (tiny {{path.to.value}} replacer)
   templates/                (where new templates you write live)
   data/
     wedding.example.json    (post-derive schema example; bilingual zh+en)
-    designs.example.json
+    designs.example.json    (one entry per design; includes optional meta block)
   photos/                   (user drops their photos here)
   .gitignore
 ```
@@ -114,7 +123,11 @@ skeleton/                 ← starting project copied into the user's workspace
 ## Output: what success looks like
 
 A directory like `~/my-wedding/` containing:
-- `dist/<design-id>.html` — previewable in any browser via file://
-- `dist/png/<design-id>.png` — high-resolution (1080×1440 at 2.57× scale) print-ready PNG
+- `dist/<design-id>.html` — the rendered invitation (iframe source for the gallery)
+- `dist/png/social/<design-id>.png` — 1080×1440, for messaging / email / social media
+- `dist/png/print/<design-id>.png` — 2160×2880 at 300 DPI, for printing physical cards
+- `dist/index.html` — local gallery page that opens in the user's browser:
+  - **Single mode** (1 design): a detail page with iframe preview, palette/typography meta, and two download buttons
+  - **Multi mode** (N designs): a grid of all N + per-design detail pages with prev/next/back
 
-The user opens the PNG and is delighted, or asks for changes; you iterate.
+The user opens `dist/index.html`, sees their invitation(s) in a polished page, and downloads the size they need. They can also continue iterating with you to refine.

@@ -13,7 +13,17 @@ import { execFileSync } from 'node:child_process';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const DIST_DIR = path.join(ROOT, 'dist');
 const PNG_DIR = path.join(DIST_DIR, 'png');
+const SOCIAL_DIR = path.join(PNG_DIR, 'social');
+const PRINT_DIR = path.join(PNG_DIR, 'print');
 const DESIGNS_FILE = path.join(ROOT, 'data', 'designs.json');
+
+// Two output sizes per design: social (messaging/email) + print (300 DPI).
+// targetWidth is the rendered pixel width — height follows the template's
+// aspect ratio. Card templates are 420×560 by default → outputs are 3:4.
+const SIZES = [
+  { name: 'social', dir: SOCIAL_DIR, targetWidth: 1080 },
+  { name: 'print',  dir: PRINT_DIR,  targetWidth: 2160 }
+];
 
 function findChrome() {
   if (process.env.CHROME && fs.existsSync(process.env.CHROME)) {
@@ -91,37 +101,41 @@ function main() {
     process.exit(1);
   }
 
-  fs.mkdirSync(PNG_DIR, { recursive: true });
-  for (const f of fs.readdirSync(PNG_DIR)) {
-    if (f.endsWith('.png')) fs.unlinkSync(path.join(PNG_DIR, f));
+  for (const s of SIZES) {
+    fs.mkdirSync(s.dir, { recursive: true });
+    for (const f of fs.readdirSync(s.dir)) {
+      if (f.endsWith('.png')) fs.unlinkSync(path.join(s.dir, f));
+    }
   }
 
   for (const d of designs) {
     const width = d.width || 420;
     const height = d.height || 560;
     const srcHtml = path.join(DIST_DIR, `${d.id}.html`);
-    const outPng = path.join(PNG_DIR, `${d.id}.png`);
 
     if (!fs.existsSync(srcHtml)) {
       console.log(`[render] Skipping ${d.id}: ${path.relative(ROOT, srcHtml)} missing — run 'npm run build' first.`);
       continue;
     }
 
-    const scale = (1080 / width).toFixed(4);
-    execFileSync(chrome, [
-      '--headless',
-      '--disable-gpu',
-      '--hide-scrollbars',
-      `--window-size=${width},${height}`,
-      `--force-device-scale-factor=${scale}`,
-      `--screenshot=${outPng}`,
-      fileUrl(srcHtml)
-    ], { stdio: ['ignore', 'ignore', 'ignore'] });
-
-    console.log(`→ ${path.relative(ROOT, outPng)} (${width}×${height} @${scale}x)`);
+    for (const s of SIZES) {
+      const outPng = path.join(s.dir, `${d.id}.png`);
+      const scale = (s.targetWidth / width).toFixed(4);
+      execFileSync(chrome, [
+        '--headless',
+        '--disable-gpu',
+        '--hide-scrollbars',
+        `--window-size=${width},${height}`,
+        `--force-device-scale-factor=${scale}`,
+        `--screenshot=${outPng}`,
+        fileUrl(srcHtml)
+      ], { stdio: ['ignore', 'ignore', 'ignore'] });
+      const px = `${s.targetWidth}×${Math.round(height * (s.targetWidth / width))}`;
+      console.log(`→ ${path.relative(ROOT, outPng)} (${s.name}, ${px})`);
+    }
   }
 
-  console.log(`[render] Done. PNGs in ${path.relative(ROOT, PNG_DIR)}/`);
+  console.log(`[render] Done. PNGs in ${path.relative(ROOT, PNG_DIR)}/{social,print}/`);
 }
 
 main();

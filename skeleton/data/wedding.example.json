@@ -1,6 +1,6 @@
 {
   "languages": ["zh", "en"],
-  "font_cdn": "fontim",
+  "font_cdn": "googleapis",
 
   "names": {
     "groom_zh": "林知言",

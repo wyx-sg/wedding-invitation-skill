@@ -4,13 +4,14 @@
 //   data/wedding.json   — couple, date, venue, copy
 //   data/designs.json   — array of designs (id, template, primary_photo, ...)
 //   templates/*.html    — design templates (use {{path.to.value}} placeholders)
-//   photos/*.jpg        — user-provided photos
+//   photos/*.{jpg,jpeg,png}  — user-provided photos
 //
 // Outputs:
 //   dist/<design-id>.html  — one rendered HTML per design
 //   dist/photos/*          — copied photo assets
 //
-// To produce a PNG for download, run scripts/render.sh after building.
+// To produce PNGs + gallery, run `npm run render && npm run gallery` after
+// building (or `npm run all` to do derive + build + render + gallery).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,7 +38,7 @@ if (!Array.isArray(designs) || designs.length === 0) {
 fs.mkdirSync(DIST_DIR, { recursive: true });
 fs.mkdirSync(path.join(DIST_DIR, 'photos'), { recursive: true });
 
-// Copy photos to dist so file:// preview can resolve /photos/<id>.jpg
+// Copy photos to dist so file:// preview can resolve /photos/<id>.{jpg,jpeg,png}
 for (const f of fs.readdirSync(PHOTOS_DIR)) {
   if (/\.(jpg|jpeg|png)$/i.test(f)) {
     fs.copyFileSync(path.join(PHOTOS_DIR, f), path.join(DIST_DIR, 'photos', f));
@@ -51,11 +52,19 @@ for (const d of designs) {
     console.error(`[build] designs.json entry "${d.id}" missing primary_photo`);
     process.exit(1);
   }
-  const photoPath = path.join(PHOTOS_DIR, `${d.primary_photo}.jpg`);
-  if (!fs.existsSync(photoPath)) {
-    console.error(`[build] Photo not found: photos/${d.primary_photo}.jpg`);
+  // Accept .jpg, .jpeg, .png — same as the copy filter above.
+  const PHOTO_EXTS = ['.jpg', '.jpeg', '.png'];
+  let photoExt = null;
+  for (const ext of PHOTO_EXTS) {
+    if (fs.existsSync(path.join(PHOTOS_DIR, `${d.primary_photo}${ext}`))) {
+      photoExt = ext;
+      break;
+    }
+  }
+  if (!photoExt) {
+    console.error(`[build] Photo not found: photos/${d.primary_photo}.{jpg,jpeg,png}`);
     console.error(`[build]   Referenced by designs.json entry "${d.id}".`);
-    console.error(`[build]   Put the photo in photos/ (file must be named exactly "${d.primary_photo}.jpg").`);
+    console.error(`[build]   Put the photo in photos/ named exactly "${d.primary_photo}" with one of: ${PHOTO_EXTS.join(', ')}.`);
     process.exit(1);
   }
   const tplPath = path.join(TEMPLATES_DIR, d.template);
@@ -73,7 +82,7 @@ for (const d of designs) {
     name_zh: d.name_zh || '',
     name_en: d.name_en || '',
     primary_photo: d.primary_photo,
-    primary_photo_url: `photos/${d.primary_photo}.jpg`,
+    primary_photo_url: `photos/${d.primary_photo}${photoExt}`,
     width: d.width || 420,
     height: d.height || 560
   };
@@ -101,4 +110,4 @@ for (const d of designs) {
 }
 
 console.log('[build] Done. Open dist/<id>.html in a browser to preview.');
-console.log('[build] Run scripts/render.sh to export PNGs.');
+console.log('[build] Next: `npm run render` (PNGs) + `npm run gallery` (index.html).');

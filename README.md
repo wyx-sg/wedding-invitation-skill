@@ -33,12 +33,18 @@ Or just tell Claude: "Help me make a wedding invitation." Either way works — C
 
 ## What you'll get
 
-- A **bespoke HTML template** designed for you — not picked from a gallery
-- A **print-ready PNG** at 1080×1440 (or 1080×1920 for 9:16 poster format)
-- Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, or any combination
+- A **bespoke HTML design** created for you — not picked from a generic gallery
+- **Two PNG sizes per design** — 1080×1440 for messaging/email, 2160×2880 at 300 DPI for printing
+- A **local gallery page** that opens in your browser with download buttons
+- Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, French, Hindi, Arabic, or any combination
 - Your photos, names, and address **never leave your machine**
 
-The 20 examples in the image above span world cultures and contemporary aesthetics:
+You pick a **mode** at the start:
+
+- **Single design + iterate** (default) — Claude designs one template tailored to you and refines with your feedback. ~30 minutes, 3-5 rounds.
+- **Multiple alternatives** — Claude generates 3 / 5 / 8 different aesthetics in parallel using your actual data. You browse them in a local gallery and either download a favorite or pick one to keep iterating.
+
+The 20 examples in the image above span world cultures and contemporary aesthetics, showing the visual range available:
 
 - **Chinese** — `new-chinese`, `red-gold`, `gugong`, `ink-flower`
 - **Japanese** — `wabi-sabi`
@@ -50,15 +56,27 @@ The 20 examples in the image above span world cultures and contemporary aestheti
 - **Contemporary** — `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
 - **Themed** — `retro-poster`, `vintage-stars`
 
-These are not templates you pick from — each is a one-off, designed from scratch. Your invitation will be designed fresh in your chosen language, with your aesthetic direction.
+Whatever mode you pick, each invitation is custom-designed from scratch — not pulled from a template library.
 
 ## How it works
 
+```mermaid
+flowchart LR
+    A[💬 You talk] --> B[language · names<br/>date · venue · photos]
+    B --> M{mode?}
+    M -->|Single| S[Claude designs 1 template<br/>· iterate with feedback]
+    M -->|Multi N| G[Claude generates N variants<br/>· each a different aesthetic]
+    S --> R[Render PNG · 2 sizes<br/>Social 1080 · Print 2160]
+    G --> R
+    R --> O[Local gallery opens in browser<br/>📥 Download buttons]
+```
+
 1. **Talk** — Claude asks your language(s), names, date, venue, style preference
-2. **Preview** — Claude shows aesthetic directions visually in your browser
-3. **Design** — Claude writes a unique HTML template from scratch in your language
-4. **Iterate** — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
-5. **Export** — one command screenshots the HTML into a high-res print-ready PNG
+2. **Mode** — Single design or compare alternatives
+3. **Preview** — Claude shows aesthetic directions visually in your browser
+4. **Design** — Claude writes unique HTML template(s) from scratch in your language
+5. **Iterate** (single mode) — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
+6. **Open gallery** — `dist/index.html` opens in your browser with download buttons for two PNG sizes
 
 ## Requirements
 

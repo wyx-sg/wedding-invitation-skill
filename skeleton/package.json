@@ -8,6 +8,7 @@
     "derive": "node scripts/derive.js",
     "build": "node scripts/build.js",
     "render": "node scripts/render.js",
-    "all": "npm run derive && npm run build && npm run render"
+    "gallery": "node scripts/build-gallery.js",
+    "all": "npm run derive && npm run build && npm run render && npm run gallery"
   }
 }
