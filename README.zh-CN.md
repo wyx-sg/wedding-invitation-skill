@@ -4,6 +4,8 @@
 
 > 一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。
 
+**🎨 [在线 gallery: wyx-sg.github.io/wedding-invitation-skill](https://wyx-sg.github.io/wedding-invitation-skill/index.zh.html)** — 点任意一张样例看完整渲染效果。
+
 ![hero](./docs/hero.png)
 
 <p align="center">

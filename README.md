@@ -4,6 +4,8 @@
 
 > An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
+**🎨 [Live gallery: wyx-sg.github.io/wedding-invitation-skill](https://wyx-sg.github.io/wedding-invitation-skill/)** — click any of the 20 examples to see it rendered full-size.
+
 ![hero](./docs/hero.png)
 
 <p align="center">

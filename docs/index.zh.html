@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>婚礼请帖 Skill — 20 张跨文化样例</title>
+  <meta name="description" content="一个 AI agent skill，通过对话为你设计专属婚礼请帖。20 张样例覆盖中式、日式、韩式、印度、阿拉伯、拉丁、法式以及欧美当代各种 aesthetic。">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
+  <style>
+  
+  :root {
+    --bg: #0a0907;
+    --bg-card: #14110d;
+    --bg-elevated: #1c1812;
+    --text: #d4c4a8;
+    --text-dim: #8a7a5e;
+    --text-muted: #5a4a36;
+    --accent: #d4b896;
+    --accent-warm: #b8956a;
+    --border: #2a2218;
+    --border-soft: #1f1a14;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, "Noto Serif SC", "PingFang SC", sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+  .nav-bar {
+    border-bottom: 1px solid var(--border-soft);
+    background: rgba(10, 9, 7, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .nav-bar .inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .nav-brand:hover { color: #f0d8b0; }
+  .nav-back {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back .arrow { font-size: 16px; transition: transform 0.2s; }
+  .nav-back:hover .arrow { transform: translateX(-3px); }
+  .lang-switch {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lang-switch a, .lang-switch button {
+    color: var(--accent);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    letter-spacing: inherit;
+    padding: 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .lang-switch a:hover, .lang-switch button:hover { border-bottom-color: var(--accent); }
+  .lang-switch .current { color: var(--text-muted); cursor: default; }
+  .lang-switch .sep { color: var(--border); }
+  @media (max-width: 600px) {
+    .nav-bar .inner { padding: 12px 16px; gap: 12px; }
+    .nav-brand { font-size: 14px; letter-spacing: 2px; }
+    .nav-back { font-size: 11px; letter-spacing: 2px; }
+  }
+
+  header.hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 32px 32px;
+    text-align: center;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 56px;
+    letter-spacing: 6px;
+    margin: 0 0 14px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  h1 .amp {
+    font-style: italic;
+    color: var(--accent-warm);
+    margin: 0 8px;
+  }
+  .tagline {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: #a89878;
+    max-width: 680px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-block;
+    padding: 11px 24px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--accent); color: var(--bg); }
+  .btn.primary { background: var(--accent); color: var(--bg); }
+  .btn.primary:hover { background: var(--accent-warm); border-color: var(--accent-warm); }
+  .note {
+    max-width: 680px;
+    margin: 24px auto 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px 72px;
+  }
+  .group-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 32px 8px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 10px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+  }
+  .card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.2s;
+    display: block;
+    border: 1px solid transparent;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.7);
+    border-color: var(--accent-warm);
+  }
+  .thumb { aspect-ratio: 3 / 4; overflow: hidden; background: #000; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .meta { padding: 16px 20px 20px; }
+  .name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+  .culture {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  footer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 32px 64px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border-soft);
+  }
+  footer a { color: var(--accent-warm); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  @media (max-width: 600px) {
+    h1 { font-size: 36px; letter-spacing: 4px; }
+    header.hero { padding: 48px 20px 24px; }
+    .tagline { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="inner">
+      <a class="nav-brand" href="index.zh.html">婚礼请帖</a>
+      <div class="lang-switch">
+        <span class="current">简体中文</span><span class="sep">·</span><a href="index.html">English</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <h1>婚礼 <span class="amp">&amp;</span> 请帖</h1>
+    <p class="tagline">一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。</p>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/wyx-sg/wedding-invitation-skill">查看 GitHub</a>
+      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#quick-start">快速开始</a>
+    </div>
+    <p class="note">下面 20 张样例每一张都为不同 aesthetic 从零设计的。你的请帖会用你选择的语言重新设计。点任意一张看完整效果。</p>
+  </header>
+
+  <main>
+      <div class="group-label">中式</div>
+      <div class="grid">
+        <a class="card" href="style01-new-chinese.html">
+          <div class="thumb"><img src="thumbnails/style01-new-chinese.png" alt="new-chinese" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">new-chinese</div>
+            <div class="desc">新中式 · 雅致</div>
+            <div class="culture">中式</div>
+          </div>
+        </a>
+        <a class="card" href="style04-red-gold.html">
+          <div class="thumb"><img src="thumbnails/style04-red-gold.png" alt="red-gold" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">red-gold</div>
+            <div class="desc">红金传统宴</div>
+            <div class="culture">中式</div>
+          </div>
+        </a>
+        <a class="card" href="style09-gugong.html">
+          <div class="thumb"><img src="thumbnails/style09-gugong.png" alt="gugong" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">gugong</div>
+            <div class="desc">故宫工笔</div>
+            <div class="culture">中式</div>
+          </div>
+        </a>
+        <a class="card" href="style13-ink-flower.html">
+          <div class="thumb"><img src="thumbnails/style13-ink-flower.png" alt="ink-flower" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">ink-flower</div>
+            <div class="desc">水墨花卉</div>
+            <div class="culture">中式</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">日式</div>
+      <div class="grid">
+        <a class="card" href="style11-wabi-sabi.html">
+          <div class="thumb"><img src="thumbnails/style11-wabi-sabi.png" alt="wabi-sabi" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">wabi-sabi</div>
+            <div class="desc">日式侘寂</div>
+            <div class="culture">日式</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">韩式</div>
+      <div class="grid">
+        <a class="card" href="style20-korean-hanbok.html">
+          <div class="thumb"><img src="thumbnails/style20-korean-hanbok.png" alt="korean-hanbok" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">korean-hanbok</div>
+            <div class="desc">韩式 hanbok</div>
+            <div class="culture">韩式</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">南亚</div>
+      <div class="grid">
+        <a class="card" href="style16-indian.html">
+          <div class="thumb"><img src="thumbnails/style16-indian.png" alt="indian" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">indian</div>
+            <div class="desc">印度 mandala</div>
+            <div class="culture">南亚</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">中东</div>
+      <div class="grid">
+        <a class="card" href="style17-arabic.html">
+          <div class="thumb"><img src="thumbnails/style17-arabic.png" alt="arabic" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">arabic</div>
+            <div class="desc">阿拉伯 arabesque</div>
+            <div class="culture">中东</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">拉美</div>
+      <div class="grid">
+        <a class="card" href="style18-latin.html">
+          <div class="thumb"><img src="thumbnails/style18-latin.png" alt="latin" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">latin</div>
+            <div class="desc">拉美民俗</div>
+            <div class="culture">拉美</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">欧式</div>
+      <div class="grid">
+        <a class="card" href="style05-vogue.html">
+          <div class="thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">vogue</div>
+            <div class="desc">时尚杂志</div>
+            <div class="culture">欧式</div>
+          </div>
+        </a>
+        <a class="card" href="style07-newspaper.html">
+          <div class="thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">newspaper</div>
+            <div class="desc">复古报纸</div>
+            <div class="culture">欧式</div>
+          </div>
+        </a>
+        <a class="card" href="style08-letter.html">
+          <div class="thumb"><img src="thumbnails/style08-letter.png" alt="letter" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">letter</div>
+            <div class="desc">手写信笺</div>
+            <div class="culture">欧式</div>
+          </div>
+        </a>
+        <a class="card" href="style12-art-deco.html">
+          <div class="thumb"><img src="thumbnails/style12-art-deco.png" alt="art-deco" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">art-deco</div>
+            <div class="desc">Gatsby 装饰艺术</div>
+            <div class="culture">欧式</div>
+          </div>
+        </a>
+        <a class="card" href="style19-french-provence.html">
+          <div class="thumb"><img src="thumbnails/style19-french-provence.png" alt="french-provence" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">french-provence</div>
+            <div class="desc">法式普罗旺斯</div>
+            <div class="culture">欧式</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">当代</div>
+      <div class="grid">
+        <a class="card" href="style02-modern-minimal.html">
+          <div class="thumb"><img src="thumbnails/style02-modern-minimal.png" alt="modern-minimal" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">modern-minimal</div>
+            <div class="desc">极简主义</div>
+            <div class="culture">当代</div>
+          </div>
+        </a>
+        <a class="card" href="style03-morandi.html">
+          <div class="thumb"><img src="thumbnails/style03-morandi.png" alt="morandi" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">morandi</div>
+            <div class="desc">柔和当代</div>
+            <div class="culture">当代</div>
+          </div>
+        </a>
+        <a class="card" href="style06-black-gold.html">
+          <div class="thumb"><img src="thumbnails/style06-black-gold.png" alt="black-gold" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">black-gold</div>
+            <div class="desc">黑金 monogram</div>
+            <div class="culture">当代</div>
+          </div>
+        </a>
+        <a class="card" href="style10-mediterranean.html">
+          <div class="thumb"><img src="thumbnails/style10-mediterranean.png" alt="mediterranean" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">mediterranean</div>
+            <div class="desc">地中海目的地</div>
+            <div class="culture">当代</div>
+          </div>
+        </a>
+      </div>
+      <div class="group-label">主题</div>
+      <div class="grid">
+        <a class="card" href="style14-retro-poster.html">
+          <div class="thumb"><img src="thumbnails/style14-retro-poster.png" alt="retro-poster" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">retro-poster</div>
+            <div class="desc">复古旅行海报</div>
+            <div class="culture">主题</div>
+          </div>
+        </a>
+        <a class="card" href="style15-vintage-stars.html">
+          <div class="thumb"><img src="thumbnails/style15-vintage-stars.png" alt="vintage-stars" loading="lazy"></div>
+          <div class="meta">
+            <div class="name">vintage-stars</div>
+            <div class="desc">星空夜空</div>
+            <div class="culture">主题</div>
+          </div>
+        </a>
+      </div>
+  </main>
+
+  <footer>
+    由 <a href="https://github.com/wyx-sg/wedding-invitation-skill">wedding-invitation skill</a> 生成 · MIT 许可 · 数据不出本机。
+  </footer>
+</body>
+</html>

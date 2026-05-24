@@ -14,68 +14,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { render } from '../skeleton/scripts/template-engine.js';
+import { fixtureFor, render } from './fixtures.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EXAMPLES_DIR = path.join(ROOT, 'examples');
 const OUT_DIR = path.join(EXAMPLES_DIR, 'thumbnails');
 const TMP_DIR = path.join(os.tmpdir(), 'wedding-skill-thumbs');
-
-// Fixture data — fully placeholder, no real-world identifying info.
-// Mirrors skeleton/data/wedding.example.json but kept inline so this script
-// is self-contained.
-const FIXTURE = {
-  names: {
-    groom_zh: '林知言',
-    groom_en: 'LIN ZHIYAN',
-    groom_surname_en: 'LIN',
-    bride_zh: '沈安然',
-    bride_en: 'SHEN ANRAN',
-    bride_surname_en: 'SHEN',
-    couple_en_short: 'L & S'
-  },
-  date: {
-    iso: '2099-10-01',
-    zh_formal: '公元 二〇九九 年 十月一日',
-    zh_short: '二〇九九年十月一日',
-    en_long: 'October 1, 2099',
-    en_short: '10.01.2099',
-    en_compact: '10 · 01',
-    weekday_zh: '星期一',
-    weekday_en: 'Monday',
-    lunar: '',
-    zh_year: '二〇九九',
-    zh_month_day: '十月一日',
-    en_month: '10',
-    en_day: '01',
-    en_year: '2099',
-    roman_year: 'MMXCIX'
-  },
-  time: {
-    value: '18:00',
-    zh_full: '傍晚 18:00 入席',
-    zh_label: '恭候',
-    hours: '18',
-    minutes: '00'
-  },
-  venue: {
-    full_zh: '上海 · 黄浦区 · 锦绣花园酒店',
-    province_zh: '上海',
-    province_en: 'SHANGHAI',
-    city_zh: '上海',
-    city_en: 'Shanghai',
-    city_en_upper: 'SHANGHAI',
-    lines_zh: ['黄浦区 永宁路 188 号', '锦绣花园酒店 宴会厅'],
-    lines_en: ['188 Yongning Road, Huangpu District', 'Eternal Garden Hotel Ballroom'],
-    type_zh: '酒店 · 宴会'
-  },
-  site: {
-    title: '林知言 & 沈安然 · 婚礼请帖',
-    subtitle: '2099.10.01 · 上海',
-    intro: '',
-    newspaper_title: 'The LIN Times'
-  }
-};
 
 // Per-template placeholder photo. Each example template has its own AI-generated
 // wedding photo tailored to its aesthetic (examples/photos/<style-id>.jpg).
@@ -145,7 +89,7 @@ function main() {
       primary_photo_url: photoUrlFor(id),
       width: 420, height
     };
-    let html = render(tpl, { ...FIXTURE, design: designCtx });
+    let html = render(tpl, { ...fixtureFor(id), design: designCtx });
     // Some templates still hardcode "{{design.primary_photo_url}}" — done above.
     // Inject frame + write to temp HTML
     html = html.replace(/<\/head>/, frameCSS(height));
