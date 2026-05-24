@@ -23,6 +23,32 @@ When bilingual: pick a **primary** (usually `languages[0]`) and a **secondary**.
 - All sizes are *logical* px — `scripts/render.js` upscales 2.5714× for print resolution (final 1080×1440).
 - Root element must be `<div class="card">` with exact `width: 420px` and `height: <height>px`. No padding on `<body>` — frame CSS injected by `build.js` handles centering.
 
+### No element may extend outside the canvas
+
+**Hard rule:** every visible element — text, photo, SVG decoration, frame, seal stamp, date numeral — must fit inside the 420×height card. Bleed-through past the card edge looks broken on web preview and gets clipped weirdly during PNG render.
+
+Mandatory safety net:
+
+```css
+.card {
+  width: 420px;
+  height: 560px;             /* or the chosen height */
+  overflow: hidden;          /* ← non-negotiable */
+  position: relative;        /* so abs-positioned children resolve against the card */
+}
+```
+
+Watch these specific failure modes — they have all bitten real templates:
+
+- **Vertical text** (`writing-mode: vertical-rl`) — measure the *height* of the text run; long names like 沈安然 plus pinyin in vertical mode can be 200+ px tall and trivially exceed the card height.
+- **Oversized display numerals** — `font-size: 96px` "10.18" or "08·15" on the card looks gorgeous but the bounding box can extend past the right or bottom edge. Always test render and check the actual painted width.
+- **Decorative SVG rays / sunbursts / mandalas** at corners — these often have a viewBox larger than expected; if positioned at `top: 0; right: 0` they spill past the card.
+- **Seal stamps / monograms with `position: absolute`** — `right: -10px` (or any negative offset) and `top: -5px` move the element outside the card. Use non-negative offsets only.
+- **Border rings around the photo** — `box-shadow: 0 0 0 20px gold` adds 20 px outside the photo wrap; if the wrap is already near the card edge, the ring will spill.
+- **Vertical decorative stripes / side bars** running edge-to-edge — verify they end at `height: 560px`, not `100vh`.
+
+Verify by previewing each template at exactly 420 px viewport width — anything visible outside the card outline is a bug to fix before declaring the template done.
+
 ## Typography
 
 Pick fonts that match the language(s) AND the aesthetic.
@@ -174,6 +200,35 @@ The aesthetic is the **palette + decorative motifs**, not the language. For an E
 - `.photo-wrap` has fixed `width × height`, `overflow: hidden`, and `border-radius` defining the shape (circle = 50%, square = 4px, oval = 50% with non-1:1 aspect, arched = `50% 50% 4px 4px`)
 - `<img>` inside uses `object-fit: cover` and `object-position: center 12%` (12% from top keeps heads in frame for portrait photos — adjust 4-20% per design)
 - Never display the bare image without a wrap — you lose control over cropping
+- **The `id="main-photo"` on the `<img>` is required** — the gallery's photo-switcher and the build pipeline both target it by id to swap photos at preview time.
+
+### Photo crop is template-specific — review every design
+
+A given photo crop is not "one size fits all". The same photo cropped to circle vs oval vs arched vs rectangle will succeed or fail differently. **Before declaring any template done, look at the rendered output and verify:**
+
+- The subject's full face (forehead → chin) is visible.
+- For couple shots, both people are fully inside the frame — not one half-cut at the edge.
+- Key context (held hands, bouquet, ring exchange) is not clipped off.
+- The subject isn't squished into a corner of the frame because the photo's aspect ratio fights the wrap's shape.
+
+If the crop is wrong, fix it before showing the user:
+
+| Symptom | Fix |
+|---|---|
+| Top of head clipped by circular frame | Lower `object-position` Y% (12% → 6% → 2%) or switch to oval / arch |
+| Subject's body is shown but head is above the frame | Negative-ish `object-position: center top` or `0%` |
+| One person in a couple shot is half-cut at the right edge | Re-center: `object-position: center center` instead of `center 12%`; or switch frame to a wider aspect |
+| Photo is full-length, frame is small + tight | Make `.photo-wrap` taller (240→320 px), use rectangle / arched shape, or pick a different (closer-cropped) photo |
+| Vertical portrait being forced into a horizontal frame | Change `.photo-wrap` aspect ratio to match the photo, or change the layout |
+
+**Frame shape vs subject framing — a quick guide:**
+
+| Photo framing | Frame shapes that work | Frame shapes to AVOID |
+|---|---|---|
+| Tight head-and-shoulders | circle, oval, arch, square | full-bleed rectangle (looks empty) |
+| Half-body portrait | oval, arch, rounded rectangle | tight circle (clips head) |
+| Full-length / group | tall rectangle, arch, no-frame full-bleed | circle, oval, tight square (clips people) |
+| Candid / outdoor wide | tall rectangle, full-bleed | any tight geometric frame |
 
 ## Layout patterns
 
@@ -193,7 +248,10 @@ The final output is a PNG, but users will preview the HTML on phones too. The ca
 
 - ❌ **Reading `examples/*.html`** — use this document as your only visual vocabulary
 - ❌ **Defaulting to Chinese** unless the user picked `zh` in `languages`
+- ❌ **Any element extending outside the 420×height canvas** — vertical text, oversized numerals, SVG rays, negative-offset absolutes, edge-to-edge stripes. Use `overflow: hidden` on `.card` as the safety net.
+- ❌ **Shipping a template without doing the photo-crop review** — clipped forehead / chin / half-visible person is a bug, not a stylistic choice
 - ❌ **Hardcoded names, dates, places** — always `{{path.to.value}}` placeholders; the field names depend on the active languages (`groom_zh` vs `groom_en` vs `groom_es`)
+- ❌ **Missing `id="main-photo"` on the photo `<img>`** — the gallery's photo-switcher requires it
 - ❌ Emoji decorations — wedding invitations need real visual elements (SVG seals, calligraphic strokes, geometric lines)
 - ❌ More than 3 distinct colors in one design (palette + 2 supporting accents max)
 - ❌ Casual fonts (Comic Sans, fake handwriting unless the letter aesthetic explicitly asks for it)

@@ -25,9 +25,19 @@ import path from 'node:path';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const DATA_DIR = path.join(ROOT, 'data');
 const DIST_DIR = path.join(ROOT, 'dist');
+const DIST_PHOTOS_DIR = path.join(DIST_DIR, 'photos');
 
 const wedding = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'wedding.json'), 'utf8'));
 const designs = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'designs.json'), 'utf8'));
+
+// Scan dist/photos for available images. The detail page renders a thumb
+// strip so the user can preview the same design with different photos
+// without rebuilding. Sorted lexically so p01..p20 render in order.
+const PHOTO_RE = /\.(jpe?g|png)$/i;
+const availablePhotos = (fs.existsSync(DIST_PHOTOS_DIR)
+  ? fs.readdirSync(DIST_PHOTOS_DIR).filter(f => PHOTO_RE.test(f))
+  : []
+).sort();
 
 if (!Array.isArray(designs) || designs.length === 0) {
   console.error('[gallery] designs.json must be a non-empty array');
@@ -83,6 +93,7 @@ const COPY = {
     backToGallery: 'All Designs',
     prevLabel: 'Previous',
     nextLabel: 'Next',
+    photoSwitcherLabel: 'Photo',
     multiTagline: 'Generated alternatives — pick a favorite and download.'
   },
   zh: {
@@ -99,6 +110,7 @@ const COPY = {
     backToGallery: '所有设计',
     prevLabel: '上一个',
     nextLabel: '下一个',
+    photoSwitcherLabel: '换照片',
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。'
   }
 }[lang];
@@ -266,9 +278,61 @@ const DETAIL_CSS = `
   .preview {
     flex: 0 0 auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 16px;
     position: relative;
+  }
+  .photo-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: calc(var(--tpl-w) * var(--iframe-scale));
+    max-width: 100%;
+  }
+  .photo-switcher-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .photo-switcher-thumbs {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212,184,150,0.35) transparent;
+    padding: 2px 1px;
+  }
+  .photo-switcher-thumbs::-webkit-scrollbar { height: 3px; }
+  .photo-switcher-thumbs::-webkit-scrollbar-thumb { background: rgba(212,184,150,0.35); border-radius: 2px; }
+  .photo-switcher-thumbs::-webkit-scrollbar-track { background: transparent; }
+  .photo-switcher-thumbs button {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1.5px solid transparent;
+    border-radius: 3px;
+    background: var(--bg-elevated);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.18s, transform 0.15s;
+  }
+  .photo-switcher-thumbs button:hover { transform: translateY(-1px); }
+  .photo-switcher-thumbs button.active { border-color: var(--accent); }
+  .photo-switcher-thumbs button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+    pointer-events: none;
   }
   .preview .frame {
     width: calc(var(--tpl-w) * var(--iframe-scale));
@@ -475,6 +539,20 @@ function detailHtml(design, index, isMulti) {
   const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
   const next = isMulti ? designs[(index + 1) % designs.length] : null;
 
+  // Photo switcher: render only when there are 2+ photos to switch between.
+  // Single-photo projects don't need the strip.
+  const primaryPhotoName = design.primary_photo;
+  const photoThumbs = availablePhotos.map(file => {
+    const photoId = file.replace(PHOTO_RE, '');
+    const isActive = photoId === primaryPhotoName;
+    return `<button type="button" class="${isActive ? 'active' : ''}" data-photo-url="photos/${esc(file)}" data-photo-id="${esc(photoId)}" aria-label="${esc(photoId)}"><img src="photos/${esc(file)}" alt="" loading="lazy"></button>`;
+  }).join('');
+  const switcherHtml = availablePhotos.length >= 2 ? `
+    <div class="photo-switcher">
+      <span class="photo-switcher-label">${esc(COPY.photoSwitcherLabel)}</span>
+      <div class="photo-switcher-thumbs" id="photo-switcher-thumbs">${photoThumbs}</div>
+    </div>` : '';
+
   const navBack = isMulti
     ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>`
     : '<span></span>';
@@ -564,8 +642,9 @@ function detailHtml(design, index, isMulti) {
   <main class="detail">
     <div class="preview">
       <div class="frame">
-        <iframe src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
+        <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
       </div>
+      ${switcherHtml}
     </div>
 
     <div class="detail-info">
@@ -601,6 +680,47 @@ function detailHtml(design, index, isMulti) {
       ${pagerHtml}
     </div>
   </main>
+  <script>
+    (function () {
+      var thumbs = document.getElementById('photo-switcher-thumbs');
+      var iframe = document.getElementById('design-iframe');
+      if (!thumbs || !iframe) return;
+
+      var current = null;
+      var defaultUrl = null;
+      var initial = thumbs.querySelector('button.active');
+      if (initial) {
+        current = initial.getAttribute('data-photo-url');
+        defaultUrl = current;
+      }
+
+      function send(url) {
+        if (!iframe.contentWindow) return;
+        try { iframe.contentWindow.postMessage({ type: 'set-photo', url: url }, '*'); } catch (_) {}
+      }
+
+      // If the iframe is already loaded by the time this script runs and a
+      // non-default photo was picked, we need to push it. Otherwise wait for
+      // the iframe's ready message (sent by build.js's injected listener).
+      window.addEventListener('message', function (e) {
+        var d = e && e.data;
+        if (!d || d.type !== 'photo-iframe-ready') return;
+        if (current && current !== defaultUrl) send(current);
+      });
+
+      thumbs.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-photo-url]');
+        if (!btn) return;
+        var url = btn.getAttribute('data-photo-url');
+        if (!url || url === current) return;
+        current = url;
+        thumbs.querySelectorAll('button').forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        send(url);
+      });
+    })();
+  </script>
 </body>
 </html>
 `;

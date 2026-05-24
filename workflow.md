@@ -2,6 +2,17 @@
 
 This file teaches the agent (you) how to take a user from "I want to make a wedding invitation" to a finished PNG. The flow has **7 stages** (Stages 1-6 plus Stage 2.5 mode selection). Do not skip stages. Do not start writing HTML before Stage 4.
 
+## Speak the user's language
+
+The moment language is set in Stage 2, **switch your conversational language to match `languages[0]` (the primary language)**. This means every subsequent question, summary, status update, AskUserQuestion label, error message, and follow-up to the user — all in the primary language. Examples:
+
+- `["zh"]` → reply only in Chinese (中文回复). Don't slip into English even for "Render now?" or "Done!".
+- `["zh", "en"]` → reply primarily in Chinese (primary), but English technical terms / template ids are fine inline.
+- `["en"]` → reply in English.
+- `["ja"]`, `["es"]`, `["ko"]`, ... → reply in that language; if you can't, reply in English and apologize.
+
+Code, file paths, template ids, JSON keys, and bash commands stay in their native form. Only your **prose to the user** changes language. This is non-negotiable — a Chinese-language invitation built with an English-speaking agent feels disconnected; the conversational language IS part of the design experience.
+
 ## The two modes
 
 After collecting wedding data (Stage 2) but before the aesthetic stage, the user picks a mode:
@@ -77,6 +88,15 @@ Never start with Tier 3 if the choice is visual. A wedding invitation is a visua
 
    Confirm photo count back to the user. Don't proceed until `photos/` has at least one image.
 
+4. **If 5+ photos** — discuss selection **before** moving on. The invitation features one primary photo (sometimes one extra). If the user dropped a whole album in, you must NOT silently pick one. Instead:
+
+   - Read all the photos with the Read tool (they're images — Claude can see them).
+   - Surface what you see: "I see N photos. Some are portrait pose, some are outdoor candid, some are full-length. Which 1-3 would you like to use on the invitation?"
+   - Build a Tier-1 visual preview (`_photo-select.html`) with all photos as numbered cards so the user can answer "p03, p07, p12" rather than describing them in words.
+   - Wait for an explicit selection. Note their primary choice — that goes into `designs.json` as `primary_photo`. Keep the rest copied in `photos/` so the gallery's photo-switcher can offer them.
+
+   Skip this step if the user gave you ≤4 photos — assume they've already curated.
+
 ## Stage 2 — Language and couple details
 
 This is the **first** content decision. Don't assume Chinese (or any language).
@@ -112,7 +132,11 @@ This is the **first** content decision. Don't assume Chinese (or any language).
    | `time.value` | "Ceremony start time? (HH:MM, 24-hour)" | always |
    | `venue.city_<lang>`, `venue.lines_<lang>` (array) | "Venue: city + 2-line address in each language" | per language |
    | `venue.name_<lang>` | "Venue name (e.g. hotel / church)?" | per language |
-   | `date.lunar` | "Include a lunar date on the invitation? (e.g. 戊辰年八月十五)" | only if `zh` in languages, optional |
+   | `date.lunar` | "Include a lunar date on the invitation? (e.g. 戊辰年八月十五)" | **only if `zh` in languages** — see rule below |
+
+   **Lunar date rule** — the lunar date question is **Chinese-context only and skip-by-default**:
+   - If `zh` is NOT in `languages` → do not ask about lunar at all. Skip the row entirely.
+   - If `zh` IS in `languages` → ask only as an optional add-on, framed as opt-in not opt-out: "要不要在请帖上加一行农历日期？（可跳过 / 不知道就跳过）". Default to empty/skip if the user is unsure or doesn't answer immediately. Most modern Chinese couples don't include it; only ask once, accept a "no" / "skip" fast.
 
    **Privacy nudge** — for address detail, AskUserQuestion:
    - Full address (street level)
@@ -159,7 +183,17 @@ The downstream scripts (`build-gallery.js`) inspect `designs.json.length` to det
 
 This is the most important interaction. **Do not ask "do you want minimal or vintage?" in plain text** — show, don't tell.
 
-1. **Read the user's photos** (use the Read tool — they're images). Note dominant colors, formality of pose, whether outfits are traditional / western / casual.
+1. **Read the user's photos** (use the Read tool — they're images). **The photos drive the recommendation.** Note:
+   - **Subject framing**: head-and-shoulders portrait? half-body? full-length? group? — this changes which photo-frame shapes are viable. Tight portraits work in oval / circle / arch. Full-length needs taller rectangular or no-frame layouts. A tight crop pushed into a circle WILL clip a forehead or chin.
+   - **Pose & formality**: studio formal portrait, casual outdoor candid, editorial fashion shot, traditional dress?
+   - **Outfits & culture**: white gown, qipao, hanbok, sari, kimono, suit, casual?
+   - **Color palette of the photo**: warm sunlight, cool studio, cream / beige, navy / black, vibrant?
+   - **Composition**: where are heads/faces positioned (top third? center? off-center)?
+
+   **Recommend aesthetics whose decorative elements + frame shape genuinely fit the photo.** Anti-patterns to avoid:
+   - Don't propose `art-deco` (heavy symmetric geometric frames) for a wide casual outdoor full-length shot — the photo can't carry the frame.
+   - Don't propose `red-gold` / `gugong` for a beachside / casual portrait — cultural / formal mismatch.
+   - Don't propose tight circle / oval frames if the photo's subject is full-length or off-center — heads will get clipped.
 
 2. **Pick aesthetic directions** from `design-principles.md` that fit the photos + any user hints. The number depends on mode:
    - **Single mode**: pick 3-5 candidates → user picks one → you design that one
@@ -230,7 +264,8 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
 
 3. **Write each template from scratch** as `templates/<design-id>.html`:
    - Use placeholders matching the fields actually present in `data/wedding.json` (e.g. `{{names.groom_en}}` if `en` in languages, `{{names.groom_es}}` if `es` etc.)
-   - Apply hard constraints from `design-principles.md` (canvas size, photo wrap, mobile-first)
+   - Apply hard constraints from `design-principles.md` (canvas size, photo wrap, mobile-first, **no element extending outside the 420×height canvas**)
+   - Set `overflow: hidden` on `.card` as a safety net so any accidentally-oversized child (giant date numerals, vertical text, SVG rays, position:absolute with negative offsets) gets clipped instead of bleeding past the canvas edge into the surrounding page background.
    - Bring in user-specific requests ("add a small icon of our dog", "make the date the most prominent element") that no aesthetic prescribes
    - In **multi mode**: each variant must look meaningfully different from the others. Don't write 3 templates that all turn into "minimalist serif + photo + name". Push range.
 
@@ -269,6 +304,19 @@ This renders every design in `data/designs.json` into `dist/<id>.html` (the raw 
 **Single mode**: open `dist/<your-design-id>.html` in the user's browser (macOS: `open`; Linux: `xdg-open`; Windows: `start`).
 
 **Multi mode**: skip live preview — go straight to Stage 6. The user will see all variants in the gallery at once.
+
+**Mandatory photo-crop review.** Before showing the result to the user, **open the rendered HTML yourself** (Read the PNG output from `npm run render`, or open `dist/<id>.html` in a way you can verify) and check:
+
+- No head, forehead, chin, or face is cropped by `.photo-wrap` border-radius / shape.
+- Both people in a couple shot are visible — no one is half-cut by the frame edge.
+- Important elements (hands holding rings, bouquet, etc.) are inside the frame.
+
+If the crop is wrong, fix it BEFORE handing back to the user. Don't ship a card with a cropped forehead and let the user discover it. Common fixes:
+
+- Adjust `object-position: center 12%` — lower the percentage (4%, 8%) to keep heads in frame, or raise (20%, 30%) for a face-centered crop.
+- Switch the frame shape: circle → oval (taller) → arch (rounded top, square bottom) → rectangle. Each one clips less of the subject's head.
+- Widen the photo-wrap: 240px → 280px → 320px so the photo isn't squeezed.
+- If the photo is full-length and the frame is small + tight, switch to a layout that gives the photo more vertical room, or pick a different photo.
 
 Feedback patterns (single mode iteration) and what they map to:
 
@@ -319,7 +367,13 @@ That's the deliverable. PNGs are saved via browser download into the user's chos
 
 - ❌ **Reading `examples/*.html`** — design-principles.md is your only visual reference
 - ❌ **Defaulting to Chinese** — always ask language first
+- ❌ **Speaking English to a user who picked Chinese (or any non-English language)** — switch your conversational language at Stage 2 and stay there
+- ❌ **Asking about lunar date when `zh` is NOT in `languages`** — it's a Chinese-specific field; skip it entirely otherwise
 - ❌ Asking style choices in plain text ("traditional or modern?") — always show visuals
+- ❌ **Picking an aesthetic without looking at the photos** — frame shape / formality must match the photo's framing & pose
+- ❌ **Shipping a template with a cropped forehead / chin / half-visible person** — always do the Stage 5 crop review before declaring done
+- ❌ **Silently picking 1 photo out of 20** — if the user dropped a folder of photos, discuss which to feature before designing
+- ❌ **Elements bleeding outside the 420×height canvas** — vertical text, oversized numerals, SVG decorations, negative-offset absolutes must stay inside; use `overflow:hidden` on `.card` as a safety net
 - ❌ Suggesting upload to any cloud / online editor / SaaS
 - ❌ Skipping Stage 2.5 — always ask single vs multi explicitly
 - ❌ **In multi mode**, generating N similar designs — they must look meaningfully different, not 3 minor variants of the same template

@@ -94,6 +94,11 @@ for (const d of designs) {
   //   - Browser preview (viewport ≥ 421 px wide): center the card on dark bg
   //   - Screenshot (Chrome --window-size=420,560): no centering, card sits
   //     at 0,0 so the PNG is the card exactly with zero bleed
+  //
+  // Also inject a tiny postMessage listener so the gallery's photo-switcher
+  // can swap #main-photo without reloading the iframe. Templates that follow
+  // design-principles.md will have <img id="main-photo">; if a template
+  // doesn't, the listener is a no-op.
   const frameCss = `<style>
     html,body{margin:0;padding:0}
     body{background:transparent}
@@ -101,7 +106,20 @@ for (const d of designs) {
     @media (min-width: 421px){
       body{background:#222;display:flex;align-items:center;justify-content:center;min-height:100vh}
     }
-  </style></head>`;
+  </style>
+  <script>
+    (function () {
+      window.addEventListener('message', function (e) {
+        var d = e && e.data;
+        if (!d || d.type !== 'set-photo' || !d.url) return;
+        var img = document.getElementById('main-photo');
+        if (img) img.setAttribute('src', d.url);
+      });
+      // Tell the parent we're ready; parent may apply the user's last
+      // selection immediately (so refreshing the detail page preserves it).
+      try { parent.postMessage({ type: 'photo-iframe-ready', id: ${JSON.stringify(d.id)} }, '*'); } catch (_) {}
+    })();
+  </script></head>`;
   const framed = html.replace(/<\/head>/, frameCss);
 
   const outPath = path.join(DIST_DIR, `${d.id}.html`);
