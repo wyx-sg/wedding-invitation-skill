@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Author-side build artifacts (the build-thumbnails.js temp dir)
+/tmp-thumbs/

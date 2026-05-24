@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给你的一封信 · 手写信笺</title>
+<link href="https://fonts.font.im/css2?family=Caveat:wght@400;500;700&family=Dancing+Script:wght@400;500;700&family=Ma+Shan+Zheng&family=Liu+Jian+Mao+Cao&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #322820;
+    font-family: 'Noto Serif SC', serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .card {
+    width: 420px;
+    height: 560px;
+    background:
+      linear-gradient(180deg, #fdf6e3 0%, #f5ead0 100%);
+    position: relative;
+    padding: 22px 24px 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+    color: #3a2f20;
+    background-image:
+      linear-gradient(180deg, #fdf6e3 0%, #f5ead0 100%),
+      repeating-linear-gradient(180deg, transparent 0, transparent 24px, rgba(180, 120, 80, 0.08) 24px, rgba(180, 120, 80, 0.08) 25px);
+  }
+  /* coffee stain */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 60px; right: -40px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(139,90,30,0.15) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* envelope flap top */
+  .flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 18px;
+    background: linear-gradient(180deg, rgba(139,90,30,0.06), transparent);
+    border-bottom: 1px dashed rgba(139,90,30,0.25);
+  }
+
+  /* postage stamp - enlarged so faces are visible */
+  .stamp {
+    position: relative;
+    width: 120px; height: 145px;
+    margin: 10px auto 10px;
+    background: #fff;
+    border: 1px solid #8b5a1e;
+    padding: 4px;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+    transform: rotate(-3deg);
+    z-index: 2;
+  }
+  .stamp::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    background:
+      radial-gradient(circle at 0 0, transparent 4px, #fdf6e3 4.5px) 0 0 / 10px 10px;
+    z-index: -1;
+  }
+  .stamp .photo-mini {
+    width: 100%;
+    height: 110px;
+    overflow: hidden;
+    background: #ddd;
+  }
+  .stamp .photo-mini img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    filter: sepia(0.15);
+  }
+  .stamp .stamp-label {
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    color: #8b1a1a;
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+  .stamp .stamp-value {
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 9px;
+    color: #3a2f20;
+  }
+
+  /* postal cancellation */
+  .cancel {
+    position: absolute;
+    top: 24px; right: 18px;
+    width: 74px; height: 74px;
+    border: 2px solid #8b1a1a;
+    border-radius: 50%;
+    color: #8b1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-15deg);
+    font-family: 'Caveat', cursive;
+    opacity: 0.6;
+    z-index: 3;
+  }
+  .cancel .big { font-size: 11px; letter-spacing: 1px; }
+  .cancel .small { font-size: 8px; margin-top: 1px; }
+
+  .salutation {
+    font-family: 'Ma Shan Zheng', 'Caveat', cursive;
+    font-size: 20px;
+    color: #3a2f20;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .letter-body {
+    font-family: 'Liu Jian Mao Cao', 'Ma Shan Zheng', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #3a2f20;
+    margin-bottom: 10px;
+    position: relative; z-index: 2;
+  }
+  .letter-body p {
+    margin-bottom: 4px;
+    text-indent: 2em;
+  }
+  .letter-body .highlight {
+    color: #8b1a1a;
+    border-bottom: 1px solid rgba(139, 26, 26, 0.4);
+    padding: 0 2px;
+  }
+
+  /* Info box - looks like a sticky note */
+  .info-note {
+    background: #fff8c4;
+    padding: 10px 12px;
+    margin: 10px -4px 10px;
+    transform: rotate(-1deg);
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+    border-left: 3px solid #d4a82a;
+    position: relative; z-index: 2;
+  }
+  .info-note-title {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 14px;
+    color: #8b1a1a;
+    margin-bottom: 5px;
+    border-bottom: 1px dashed rgba(139, 90, 30, 0.4);
+    padding-bottom: 3px;
+  }
+  .info-note-row {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 12px;
+    color: #3a2f20;
+    line-height: 1.5;
+    display: flex;
+    justify-content: space-between;
+    padding: 1px 0;
+  }
+  .info-note-row .k {
+    color: #8b5a1e;
+    font-size: 11px;
+    flex-shrink: 0;
+    width: 52px;
+  }
+  .info-note-row .v {
+    text-align: right;
+    flex: 1;
+  }
+
+  .signature {
+    text-align: right;
+    margin-top: 8px;
+    font-family: 'Liu Jian Mao Cao', 'Ma Shan Zheng', cursive;
+    font-size: 14px;
+    color: #3a2f20;
+    line-height: 1.4;
+    position: relative; z-index: 2;
+  }
+  .signature .names {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 18px;
+    color: #8b1a1a;
+    margin-top: 2px;
+    letter-spacing: 3px;
+  }
+  .signature .date {
+    font-family: 'Caveat', cursive;
+    font-size: 12px;
+    color: #8b5a1e;
+    margin-top: 2px;
+  }
+
+  /* little heart doodle */
+  .doodle {
+    position: absolute;
+    color: #c41a1a;
+    font-family: 'Caveat', cursive;
+    opacity: 0.5;
+  }
+  .doodle.d1 { bottom: 16px; left: 18px; font-size: 20px; transform: rotate(-15deg); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="flap"></div>
+
+  <div class="cancel">
+    <div class="big">{{venue.city_en_upper}}</div>
+    <div class="small">{{date.en_month}} · {{date.en_year}}</div>
+    <div class="small">★ ★ ★</div>
+  </div>
+
+  <div class="stamp">
+    <div class="photo-mini">
+      <img id="main-photo" src="{{design.primary_photo_url}}" alt="新人">
+    </div>
+    <div class="stamp-label">our day</div>
+    <div class="stamp-value">¥ ∞</div>
+  </div>
+
+  <div class="salutation">亲爱的你：</div>
+
+  <div class="letter-body">
+    <p>提笔时, 窗外正是<span class="highlight">盛夏初伏</span>, 蝉鸣阵阵。我们要结婚了 ——</p>
+    <p>想请你来<span class="highlight">老家的院子</span>, 喝一杯喜酒, 见一见我们最重要的人。</p>
+  </div>
+
+  <div class="info-note">
+    <div class="info-note-title">✿ 婚 礼 备 忘 ✿</div>
+    <div class="info-note-row"><span class="k">日 期</span><span class="v">{{date.en_year}}.{{date.en_month}}.{{date.en_day}} · 周四</span></div>
+    <div class="info-note-row"><span class="k">农 历</span><span class="v">{{date.lunar}}</span></div>
+    <div class="info-note-row"><span class="k">时 间</span><span class="v">中午 {{time.value}} 入席</span></div>
+    <div class="info-note-row"><span class="k">地 点</span><span class="v">{{venue.city_zh}} {{venue.lines_zh.0}}<br>{{venue.lines_zh.1}}</span></div>
+  </div>
+
+  <div class="signature">
+    爱你的<br>
+    <span class="names">{{names.groom_zh}} &amp; {{names.bride_zh}}</span>
+    <div class="date">— 写于 {{date.en_short}} —</div>
+  </div>
+
+  <div class="doodle d1">♡</div>
+</div>
+</body>
+</html>

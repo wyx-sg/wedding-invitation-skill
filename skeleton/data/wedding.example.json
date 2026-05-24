@@ -1,0 +1,54 @@
+{
+  "names": {
+    "groom_zh": "林知言",
+    "groom_en": "LIN ZHIYAN",
+    "groom_surname_en": "LIN",
+    "bride_zh": "沈安然",
+    "bride_en": "SHEN ANRAN",
+    "bride_surname_en": "SHEN",
+    "couple_en_short": "L & S"
+  },
+  "date": {
+    "iso": "2099-10-01",
+    "zh_formal": "公元 二〇九九 年 十月初一",
+    "zh_short": "二〇九九年十月一日",
+    "en_long": "October 1, 2099",
+    "en_short": "10.01.2099",
+    "en_compact": "10 · 01",
+    "weekday_zh": "星期一",
+    "weekday_en": "Monday",
+    "lunar": "",
+    "zh_year": "二〇九九",
+    "zh_month_day": "十月初一",
+    "en_month": "10",
+    "en_day": "01",
+    "en_year": "2099",
+    "roman_year": "MMXCIX"
+  },
+  "time": {
+    "value": "18:00",
+    "zh_full": "傍晚 18:00 入席",
+    "zh_label": "恭候",
+    "hours": "18",
+    "minutes": "00"
+  },
+  "venue": {
+    "full_zh": "示例市 · 示例路 · 示例酒店",
+    "province_zh": "示例省",
+    "province_en": "EXAMPLE PROVINCE",
+    "city_zh": "示例 · 城市",
+    "city_en": "Example City",
+    "city_en_upper": "EXAMPLE CITY",
+    "lines_zh": [
+      "示例区 示例街道",
+      "示例酒店 宴会厅"
+    ],
+    "type_zh": "酒店 · 宴会"
+  },
+  "site": {
+    "title": "林知言 & 沈安然 · 婚礼请帖",
+    "subtitle": "2099.10.01 · 示例城市",
+    "intro": "",
+    "newspaper_title": "The LIN Times"
+  }
+}

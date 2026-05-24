@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{names.groom_zh}} & {{names.bride_zh}}</title>
+<link href="https://fonts.font.im/css2?family=Playfair+Display:wght@400;700&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: #0a0a0a;
+    color: #d4af37;
+    padding: 36px 38px;
+    position: relative;
+    overflow: hidden;
+  }
+  .frame-outer { position: absolute; inset: 16px; border: 2px solid #d4af37; }
+  .frame-inner { position: absolute; inset: 22px; border: 1px solid #8b6e3a; }
+  .corner-fan {
+    position: absolute;
+    width: 30px; height: 30px;
+    background: conic-gradient(from 0deg, #d4af37 0deg 20deg, transparent 20deg 40deg, #d4af37 40deg 60deg, transparent 60deg 80deg, #d4af37 80deg 90deg);
+  }
+  .corner-fan.tl { top: 16px; left: 16px; }
+  .corner-fan.tr { top: 16px; right: 16px; transform: rotate(90deg); }
+  .corner-fan.bl { bottom: 16px; left: 16px; transform: rotate(-90deg); }
+  .corner-fan.br { bottom: 16px; right: 16px; transform: rotate(180deg); }
+  .content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; padding: 30px 16px; }
+  .top-label {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    letter-spacing: 10px;
+    color: #b8956a;
+    margin-bottom: 8px;
+  }
+  .monogram {
+    text-align: center;
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 56px;
+    line-height: 1;
+    color: #d4af37;
+  }
+  .monogram .amp { font-style: normal; color: #b8956a; font-size: 36px; vertical-align: 10px; margin: 0 6px; }
+  .photo-wrap {
+    width: 130px; height: 170px;
+    margin: 16px auto;
+    border: 2px solid #d4af37;
+    overflow: hidden;
+    box-shadow: 0 0 0 4px #0a0a0a, 0 0 0 5px #8b6e3a;
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+  .names {
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    letter-spacing: 6px;
+    color: #d4af37;
+    margin-top: 10px;
+  }
+  .names .amp { font-family: 'Bodoni Moda', serif; font-style: italic; color: #b8956a; margin: 0 6px; }
+  .date {
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #d4af37;
+    letter-spacing: 3px;
+  }
+  .date .small { display: block; font-size: 10px; color: #b8956a; letter-spacing: 5px; margin-top: 6px; }
+  .venue {
+    text-align: center;
+    margin-top: auto;
+    font-size: 11px;
+    color: #b8956a;
+    letter-spacing: 3px;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="frame-outer"></div>
+  <div class="frame-inner"></div>
+  <div class="corner-fan tl"></div>
+  <div class="corner-fan tr"></div>
+  <div class="corner-fan bl"></div>
+  <div class="corner-fan br"></div>
+
+  <div class="content">
+    <div class="top-label">— {{date.roman_year}} —</div>
+    <div class="monogram">{{names.groom_en.0}}<span class="amp">&</span>{{names.bride_en.0}}</div>
+
+    <div class="photo-wrap">
+      <img src="{{design.primary_photo_url}}" alt="">
+    </div>
+
+    <div class="names">{{names.groom_zh}}<span class="amp">&</span>{{names.bride_zh}}</div>
+    <div class="date">
+      {{date.en_long}}
+      <span class="small">{{date.weekday_en}} · {{time.value}}</span>
+    </div>
+
+    <div class="venue">{{venue.city_zh}}<br>{{venue.lines_zh.0}} · {{venue.lines_zh.1}}</div>
+  </div>
+</div>
+</body>
+</html>

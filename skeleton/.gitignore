@@ -1,0 +1,12 @@
+# Build artifacts
+dist/
+
+# Personal data (your wedding-invitation project should keep these private!)
+photos/*
+!photos/.gitkeep
+data/wedding.json
+data/designs.json
+
+# Node
+node_modules/
+npm-debug.log*

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "my-design",
+    "name_zh": "我的请帖",
+    "name_en": "MY INVITATION",
+    "template": "style01-new-chinese.html",
+    "primary_photo": "photo-01",
+    "width": 420,
+    "height": 560
+  }
+]

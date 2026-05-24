@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{names.groom_zh}} & {{names.bride_zh}}</title>
+<link href="https://fonts.font.im/css2?family=Noto+Serif+SC:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #faf6ee; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: #faf6ee;
+    padding: 50px 50px 44px;
+    position: relative;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .brush-stroke {
+    position: absolute;
+    top: 30px; right: 40px;
+    width: 60px; height: 16px;
+    background: #1a1a1a;
+    opacity: 0.8;
+    border-radius: 50% 5% 50% 5% / 90% 30% 90% 30%;
+    transform: rotate(-3deg);
+  }
+  .label-en {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #666;
+    margin-bottom: 24px;
+  }
+  .photo-wrap {
+    width: 160px; height: 200px;
+    margin: 0 auto 28px;
+    border-radius: 80px 80px 0 0;
+    overflow: hidden;
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; filter: grayscale(0.15); }
+  .names-zh {
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 8px;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+  .names-zh .sep { color: #999; margin: 0 8px; font-weight: 300; }
+  .names-en {
+    text-align: center;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #888;
+    margin-bottom: 30px;
+  }
+  .ink-line { width: 30px; height: 1px; background: #1a1a1a; margin: 16px auto; opacity: 0.6; }
+  .date {
+    text-align: center;
+    font-size: 13px;
+    color: #1a1a1a;
+    letter-spacing: 4px;
+    line-height: 1.8;
+  }
+  .date .accent { color: #1a1a1a; font-weight: 500; }
+  .date .small { font-size: 10px; color: #888; margin-top: 6px; display: block; }
+  .venue {
+    text-align: center;
+    margin-top: auto;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #444;
+    line-height: 1.8;
+  }
+  .venue .type { font-size: 9px; color: #999; margin-top: 4px; display: block; letter-spacing: 5px; }
+  .footer {
+    text-align: center;
+    margin-top: 16px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brush-stroke"></div>
+  <div class="label-en">{{names.groom_en}} & {{names.bride_en}}</div>
+
+  <div class="photo-wrap">
+    <img src="{{design.primary_photo_url}}" alt="">
+  </div>
+
+  <div class="names-zh">{{names.groom_zh}}<span class="sep">·</span>{{names.bride_zh}}</div>
+  <div class="names-en">— our day —</div>
+
+  <div class="ink-line"></div>
+
+  <div class="date">
+    <span class="accent">{{date.zh_formal}}</span>
+    <span class="small">{{date.lunar}} · {{date.weekday_zh}} · {{time.value}}</span>
+  </div>
+
+  <div class="venue">
+    {{venue.city_zh}} · {{venue.lines_zh.0}}<br>
+    {{venue.lines_zh.1}}
+    <span class="type">— {{venue.type_zh}} —</span>
+  </div>
+
+  <div class="footer">with quiet joy</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{site.title}}</title>
+<link href="https://fonts.font.im/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .card {
+    width: 420px;
+    height: 560px;
+    background: #f0ebe1;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+    color: #0a0a0a;
+  }
+
+  /* The masthead */
+  .masthead {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 14px 18px 8px;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .magazine-name {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #f0ebe1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .magazine-issue {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2.5px;
+    color: #f0ebe1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* The photo as cover image - top portion */
+  .cover-photo {
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(180deg, #e8e2d4, #d4cdbb);
+  }
+  .cover-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    filter: contrast(1.05) saturate(0.95);
+  }
+
+  /* Cover title: over the bouquet/chest area */
+  .cover-title {
+    position: absolute;
+    top: 240px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .title-line {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    color: #f0ebe1;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+  }
+  .title-line em {
+    font-style: italic;
+    color: #b8121a;
+    font-weight: 400;
+    margin: 0 -2px;
+    font-size: 60px;
+  }
+  .title-sub {
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 5px;
+    margin-top: 4px;
+    color: #f0ebe1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  /* Cover tease - just one, magazine teaser */
+  .cover-tease {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    left: 16px;
+    top: 150px;
+    max-width: 130px;
+  }
+  .tease-num {
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 32px;
+    color: #b8121a;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .tease-headline {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #f0ebe1;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    letter-spacing: -0.3px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .tease-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    color: #f0ebe1;
+    line-height: 1.4;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* Bottom section - info bar */
+  .info-bar {
+    background: #0a0a0a;
+    color: #f0ebe1;
+    padding: 12px 22px 10px;
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 38px;
+    height: 142px;
+    z-index: 3;
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(240,235,225,0.15);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-key {
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: #d4af37;
+    letter-spacing: 1.5px;
+  }
+  .info-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-align: right;
+    line-height: 1.3;
+  }
+  .info-val .big {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .info-val .small {
+    font-size: 8px;
+    opacity: 0.7;
+  }
+
+  /* End card / footer combined */
+  .end-card {
+    background: #b8121a;
+    color: #f0ebe1;
+    padding: 9px 22px;
+    text-align: center;
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 38px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .end-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    font-weight: 500;
+  }
+  .end-en {
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-size: 8px;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    margin-top: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="masthead">
+    <div class="magazine-name">VOGUE WEDDING</div>
+    <div class="magazine-issue">ISSUE {{date.en_month}}.{{date.en_year}} · CN</div>
+  </div>
+
+  <div class="cover-photo">
+    <img id="main-photo" src="{{design.primary_photo_url}}" alt="新人">
+  </div>
+
+  <div class="cover-tease">
+    <div class="tease-num">01</div>
+    <div class="tease-headline">A Summer<br>Family Dinner</div>
+    <div class="tease-body">{{venue.city_en}}, {{venue.province_en}}<br>a noon ceremony</div>
+  </div>
+
+  <div class="cover-title">
+    <div class="title-line">{{names.groom_surname_en}}<em>&</em>{{names.bride_surname_en}}</div>
+    <div class="title-sub">— SAVE THE DATE —</div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-row">
+      <div class="info-key">The Couple</div>
+      <div class="info-val">{{names.groom_zh}} &middot; {{names.bride_zh}}<br><span class="small">{{names.groom_en}} · {{names.bride_en}}</span></div>
+    </div>
+    <div class="info-row">
+      <div class="info-key">The Date</div>
+      <div class="info-val"><span class="big">{{date.en_short}}</span> THU<br><span class="small">{{date.lunar}}</span></div>
+    </div>
+    <div class="info-row">
+      <div class="info-key">The Hour</div>
+      <div class="info-val"><span class="big">{{time.value}}</span> noon</div>
+    </div>
+    <div class="info-row">
+      <div class="info-key">The Place</div>
+      <div class="info-val">{{venue.city_zh}} · {{venue.lines_zh.0}}<br><span class="small">{{venue.lines_zh.1}}</span></div>
+    </div>
+  </div>
+
+  <div class="end-card">
+    <div class="end-zh">敬 请 光 临</div>
+    <div class="end-en">join us for the cover story of our lives</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吴宅囍事 · 新中式 (3:4)</title>
+<link href="https://fonts.font.im/css2?family=Noto+Serif+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --paper: #f6efe1;
+    --cinnabar: #b8362b;
+    --cinnabar-deep: #8b2418;
+    --ink: #1a1a1a;
+    --ink-soft: #3d3530;
+    --imperial-gold: #b8956a;
+    --imperial-gold-deep: #8b6e3a;
+    --aged-brown: #6d5a42;
+  }
+  html, body { background: var(--paper); }
+  body {
+    font-family: 'Noto Serif SC', serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    margin: 0;
+  }
+  .card {
+    width: 420px;
+    height: 560px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 15%, #faf3e3 0%, transparent 60%),
+      radial-gradient(ellipse at top right, rgba(184, 54, 43, 0.04), transparent 50%),
+      linear-gradient(180deg, #f6efe1 0%, #ece2c9 100%);
+    position: relative;
+    padding: 24px 34px 22px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 18% 26%, rgba(109, 90, 66, 0.05) 0%, transparent 28%),
+      radial-gradient(circle at 82% 74%, rgba(109, 90, 66, 0.06) 0%, transparent 32%);
+    pointer-events: none;
+  }
+
+  /* 云纹角花 */
+  .corner-orn {
+    position: absolute;
+    width: 48px; height: 48px;
+    color: var(--cinnabar);
+    opacity: 0.6;
+    z-index: 1;
+  }
+  .corner-orn.tl { top: 10px; left: 10px; }
+  .corner-orn.tr { top: 10px; right: 10px; transform: scaleX(-1); }
+  .corner-orn.bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+  .corner-orn.br { bottom: 10px; right: 10px; transform: scale(-1, -1); }
+
+  /* 顶部题头 + 印章 */
+  .top-section {
+    position: relative; z-index: 2;
+  }
+  .header-tag {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px;
+    letter-spacing: 6px;
+    color: var(--imperial-gold-deep);
+    margin-bottom: 6px;
+  }
+  .seal-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .seal-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cinnabar) 50%, transparent);
+    opacity: 0.45;
+  }
+  .seal {
+    width: 46px; height: 46px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 40%),
+      radial-gradient(circle at 70% 70%, rgba(0,0,0,0.18), transparent 50%),
+      var(--cinnabar);
+    color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    border-radius: 3px;
+    box-shadow:
+      0 0 0 1px var(--cinnabar-deep),
+      0 0 0 2.5px var(--paper),
+      0 0 0 3.5px rgba(184, 54, 43, 0.3),
+      2px 3px 0 rgba(139, 36, 24, 0.25);
+    transform: rotate(-4deg);
+    font-family: 'ZCOOL XiaoWei', serif;
+    position: relative;
+    line-height: 1;
+  }
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: 2.5px;
+    border: 1px solid rgba(255, 240, 220, 0.25);
+    border-radius: 1.5px;
+  }
+
+  /* 拱形照片 */
+  .photo-frame {
+    width: 150px;
+    margin: 0 auto 10px;
+    position: relative;
+    z-index: 2;
+  }
+  .photo-frame::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 1px solid var(--imperial-gold);
+    border-radius: 50%;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .photo-wrap {
+    width: 150px;
+    height: 188px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px var(--paper),
+      0 0 0 3px var(--cinnabar),
+      0 8px 20px rgba(28, 18, 12, 0.18);
+    background: #fff;
+  }
+  .photo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    filter: saturate(0.96);
+  }
+
+  .ornament {
+    text-align: center;
+    color: var(--cinnabar);
+    font-size: 12px;
+    letter-spacing: 9px;
+    margin: 0 0 4px;
+    padding-left: 9px;
+    font-family: 'ZCOOL XiaoWei', serif;
+    position: relative; z-index: 2;
+  }
+
+  .names {
+    text-align: center;
+    font-size: 21px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-bottom: 2px;
+    position: relative; z-index: 2;
+    font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+    letter-spacing: 2px;
+    line-height: 1.3;
+  }
+  .names .knot {
+    display: inline-block;
+    width: 18px;
+    text-align: center;
+    margin: 0 5px;
+    color: var(--cinnabar);
+    font-size: 14px;
+    vertical-align: 3px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    letter-spacing: 0;
+  }
+  .names-en {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--aged-brown);
+    margin-bottom: 8px;
+    position: relative; z-index: 2;
+    font-style: italic;
+  }
+
+  .gold-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 60px 8px;
+    position: relative; z-index: 2;
+  }
+  .gold-divider .ln {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--imperial-gold) 50%, transparent);
+    opacity: 0.7;
+  }
+  .gold-divider .diamond {
+    width: 4px; height: 4px;
+    background: var(--imperial-gold);
+    transform: rotate(45deg);
+    opacity: 0.85;
+  }
+
+  .date-block {
+    text-align: center;
+    position: relative; z-index: 2;
+    line-height: 1.3;
+  }
+  .date-main {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 19px;
+    color: var(--ink);
+    letter-spacing: 2px;
+    font-weight: 500;
+  }
+  .date-main .accent {
+    color: var(--cinnabar);
+  }
+  .date-lunar {
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 3px;
+    margin-top: 2px;
+  }
+  .date-time {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 13px;
+    color: var(--cinnabar);
+    letter-spacing: 4px;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .date-time .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    margin: 0 1px;
+    letter-spacing: 0;
+  }
+
+  .venue-block {
+    text-align: center;
+    position: relative; z-index: 2;
+    margin-top: 2px;
+  }
+  .venue-value {
+    font-size: 12px;
+    color: var(--ink);
+    letter-spacing: 1.5px;
+    line-height: 1.7;
+  }
+  .venue-value .home {
+    font-family: 'ZCOOL XiaoWei', serif;
+    color: var(--aged-brown);
+    font-size: 10px;
+    letter-spacing: 3px;
+    margin-left: 6px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: auto;
+    position: relative; z-index: 2;
+  }
+  .footer-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--aged-brown);
+    margin-bottom: 5px;
+  }
+  .footer-zh {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 13px;
+    letter-spacing: 10px;
+    color: var(--cinnabar);
+    padding-left: 10px;
+    font-weight: 500;
+  }
+
+  /* 右下角姓名印 */
+  .signature-seal {
+    position: absolute;
+    bottom: 24px;
+    right: 18px;
+    width: 26px;
+    height: 26px;
+    background: var(--cinnabar);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-family: 'ZCOOL XiaoWei', serif;
+    border-radius: 2px;
+    transform: rotate(-6deg);
+    box-shadow:
+      0 0 0 1px rgba(139, 36, 24, 0.6),
+      1px 2px 0 rgba(139, 36, 24, 0.15);
+    z-index: 3;
+    opacity: 0.92;
+    line-height: 1;
+  }
+  .signature-seal::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 0.5px solid rgba(255, 240, 220, 0.4);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <svg class="corner-orn tl" viewBox="0 0 72 72" fill="none">
+    <path d="M8 8 Q24 12 28 28 Q12 24 8 8 Z" fill="currentColor" opacity="0.85"/>
+    <path d="M14 36 Q18 30 26 28" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <path d="M36 14 Q30 18 28 26" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <circle cx="38" cy="38" r="1.2" fill="currentColor" opacity="0.7"/>
+  </svg>
+  <svg class="corner-orn tr" viewBox="0 0 72 72" fill="none">
+    <path d="M8 8 Q24 12 28 28 Q12 24 8 8 Z" fill="currentColor" opacity="0.85"/>
+    <path d="M14 36 Q18 30 26 28" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <path d="M36 14 Q30 18 28 26" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <circle cx="38" cy="38" r="1.2" fill="currentColor" opacity="0.7"/>
+  </svg>
+  <svg class="corner-orn bl" viewBox="0 0 72 72" fill="none">
+    <path d="M8 8 Q24 12 28 28 Q12 24 8 8 Z" fill="currentColor" opacity="0.85"/>
+    <path d="M14 36 Q18 30 26 28" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <path d="M36 14 Q30 18 28 26" stroke="currentColor" stroke-width="0.8" fill="none"/>
+  </svg>
+  <svg class="corner-orn br" viewBox="0 0 72 72" fill="none">
+    <path d="M8 8 Q24 12 28 28 Q12 24 8 8 Z" fill="currentColor" opacity="0.85"/>
+    <path d="M14 36 Q18 30 26 28" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <path d="M36 14 Q30 18 28 26" stroke="currentColor" stroke-width="0.8" fill="none"/>
+  </svg>
+
+  <div class="top-section">
+    <div class="header-tag">{{names.groom_en}} &amp; {{names.bride_en}} · {{date.roman_year}}</div>
+    <div class="seal-row">
+      <div class="seal-line"></div>
+      <div class="seal">囍</div>
+      <div class="seal-line"></div>
+    </div>
+  </div>
+
+  <div class="photo-frame">
+    <div class="photo-wrap">
+      <img id="main-photo" src="{{design.primary_photo_url}}" alt="新人">
+    </div>
+  </div>
+
+  <div class="ornament">敬 备 喜 筵</div>
+
+  <div class="names">
+    {{names.groom_zh}}<span class="knot">&amp;</span>{{names.bride_zh}}
+  </div>
+  <div class="names-en">{{names.groom_en}} &nbsp;·&nbsp; {{names.bride_en}}</div>
+
+  <div class="gold-divider">
+    <span class="ln"></span><span class="diamond"></span><span class="ln"></span>
+  </div>
+
+  <div class="date-block">
+    <div class="date-main">公元<span class="accent">{{date.zh_year}}</span>年<span class="accent">{{date.zh_month_day}}</span></div>
+    <div class="date-lunar">{{date.lunar}} · {{date.weekday_zh}}</div>
+    <div class="date-time">{{time.zh_label}} <span class="num">{{time.hours}}</span>:<span class="num">{{time.minutes}}</span></div>
+  </div>
+
+  <div class="gold-divider">
+    <span class="ln"></span><span class="diamond"></span><span class="ln"></span>
+  </div>
+
+  <div class="venue-block">
+    <div class="venue-value">
+      {{venue.city_zh}} · {{venue.lines_zh.0}}<br>
+      {{venue.lines_zh.1}}<span class="home">— {{venue.type_zh}} —</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-en">— with deepest joy, please join us —</div>
+    <div class="footer-zh">敬 请 光 临</div>
+  </div>
+
+  <div class="signature-seal">吴</div>
+</div>
+</body>
+</html>

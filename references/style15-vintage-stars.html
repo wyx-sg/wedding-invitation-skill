@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{names.groom_zh}} & {{names.bride_zh}}</title>
+<link href="https://fonts.font.im/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Special+Elite&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a3a5c; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: radial-gradient(ellipse at top, #2a4a6c 0%, #1a3a5c 60%, #0f2a48 100%);
+    padding: 32px 30px;
+    position: relative;
+    color: #f5ebd6;
+    overflow: hidden;
+  }
+  /* Stars */
+  .star { position: absolute; background: #fbd967; border-radius: 50%; opacity: 0.85; }
+  .star::before { content: ''; position: absolute; inset: -2px; background: radial-gradient(circle, rgba(251,217,103,0.4), transparent 70%); border-radius: 50%; }
+  .star.s1 { top: 50px; left: 60px; width: 3px; height: 3px; }
+  .star.s2 { top: 90px; right: 80px; width: 2px; height: 2px; }
+  .star.s3 { top: 30px; right: 40px; width: 4px; height: 4px; }
+  .star.s4 { bottom: 80px; left: 50px; width: 2px; height: 2px; }
+  .star.s5 { bottom: 120px; right: 60px; width: 3px; height: 3px; }
+  .star.s6 { top: 200px; left: 30px; width: 1.5px; height: 1.5px; }
+  .star.s7 { top: 280px; right: 30px; width: 1.5px; height: 1.5px; }
+
+  /* Moon */
+  .moon { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; background: #fbd967; border-radius: 50%; box-shadow: -8px 8px 0 -2px #1a3a5c, 0 0 16px rgba(251,217,103,0.4); }
+
+  .header {
+    text-align: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: #fbd967;
+    margin-top: 90px;
+    margin-bottom: 4px;
+  }
+  .title {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 30px;
+    color: #f5ebd6;
+    line-height: 1.15;
+    padding: 0 20px;
+  }
+  .title .amp { color: #fbd967; font-size: 24px; vertical-align: 3px; }
+  .photo-wrap {
+    width: 110px; height: 140px;
+    margin: 16px auto 12px;
+    border: 2px solid #fbd967;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 0 24px rgba(251,217,103,0.2);
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; filter: sepia(0.15); }
+
+  .names {
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: #f5ebd6;
+    margin-top: 12px;
+  }
+  .names .sep { color: #fbd967; margin: 0 8px; }
+
+  .date-line { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 14px 20px; }
+  .date-line .ln { flex: 1; height: 1px; background: #fbd967; opacity: 0.4; }
+  .date-line .text { font-family: 'Special Elite', monospace; font-size: 10px; color: #fbd967; letter-spacing: 3px; }
+
+  .date {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #f5ebd6;
+    letter-spacing: 2px;
+  }
+  .date .small { font-family: 'Special Elite', monospace; font-style: normal; font-size: 9px; color: #fbd967; display: block; letter-spacing: 4px; margin-top: 4px; }
+
+  .venue {
+    text-align: center;
+    position: absolute;
+    bottom: 30px; left: 30px; right: 30px;
+    font-size: 10px;
+    color: #f5ebd6;
+    letter-spacing: 3px;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="moon"></div>
+  <div class="star s1"></div>
+  <div class="star s2"></div>
+  <div class="star s3"></div>
+  <div class="star s4"></div>
+  <div class="star s5"></div>
+  <div class="star s6"></div>
+  <div class="star s7"></div>
+
+  <div class="header">UNDER THE SAME SKY</div>
+  <div class="title">{{names.groom_en}} <span class="amp">&</span> {{names.bride_en}}</div>
+
+  <div class="photo-wrap">
+    <img src="{{design.primary_photo_url}}" alt="">
+  </div>
+
+  <div class="names">{{names.groom_zh}}<span class="sep">·</span>{{names.bride_zh}}</div>
+
+  <div class="date-line">
+    <span class="ln"></span><span class="text">THE DATE</span><span class="ln"></span>
+  </div>
+
+  <div class="date">
+    {{date.en_long}}
+    <span class="small">{{date.weekday_en}} · {{date.lunar}} · {{time.value}}</span>
+  </div>
+
+  <div class="venue">
+    {{venue.city_zh}} · {{venue.lines_zh.0}}<br>
+    {{venue.lines_zh.1}}
+  </div>
+</div>
+</body>
+</html>

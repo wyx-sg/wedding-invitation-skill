@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{names.groom_en}} & {{names.bride_en}} · Modern Minimal</title>
+<link href="https://fonts.font.im/css2?family=Noto+Sans+SC:wght@200;300;400;500&family=Inter:wght@200;300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #181818;
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .card {
+    width: 420px;
+    height: 560px;
+    background: #fafaf7;
+    position: relative;
+    padding: 22px 30px 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    overflow: hidden;
+    color: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 顶部 save the date */
+  .header {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .header-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 5px;
+    color: #B8956A;
+    margin-bottom: 4px;
+  }
+  .header-zh {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 8px;
+    color: #8b8680;
+    padding-left: 8px;
+    font-weight: 300;
+  }
+
+  /* 椭圆 photo —— 视觉重心 */
+  .photo-frame {
+    width: 180px;
+    margin: 0 auto 12px;
+    position: relative;
+  }
+  .photo-frame::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 1px solid #B8956A;
+    border-radius: 50%;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .photo-wrap {
+    width: 180px;
+    height: 230px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.14);
+    background: #fff;
+  }
+  .photo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    filter: contrast(1.02) saturate(0.95);
+  }
+
+  /* 名字 */
+  .names {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .names-zh {
+    font-size: 19px;
+    letter-spacing: 5px;
+    font-weight: 300;
+    margin-bottom: 4px;
+    color: #0a0a0a;
+  }
+  .names-amp {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: #B8956A;
+    margin: 0 6px;
+    font-size: 20px;
+  }
+  .names-en {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #8b8680;
+    font-weight: 300;
+  }
+
+  /* 装饰线 */
+  .ornate-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 6px 0 10px;
+  }
+  .ornate-line .ln {
+    width: 36px; height: 1px;
+    background: linear-gradient(90deg, transparent, #B8956A 50%, transparent);
+    opacity: 0.55;
+  }
+  .ornate-line .dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #B8956A;
+    opacity: 0.7;
+  }
+
+  /* 日期紧凑 */
+  .date-block {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .date-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: #0a0a0a;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+  .date-big em {
+    font-style: italic;
+    color: #B8956A;
+    font-weight: 400;
+  }
+  .date-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #8b8680;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+  }
+  .date-zh {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #8b8680;
+  }
+
+  /* 时间地点 */
+  .info-block {
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .info-row {
+    font-size: 11.5px;
+    color: #0a0a0a;
+    letter-spacing: 1px;
+    line-height: 1.55;
+  }
+  .info-row em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: #B8956A;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .info-row .sub {
+    font-size: 10px;
+    color: #8b8680;
+  }
+
+  .footer {
+    margin-top: auto;
+    text-align: center;
+  }
+  .footer-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: #B8956A;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+  .footer-zh {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: #8b8680;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- 顶部 -->
+  <div class="header">
+    <div class="header-en">save the date</div>
+    <div class="header-zh">我 们 结 婚 啦</div>
+  </div>
+
+  <!-- 椭圆 photo —— 视觉重心 -->
+  <div class="photo-frame">
+    <div class="photo-wrap">
+      <img id="main-photo" src="{{design.primary_photo_url}}" alt="新人">
+    </div>
+  </div>
+
+  <!-- 名字 -->
+  <div class="names">
+    <div class="names-zh">{{names.groom_zh}}<span class="names-amp">&</span>{{names.bride_zh}}</div>
+    <div class="names-en">{{names.groom_en}} &nbsp;·&nbsp; {{names.bride_en}}</div>
+  </div>
+
+  <!-- 装饰线 -->
+  <div class="ornate-line">
+    <span class="ln"></span>
+    <span class="dot"></span>
+    <span class="ln"></span>
+  </div>
+
+  <!-- 日期紧凑 -->
+  <div class="date-block">
+    <div class="date-big">{{date.zh_year}} <em>·</em> {{date.zh_month_day}}</div>
+    <div class="date-sub">{{date.en_long}} · {{date.weekday_en}}</div>
+    <div class="date-zh">农历 {{date.lunar}} · {{date.weekday_zh}}</div>
+  </div>
+
+  <!-- 时间地点 -->
+  <div class="info-block">
+    <div class="info-row"><em>{{time.value}}</em> noon · {{time.zh_label}}</div>
+    <div class="info-row" style="margin-top:2px;">{{venue.city_zh}} · {{venue.lines_zh.0}} <span class="sub">/ {{venue.lines_zh.1}}</span></div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <div class="footer-en">with all our love</div>
+    <div class="footer-zh">敬 请 光 临</div>
+  </div>
+</div>
+</body>
+</html>

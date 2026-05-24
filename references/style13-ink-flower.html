@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{names.groom_zh}} & {{names.bride_zh}}</title>
+<link href="https://fonts.font.im/css2?family=Noto+Serif+SC:wght@300;400;500&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5ede0; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background: linear-gradient(180deg, #faf3e3 0%, #f0e6cf 100%);
+    padding: 40px 40px 36px;
+    position: relative;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .branch { position: absolute; top: -10px; right: -20px; width: 200px; height: 280px; opacity: 0.85; pointer-events: none; }
+  .ink-stamp { position: absolute; bottom: 14px; right: 14px; width: 26px; height: 26px; background: #b8362b; color: #f5ede0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-family: 'ZCOOL XiaoWei', serif; border-radius: 2px; transform: rotate(-4deg); opacity: 0.92; }
+
+  .header {
+    text-align: center;
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 13px;
+    letter-spacing: 10px;
+    color: #b8362b;
+    margin-bottom: 8px;
+  }
+  .photo-wrap {
+    width: 150px; height: 195px;
+    margin: 14px auto 18px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 0 3px #f5ede0, 0 0 0 4px #b8362b, 0 10px 20px rgba(58,40,20,0.18);
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+  .names {
+    text-align: center;
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 24px;
+    letter-spacing: 4px;
+    color: #3a2a1a;
+  }
+  .names .sep { color: #b8362b; margin: 0 8px; font-size: 18px; vertical-align: 2px; }
+  .names-en {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #8b6a3a;
+    margin-top: 6px;
+    margin-bottom: 14px;
+  }
+  .ornament {
+    width: 30px; height: 1px;
+    background: #b8362b;
+    margin: 14px auto;
+    opacity: 0.6;
+  }
+  .date {
+    text-align: center;
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 14px;
+    color: #3a2a1a;
+    letter-spacing: 3px;
+    line-height: 1.7;
+  }
+  .date .lunar { font-size: 11px; color: #8b6a3a; margin-top: 4px; }
+  .venue {
+    text-align: center;
+    margin-top: auto;
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 12px;
+    color: #3a2a1a;
+    letter-spacing: 3px;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <svg class="branch" viewBox="0 0 200 280" fill="none">
+    <path d="M180 20 Q160 60 140 100 Q120 140 105 175 Q95 210 90 250" stroke="#3a3a3a" stroke-width="1.4" fill="none"/>
+    <path d="M155 75 Q140 78 130 90" stroke="#3a3a3a" stroke-width="0.9" fill="none"/>
+    <path d="M120 130 Q108 130 100 140" stroke="#3a3a3a" stroke-width="0.9" fill="none"/>
+    <path d="M100 190 Q88 192 80 200" stroke="#3a3a3a" stroke-width="0.9" fill="none"/>
+    <g transform="translate(155, 70)">
+      <circle cx="0" cy="0" r="6" fill="#f0e6cf" stroke="#3a3a3a" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#b8362b"/>
+    </g>
+    <g transform="translate(120, 130)">
+      <circle cx="0" cy="0" r="6" fill="#f0e6cf" stroke="#3a3a3a" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#b8362b"/>
+    </g>
+    <g transform="translate(100, 190)">
+      <circle cx="0" cy="0" r="6" fill="#f0e6cf" stroke="#3a3a3a" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#b8362b"/>
+    </g>
+    <g transform="translate(95, 245)">
+      <circle cx="0" cy="0" r="5" fill="#f0e6cf" stroke="#3a3a3a" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="1.5" fill="#b8362b"/>
+    </g>
+  </svg>
+
+  <div class="header">花 好 月 圆</div>
+
+  <div class="photo-wrap">
+    <img src="{{design.primary_photo_url}}" alt="">
+  </div>
+
+  <div class="names">{{names.groom_zh}}<span class="sep">·</span>{{names.bride_zh}}</div>
+  <div class="names-en">{{names.groom_en}} · {{names.bride_en}}</div>
+
+  <div class="ornament"></div>
+
+  <div class="date">
+    {{date.zh_formal}}
+    <div class="lunar">{{date.lunar}} · {{date.weekday_zh}} · {{time.value}}</div>
+  </div>
+
+  <div class="venue">
+    {{venue.city_zh}} · {{venue.lines_zh.0}}<br>
+    {{venue.lines_zh.1}}<br>
+    <small style="color:#8b6a3a; font-size:10px;">— {{venue.type_zh}} —</small>
+  </div>
+
+  <div class="ink-stamp">吴</div>
+</div>
+</body>
+</html>

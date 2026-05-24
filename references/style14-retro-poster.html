@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{names.groom_zh}} & {{names.bride_zh}}</title>
+<link href="https://fonts.font.im/css2?family=Anton&family=Pacifico&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fce8d2; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card {
+    width: 420px; height: 560px;
+    background:
+      radial-gradient(circle at 30% 20%, #fce8d2 0%, #f4a261 65%, #d97c2b 100%);
+    padding: 30px 30px;
+    position: relative;
+    overflow: hidden;
+    color: #5a3a20;
+  }
+  .sun-rays { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 400px; height: 200px; opacity: 0.18; }
+  .circle-dot { position: absolute; bottom: 40px; left: 30px; width: 80px; height: 80px; border-radius: 50%; background: #fce8d2; border: 3px solid #5a3a20; }
+  .ribbon { position: absolute; top: 100px; left: -20px; padding: 4px 30px 4px 30px; background: #5a3a20; color: #fce8d2; font-family: 'Anton', sans-serif; font-size: 10px; letter-spacing: 4px; transform: rotate(-12deg); }
+  .header {
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 60px;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: #5a3a20;
+    margin-top: 10px;
+  }
+  .header .script { font-family: 'Pacifico', cursive; font-size: 28px; color: #d4521a; letter-spacing: 0; }
+  .photo-wrap {
+    width: 130px; height: 130px;
+    margin: 18px auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #fce8d2;
+    box-shadow: 0 0 0 7px #5a3a20;
+  }
+  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+  .names {
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #5a3a20;
+    margin-top: 14px;
+  }
+  .date {
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 28px;
+    color: #d4521a;
+    letter-spacing: 8px;
+    margin-top: 6px;
+  }
+  .date-detail {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #5a3a20;
+    margin-top: 4px;
+  }
+  .venue {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 11px;
+    color: #5a3a20;
+    letter-spacing: 2px;
+    line-height: 1.6;
+  }
+  .stamp { position: absolute; top: 18px; right: 18px; width: 52px; height: 52px; border: 2px solid #5a3a20; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Anton', sans-serif; font-size: 10px; color: #5a3a20; transform: rotate(8deg); letter-spacing: 1px; text-align: center; line-height: 1.1; }
+</style>
+</head>
+<body>
+<div class="card">
+  <svg class="sun-rays" viewBox="0 0 400 200" fill="none">
+    <g stroke="#5a3a20" stroke-width="2">
+      <line x1="200" y1="200" x2="40" y2="40"/>
+      <line x1="200" y1="200" x2="100" y2="20"/>
+      <line x1="200" y1="200" x2="200" y2="0"/>
+      <line x1="200" y1="200" x2="300" y2="20"/>
+      <line x1="200" y1="200" x2="360" y2="40"/>
+    </g>
+  </svg>
+
+  <div class="circle-dot"></div>
+  <div class="ribbon">{{date.en_short}}</div>
+
+  <div class="header">WE'RE <span class="script">getting</span><br>MARRIED</div>
+
+  <div class="photo-wrap">
+    <img src="{{design.primary_photo_url}}" alt="">
+  </div>
+
+  <div class="names">{{names.groom_zh}} &amp; {{names.bride_zh}}</div>
+  <div class="date">{{date.en_compact}}</div>
+  <div class="date-detail">{{date.weekday_en}} · {{date.lunar}}</div>
+
+  <div class="venue">
+    {{venue.city_zh}}<br>
+    {{venue.lines_zh.0}} · {{venue.lines_zh.1}}
+  </div>
+
+  <div class="stamp">SAVE<br>THE<br>DATE</div>
+</div>
+</body>
+</html>
