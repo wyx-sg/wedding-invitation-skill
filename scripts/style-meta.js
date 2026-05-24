@@ -336,7 +336,7 @@ export const STYLE_META = {
 export const COMPATIBLE_PHOTOS = {
   // Warm Chinese formal cluster — refined portraits with traditional outfits
   'style01-new-chinese':   ['style01-new-chinese', 'style13-ink-flower', 'style09-gugong'],
-  'style04-red-gold':      ['style04-red-gold', 'style01-new-chinese'],
+  'style04-red-gold':      ['style04-red-gold', 'style01-new-chinese', 'style09-gugong'],
   'style09-gugong':        ['style09-gugong', 'style13-ink-flower', 'style01-new-chinese'],
   'style13-ink-flower':    ['style13-ink-flower', 'style09-gugong', 'style11-wabi-sabi', 'style01-new-chinese'],
 
@@ -350,7 +350,7 @@ export const COMPATIBLE_PHOTOS = {
   'style05-vogue':         ['style05-vogue', 'style06-black-gold', 'style12-art-deco'],
   'style06-black-gold':    ['style06-black-gold', 'style05-vogue', 'style12-art-deco'],
   'style12-art-deco':      ['style12-art-deco', 'style06-black-gold', 'style05-vogue'],
-  'style15-vintage-stars': ['style15-vintage-stars', 'style12-art-deco'],
+  'style15-vintage-stars': ['style15-vintage-stars', 'style12-art-deco', 'style06-black-gold'],
 
   // Vintage / themed
   'style07-newspaper':     ['style07-newspaper', 'style14-retro-poster'],
