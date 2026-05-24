@@ -94,6 +94,7 @@ const COPY = {
     prevLabel: 'Previous',
     nextLabel: 'Next',
     photoSwitcherLabel: 'Photo',
+    photoSwitcherAria: id => `Switch to photo ${id}`,
     multiTagline: 'Generated alternatives — pick a favorite and download.'
   },
   zh: {
@@ -111,6 +112,7 @@ const COPY = {
     prevLabel: '上一个',
     nextLabel: '下一个',
     photoSwitcherLabel: '换照片',
+    photoSwitcherAria: id => `切换到照片 ${id}`,
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。'
   }
 }[lang];
@@ -545,7 +547,8 @@ function detailHtml(design, index, isMulti) {
   const photoThumbs = availablePhotos.map(file => {
     const photoId = file.replace(PHOTO_RE, '');
     const isActive = photoId === primaryPhotoName;
-    return `<button type="button" class="${isActive ? 'active' : ''}" data-photo-url="photos/${esc(file)}" data-photo-id="${esc(photoId)}" aria-label="${esc(photoId)}"><img src="photos/${esc(file)}" alt="" loading="lazy"></button>`;
+    const cls = isActive ? ' class="active"' : '';
+    return `<button type="button"${cls} data-photo-url="photos/${esc(file)}" data-photo-id="${esc(photoId)}" aria-label="${esc(COPY.photoSwitcherAria(photoId))}"><img src="photos/${esc(file)}" alt="" loading="lazy"></button>`;
   }).join('');
   const switcherHtml = availablePhotos.length >= 2 ? `
     <div class="photo-switcher">

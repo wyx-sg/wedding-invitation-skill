@@ -97,14 +97,14 @@ for (const d of designs) {
   // can drift past 420 px and bake a centered-on-dark-bg layout into the
   // print PNG).
   //
-  // Modes:
-  //   - Standalone preview in a browser tab (no hash):
-  //       html gets .preview-mode → dark page bg, card centered.
-  //   - Embedded in the gallery's <iframe> (parent !== self, also no hash):
-  //       html gets .preview-mode but the styles below are also safe for
-  //       the iframe — the iframe's intrinsic 420×height clips anyway.
+  // Modes (decided synchronously in <head> before body paints):
+  //   - Standalone preview in a browser tab (no hash, self === top):
+  //       .preview-mode added → dark page bg, card centered.
+  //   - Embedded in the gallery's <iframe> (self !== top):
+  //       .preview-mode skipped → transparent body; the gallery's own
+  //       .frame element handles framing.
   //   - PNG screenshot via render.js (hash === '#render'):
-  //       no class added → body transparent, card at 0,0, zero bleed.
+  //       .preview-mode skipped → transparent body, card at 0,0, zero bleed.
   //
   // Also inject a tiny postMessage listener so the gallery's photo-switcher
   // can swap #main-photo without reloading the iframe. Templates that follow
