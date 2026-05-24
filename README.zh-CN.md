@@ -4,6 +4,8 @@
 
 > 一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。
 
+![hero](./docs/hero.png)
+
 <p align="center">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Works with Claude Code" src="https://img.shields.io/badge/Claude%20Code-compatible-d4af37">

@@ -4,6 +4,8 @@
 
 > An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
+![hero](./docs/hero.png)
+
 <p align="center">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Works with Claude Code" src="https://img.shields.io/badge/Claude%20Code-compatible-d4af37">
