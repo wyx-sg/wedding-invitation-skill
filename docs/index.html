@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wedding Invitation Skill — 20 World-Culture Examples</title>
+  <meta name="description" content="An AI-agent skill that designs your wedding invitation from a conversation. 20 example designs across Chinese, Japanese, Korean, Indian, Middle Eastern, Latin, French, and contemporary aesthetics.">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0907;
+      color: #d4c4a8;
+      font-family: 'Inter', -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 72px 32px 32px;
+      text-align: center;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 56px;
+      letter-spacing: 6px;
+      margin: 0 0 12px;
+      color: #d4b896;
+      text-transform: uppercase;
+    }
+    h1 .amp {
+      font-style: italic;
+      color: #b8956a;
+      margin: 0 8px;
+    }
+    .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: #a89878;
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 22px;
+      border: 1px solid #d4b896;
+      color: #d4b896;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #d4b896; color: #0a0907; }
+    .btn.primary { background: #d4b896; color: #0a0907; }
+    .btn.primary:hover { background: #b8956a; border-color: #b8956a; }
+    .note {
+      max-width: 640px;
+      margin: 24px auto 0;
+      font-size: 12px;
+      color: #6a5c48;
+      font-style: italic;
+    }
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px 72px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 28px;
+    }
+    .card {
+      background: #14110d;
+      border-radius: 6px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: block;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6);
+    }
+    .thumb { aspect-ratio: 3 / 4; overflow: hidden; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .meta { padding: 14px 18px 18px; }
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: #d4b896;
+      letter-spacing: 1px;
+    }
+    .desc {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+    .culture {
+      font-size: 10px;
+      color: #6a5c48;
+      margin-top: 6px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    footer {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 32px 64px;
+      text-align: center;
+      color: #6a5c48;
+      font-size: 13px;
+      border-top: 1px solid #1f1a14;
+    }
+    footer a { color: #b8956a; text-decoration: none; }
+    footer a:hover { color: #d4b896; }
+    @media (max-width: 600px) {
+      h1 { font-size: 36px; letter-spacing: 4px; }
+      header { padding: 48px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wedding <span class="amp">&amp;</span> Invitation</h1>
+    <p class="tagline">An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.</p>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/wyx-sg/wedding-invitation-skill">VIEW ON GITHUB</a>
+      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#quick-start">QUICK START</a>
+    </div>
+    <p class="note">The 20 examples below were each designed from scratch for a different aesthetic. Your invitation will be designed fresh in your chosen language. Click any to see it in full.</p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <a class="card" href="style01-new-chinese.html" data-culture="Chinese">
+        <div class="thumb"><img src="thumbnails/style01-new-chinese.png" alt="new-chinese" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">new-chinese</div>
+          <div class="desc">refined traditional</div>
+          <div class="culture">Chinese</div>
+        </div>
+      </a>
+      <a class="card" href="style02-modern-minimal.html" data-culture="Contemporary">
+        <div class="thumb"><img src="thumbnails/style02-modern-minimal.png" alt="modern-minimal" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">modern-minimal</div>
+          <div class="desc">scandi minimalism</div>
+          <div class="culture">Contemporary</div>
+        </div>
+      </a>
+      <a class="card" href="style03-morandi.html" data-culture="Contemporary">
+        <div class="thumb"><img src="thumbnails/style03-morandi.png" alt="morandi" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">morandi</div>
+          <div class="desc">soft contemporary</div>
+          <div class="culture">Contemporary</div>
+        </div>
+      </a>
+      <a class="card" href="style04-red-gold.html" data-culture="Chinese">
+        <div class="thumb"><img src="thumbnails/style04-red-gold.png" alt="red-gold" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">red-gold</div>
+          <div class="desc">traditional banquet</div>
+          <div class="culture">Chinese</div>
+        </div>
+      </a>
+      <a class="card" href="style05-vogue.html" data-culture="European">
+        <div class="thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">vogue</div>
+          <div class="desc">editorial / fashion</div>
+          <div class="culture">European</div>
+        </div>
+      </a>
+      <a class="card" href="style06-black-gold.html" data-culture="Contemporary">
+        <div class="thumb"><img src="thumbnails/style06-black-gold.png" alt="black-gold" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">black-gold</div>
+          <div class="desc">monogram / formal</div>
+          <div class="culture">Contemporary</div>
+        </div>
+      </a>
+      <a class="card" href="style07-newspaper.html" data-culture="European">
+        <div class="thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">newspaper</div>
+          <div class="desc">old-print broadsheet</div>
+          <div class="culture">European</div>
+        </div>
+      </a>
+      <a class="card" href="style08-letter.html" data-culture="European">
+        <div class="thumb"><img src="thumbnails/style08-letter.png" alt="letter" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">letter</div>
+          <div class="desc">handwritten note</div>
+          <div class="culture">European</div>
+        </div>
+      </a>
+      <a class="card" href="style09-gugong.html" data-culture="Chinese">
+        <div class="thumb"><img src="thumbnails/style09-gugong.png" alt="gugong" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">gugong</div>
+          <div class="desc">chinese palace</div>
+          <div class="culture">Chinese</div>
+        </div>
+      </a>
+      <a class="card" href="style10-mediterranean.html" data-culture="Contemporary">
+        <div class="thumb"><img src="thumbnails/style10-mediterranean.png" alt="mediterranean" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">mediterranean</div>
+          <div class="desc">destination / outdoor</div>
+          <div class="culture">Contemporary</div>
+        </div>
+      </a>
+      <a class="card" href="style11-wabi-sabi.html" data-culture="Japanese">
+        <div class="thumb"><img src="thumbnails/style11-wabi-sabi.png" alt="wabi-sabi" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">wabi-sabi</div>
+          <div class="desc">japanese restraint</div>
+          <div class="culture">Japanese</div>
+        </div>
+      </a>
+      <a class="card" href="style12-art-deco.html" data-culture="European">
+        <div class="thumb"><img src="thumbnails/style12-art-deco.png" alt="art-deco" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">art-deco</div>
+          <div class="desc">gatsby glamour</div>
+          <div class="culture">European</div>
+        </div>
+      </a>
+      <a class="card" href="style13-ink-flower.html" data-culture="Chinese">
+        <div class="thumb"><img src="thumbnails/style13-ink-flower.png" alt="ink-flower" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">ink-flower</div>
+          <div class="desc">chinese ink painting</div>
+          <div class="culture">Chinese</div>
+        </div>
+      </a>
+      <a class="card" href="style14-retro-poster.html" data-culture="Themed">
+        <div class="thumb"><img src="thumbnails/style14-retro-poster.png" alt="retro-poster" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">retro-poster</div>
+          <div class="desc">travel-poster</div>
+          <div class="culture">Themed</div>
+        </div>
+      </a>
+      <a class="card" href="style15-vintage-stars.html" data-culture="Themed">
+        <div class="thumb"><img src="thumbnails/style15-vintage-stars.png" alt="vintage-stars" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">vintage-stars</div>
+          <div class="desc">celestial / night</div>
+          <div class="culture">Themed</div>
+        </div>
+      </a>
+      <a class="card" href="style16-indian.html" data-culture="South Asian">
+        <div class="thumb"><img src="thumbnails/style16-indian.png" alt="indian" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">indian</div>
+          <div class="desc">mandala / paisley</div>
+          <div class="culture">South Asian</div>
+        </div>
+      </a>
+      <a class="card" href="style17-arabic.html" data-culture="Middle Eastern">
+        <div class="thumb"><img src="thumbnails/style17-arabic.png" alt="arabic" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">arabic</div>
+          <div class="desc">arabesque / mihrab</div>
+          <div class="culture">Middle Eastern</div>
+        </div>
+      </a>
+      <a class="card" href="style18-latin.html" data-culture="Latin">
+        <div class="thumb"><img src="thumbnails/style18-latin.png" alt="latin" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">latin</div>
+          <div class="desc">papel picado / folk</div>
+          <div class="culture">Latin</div>
+        </div>
+      </a>
+      <a class="card" href="style19-french-provence.html" data-culture="European">
+        <div class="thumb"><img src="thumbnails/style19-french-provence.png" alt="french-provence" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">french-provence</div>
+          <div class="desc">lavender / chateau</div>
+          <div class="culture">European</div>
+        </div>
+      </a>
+      <a class="card" href="style20-korean-hanbok.html" data-culture="Korean">
+        <div class="thumb"><img src="thumbnails/style20-korean-hanbok.png" alt="korean-hanbok" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">korean-hanbok</div>
+          <div class="desc">traditional joseon</div>
+          <div class="culture">Korean</div>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    Built with the <a href="https://github.com/wyx-sg/wedding-invitation-skill">wedding-invitation skill</a> · MIT License · No data leaves your machine.
+  </footer>
+</body>
+</html>
