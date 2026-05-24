@@ -121,6 +121,11 @@ function main() {
     for (const s of SIZES) {
       const outPng = path.join(s.dir, `${d.id}.png`);
       const scale = (s.targetWidth / width).toFixed(4);
+      // #render tells the page (via build.js-injected script) to skip the
+      // dark "preview" frame styling. Required: at high DPR (e.g. print
+      // scale 5.1428×), Chrome's effective CSS viewport can drift slightly
+      // past 420 px and trigger a width-based media query, baking the
+      // preview dark bg into the PNG. The hash-based opt-out is exact.
       execFileSync(chrome, [
         '--headless',
         '--disable-gpu',
@@ -128,7 +133,7 @@ function main() {
         `--window-size=${width},${height}`,
         `--force-device-scale-factor=${scale}`,
         `--screenshot=${outPng}`,
-        fileUrl(srcHtml)
+        fileUrl(srcHtml) + '#render'
       ], { stdio: ['ignore', 'ignore', 'ignore'] });
       const px = `${s.targetWidth}×${Math.round(height * (s.targetWidth / width))}`;
       console.log(`→ ${path.relative(ROOT, outPng)} (${s.name}, ${px})`);
