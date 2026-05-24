@@ -1,13 +1,13 @@
-// Pre-render all references/*.html into references/thumbnails/*.png so
-// Stage 3 (style selection) can show the user a visual menu instantly
-// instead of doing 3× full build+render at runtime.
+// Pre-render all examples/*.html into examples/thumbnails/*.png so the
+// README gallery and any inspiration UI can show what the skill has
+// produced in the past without needing live rendering.
 //
 // This is a build-time tool for the skill *author* (not the end user).
-// Run once after editing references/, then commit the PNGs.
+// Run once after editing examples/, then commit the PNGs.
 //
 //   node scripts/build-thumbnails.js
 //
-// Output: references/thumbnails/<style-id>.png at 840×1120 (2x retina for a
+// Output: examples/thumbnails/<style-id>.png at 840×1120 (2x retina for a
 // 420×560 gallery card).
 
 import fs from 'node:fs';
@@ -17,8 +17,8 @@ import { execFileSync } from 'node:child_process';
 import { render } from '../skeleton/scripts/template-engine.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const REFS_DIR = path.join(ROOT, 'references');
-const OUT_DIR = path.join(REFS_DIR, 'thumbnails');
+const EXAMPLES_DIR = path.join(ROOT, 'examples');
+const OUT_DIR = path.join(EXAMPLES_DIR, 'thumbnails');
 const TMP_DIR = path.join(os.tmpdir(), 'wedding-skill-thumbs');
 
 // Fixture data — fully placeholder, no real-world identifying info.
@@ -59,39 +59,30 @@ const FIXTURE = {
     minutes: '00'
   },
   venue: {
-    full_zh: '示例市 · 示例路 · 示例酒店',
-    province_zh: '示例省',
-    province_en: 'EXAMPLE PROVINCE',
-    city_zh: '示例 · 城市',
-    city_en: 'Example City',
-    city_en_upper: 'EXAMPLE CITY',
-    lines_zh: ['示例区 示例街道', '示例酒店 宴会厅'],
+    full_zh: '上海 · 黄浦区 · 锦绣花园酒店',
+    province_zh: '上海',
+    province_en: 'SHANGHAI',
+    city_zh: '上海',
+    city_en: 'Shanghai',
+    city_en_upper: 'SHANGHAI',
+    lines_zh: ['黄浦区 永宁路 188 号', '锦绣花园酒店 宴会厅'],
+    lines_en: ['188 Yongning Road, Huangpu District', 'Eternal Garden Hotel Ballroom'],
     type_zh: '酒店 · 宴会'
   },
   site: {
     title: '林知言 & 沈安然 · 婚礼请帖',
-    subtitle: '2099.10.01 · 示例城市',
+    subtitle: '2099.10.01 · 上海',
     intro: '',
     newspaper_title: 'The LIN Times'
   }
 };
 
-// Placeholder photo as a self-contained SVG data URI (gradient + label).
-// Aspect 3:4 to match what the templates expect.
-const PLACEHOLDER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1067" preserveAspectRatio="xMidYMid slice">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e8d8c4"/>
-      <stop offset="1" stop-color="#c4a888"/>
-    </linearGradient>
-  </defs>
-  <rect width="800" height="1067" fill="url(#g)"/>
-  <g fill="#8c7058" font-family="Georgia, serif">
-    <text x="400" y="490" text-anchor="middle" font-size="56" font-style="italic">photo</text>
-    <text x="400" y="560" text-anchor="middle" font-size="22" letter-spacing="4">PLACEHOLDER</text>
-  </g>
-</svg>`;
-const PLACEHOLDER_URL = 'data:image/svg+xml;utf8,' + encodeURIComponent(PLACEHOLDER_SVG);
+// Placeholder photo for thumbnails: a sunset shot bundled into the repo.
+// Embedded as a base64 data URI so the temp HTML written to /tmp can find it
+// regardless of the user's filesystem layout.
+const PLACEHOLDER_PHOTO = path.join(ROOT, 'examples', 'photos', 'placeholder-couple.jpg');
+const PLACEHOLDER_URL = 'data:image/jpeg;base64,' +
+  fs.readFileSync(PLACEHOLDER_PHOTO).toString('base64');
 
 function findChrome() {
   const env = process.env.CHROME;
@@ -127,14 +118,14 @@ function main() {
     if (f.endsWith('.png')) fs.unlinkSync(path.join(OUT_DIR, f));
   }
 
-  const refs = fs.readdirSync(REFS_DIR)
+  const refs = fs.readdirSync(EXAMPLES_DIR)
     .filter(f => f.endsWith('.html'))
     .sort();
-  console.log(`[thumbs] Found ${refs.length} reference template(s)`);
+  console.log(`[thumbs] Found ${refs.length} example template(s)`);
 
   for (const ref of refs) {
     const id = ref.replace(/\.html$/, '');
-    const tplPath = path.join(REFS_DIR, ref);
+    const tplPath = path.join(EXAMPLES_DIR, ref);
     const tpl = fs.readFileSync(tplPath, 'utf8');
 
     // Probe height from the template's .card rule. Default 560.
@@ -167,7 +158,7 @@ function main() {
     const size = fs.statSync(out).size;
     console.log(`[thumbs] → ${id}.png (${(size / 1024).toFixed(0)} KB)`);
   }
-  console.log(`[thumbs] Done. ${refs.length} thumbnails in references/thumbnails/`);
+  console.log(`[thumbs] Done. ${refs.length} thumbnails in examples/thumbnails/`);
 }
 
 main();

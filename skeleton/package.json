@@ -7,7 +7,7 @@
   "scripts": {
     "derive": "node scripts/derive.js",
     "build": "node scripts/build.js",
-    "render": "bash scripts/render.sh",
+    "render": "node scripts/render.js",
     "all": "npm run derive && npm run build && npm run render"
   }
 }

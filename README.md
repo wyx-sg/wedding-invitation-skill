@@ -1,68 +1,121 @@
-# wedding-invitation skill
+<p align="right"><strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a></p>
 
-A Claude Code skill for generating beautiful, bespoke wedding invitation cards — **entirely on your own machine**.
+# Wedding Invitation
 
-## What it does
+> An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
-You chat with Claude about your wedding (names, date, venue, style preference, photos). Claude designs a custom HTML template for you, renders it with headless Chrome, and hands you a print-ready PNG.
+![hero](./docs/hero.png)
 
-No website. No signup. No cloud. Your photos, names, and address never leave your laptop.
+<p align="center">
+  <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg">
+  <img alt="Works with Claude Code" src="https://img.shields.io/badge/Claude%20Code-compatible-d4af37">
+  <img alt="Node 18+" src="https://img.shields.io/badge/node-%E2%89%A518-339933">
+  <img alt="macOS · Linux · Windows" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-lightgrey">
+</p>
 
-## What makes it different
+## Quick start
 
-| Most wedding-invitation tools | This skill |
-|---|---|
-| Pick from a fixed gallery of templates | Claude *designs* a unique one based on your style preferences |
-| Upload photos to their servers | Photos stay on your machine — `.gitignore`'d by default |
-| SaaS / monthly fee / signup wall | Free; runs locally; no account |
-| Web-based editor that bottlenecks on remote servers | Pure file:// preview; no network calls after install |
-
-## Install
-
-This is a Claude Code skill. After installing, just tell Claude:
-
-> "Help me make a wedding invitation."
-
-Claude reads `SKILL.md` and drives the conversation from there.
-
-For the curious / hacker — the skill layout:
-
+```bash
+git clone https://github.com/wyx-sg/wedding-invitation-skill \
+  ~/.claude/skills/wedding-invitation
 ```
-SKILL.md                ← skill entry point (Claude reads this)
-workflow.md             ← dialogue / decision guide
-design-principles.md    ← visual + technical constraints
-references/             ← 15 example templates as stylistic vocabulary
-skeleton/               ← starting project copied to your workspace
-```
+
+Then in [Claude Code](https://claude.ai/code), say:
+
+> Help me make a wedding invitation.
+
+Claude takes it from there. No restart needed — Claude Code picks up new skills in the current session.
+
+## What you'll get
+
+- A **bespoke HTML template** designed for you — not picked from a gallery
+- A **print-ready PNG** at 1080×1440 (or 1080×1920 for 9:16 poster format)
+- Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, or any combination
+- Your photos, names, and address **never leave your machine**
+
+## Gallery
+
+The 15 invitations below are **Chinese examples** showing what aesthetics this skill can produce. They are not templates you pick from — each one was designed from scratch for a different aesthetic. Your invitation will be designed fresh in your chosen language.
+
+<table>
+  <tr>
+    <td align="center"><img src="examples/thumbnails/style01-new-chinese.png" width="160"><br><sub><b>new-chinese</b><br>refined traditional</sub></td>
+    <td align="center"><img src="examples/thumbnails/style02-modern-minimal.png" width="160"><br><sub><b>modern-minimal</b><br>scandi minimalism</sub></td>
+    <td align="center"><img src="examples/thumbnails/style03-morandi.png" width="160"><br><sub><b>morandi</b><br>soft contemporary</sub></td>
+    <td align="center"><img src="examples/thumbnails/style04-red-gold.png" width="160"><br><sub><b>red-gold</b><br>traditional banquet</sub></td>
+    <td align="center"><img src="examples/thumbnails/style05-vogue.png" width="160"><br><sub><b>vogue</b><br>editorial / fashion</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="examples/thumbnails/style06-black-gold.png" width="160"><br><sub><b>black-gold</b><br>monogram / formal</sub></td>
+    <td align="center"><img src="examples/thumbnails/style07-newspaper.png" width="160"><br><sub><b>newspaper</b><br>old-print broadsheet</sub></td>
+    <td align="center"><img src="examples/thumbnails/style08-letter.png" width="160"><br><sub><b>letter</b><br>handwritten note</sub></td>
+    <td align="center"><img src="examples/thumbnails/style09-gugong.png" width="160"><br><sub><b>gugong</b><br>palace / museum</sub></td>
+    <td align="center"><img src="examples/thumbnails/style10-mediterranean.png" width="160"><br><sub><b>mediterranean</b><br>destination / outdoor</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="examples/thumbnails/style11-wabi-sabi.png" width="160"><br><sub><b>wabi-sabi</b><br>japanese restraint</sub></td>
+    <td align="center"><img src="examples/thumbnails/style12-art-deco.png" width="160"><br><sub><b>art-deco</b><br>gatsby glamour</sub></td>
+    <td align="center"><img src="examples/thumbnails/style13-ink-flower.png" width="160"><br><sub><b>ink-flower</b><br>chinese ink painting</sub></td>
+    <td align="center"><img src="examples/thumbnails/style14-retro-poster.png" width="160"><br><sub><b>retro-poster</b><br>travel-poster</sub></td>
+    <td align="center"><img src="examples/thumbnails/style15-vintage-stars.png" width="160"><br><sub><b>vintage-stars</b><br>celestial / night</sub></td>
+  </tr>
+</table>
+
+## How it works
+
+1. **Talk** — Claude asks your language(s), names, date, venue, style preference
+2. **Preview** — Claude shows aesthetic directions visually in your browser
+3. **Design** — Claude writes a unique HTML template from scratch in your language
+4. **Iterate** — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
+5. **Export** — one command screenshots the HTML into a high-res print-ready PNG
 
 ## Requirements
 
 - **Node.js 18+**
-- **Google Chrome or Chromium** installed — used to screenshot the HTML into a PNG.
-  If you don't have it, the skill will fall back to `npx puppeteer-cli` which downloads a bundled chromium (~200 MB on first run).
-- **macOS or Linux**. Windows is untested; the render script uses bash. WSL works.
+- **Google Chrome, Chromium, or Microsoft Edge** — used to render the PNG. The skill ships with a cross-platform Node script (`render.js`) that locates whichever you have.
+- **macOS, Linux, or Windows**
 
-## Workflow (under the hood)
+If you don't have a Chromium-family browser, the skill prints install instructions for your OS.
 
-1. **Setup** — Claude copies `skeleton/` into a working directory you choose (e.g. `~/my-wedding/`)
-2. **Gather** — Claude asks for names, date, venue, time, style preference; fills `data/wedding.json`
-3. **Style preview** — Claude renders 3 candidate styles in your browser so you can compare visually
-4. **Design** — Claude writes a new `templates/<your-design>.html` tailored to the direction you chose
-5. **Build** — `npm run build` renders the template to `dist/<your-design>.html`; you open it in your browser
-6. **Iterate** — you give feedback ("bigger font", "softer color", "swap the photo"), Claude tweaks the template, you rebuild
-7. **Export** — `npm run render` screenshots the HTML to `dist/png/<your-design>.png` at 1080×1440 print resolution; Claude asks where to save the final file
+## Use with other coding agents
+
+| Agent | How to use |
+|---|---|
+| **Claude Code** | First-class — auto-discovers the skill after `git clone` |
+| **Claude Agent SDK** | Supported |
+| Cursor / Aider / Codex CLI / Gemini CLI / others | Clone anywhere; tell the agent: "read `SKILL.md` and help me make a wedding invitation" |
+
+Some interactions use Claude Code's `AskUserQuestion` tool for visual picking; other agents automatically fall back to plain text.
 
 ## Privacy
 
-- Photos in `skeleton/photos/` — already `.gitignore`d
-- Wedding data (`data/wedding.json`) — already `.gitignore`d
-- Build output (`dist/`) — already `.gitignore`d
-- No telemetry. The skill itself makes zero network requests. The browser loads fonts from `fonts.font.im` at preview time (browser-side, optional — you can pre-download fonts).
+Your photos, names, and address never leave your machine.
 
-## Credits
+- The skill itself makes **zero network requests**.
+- At preview time, the rendered HTML loads webfonts from `fonts.font.im` (a Google Fonts mirror) — only your browser sees that, and only the font URLs. You can pre-download fonts to go fully offline.
+- The project directory's `.gitignore` excludes `photos/`, `data/wedding.json`, and `dist/` by default — so even if you `git init` your wedding project, your data won't be tracked.
+- No telemetry, no analytics, no third-party services.
 
-Templates in `references/` were originally built for one anonymized wedding, used here as stylistic vocabulary. All identifying information has been stripped; what you see in references are pure design exercises with `{{path.to.value}}` placeholders only. Real wedding data never enters this repo.
+## FAQ
+
+**Can I use this without Claude Code?**
+Yes. Any coding agent that reads markdown works — you just need to manually point it at `SKILL.md`. Auto-discovery is Claude Code specific.
+
+**Is this a website?**
+No. It produces a static PNG you can print, share, attach to email, or send via messaging apps.
+
+**What languages does it support?**
+Anything. The skill asks at the start. Chinese, English, Spanish, Japanese, Korean, French, bilingual combinations — `design-principles.md` has typography guidance for the major scripts.
+
+**Can I use my own photos?**
+Yes. The skill asks where they live on your machine and copies them into the project.
+
+**Will my data appear anywhere online?**
+No. The project directory is `.gitignore`'d by default. Your photos and details stay local.
+
+**What if I'm on Windows?**
+Works. `render.js` shells out to whichever Chrome / Chromium / Edge you have installed. The skill's documentation includes Windows commands alongside macOS/Linux.
 
 ## License
 
-MIT.
+MIT — see [LICENSE](./LICENSE).
