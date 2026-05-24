@@ -367,13 +367,17 @@ const DETAIL_CSS = `
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 999px;
-    opacity: 0.6;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s;
     z-index: 10;
   }
   .preview:hover .zoom-controls,
   .zoom-controls:hover,
-  .zoom-controls:focus-within { opacity: 1; }
+  .zoom-controls:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+  }
   .zoom-btn {
     width: 30px;
     height: 30px;
