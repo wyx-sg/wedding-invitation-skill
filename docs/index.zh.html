@@ -101,15 +101,15 @@
   header.hero {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 64px 32px 32px;
+    padding: 28px 32px 16px;
     text-align: center;
   }
   h1 {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
-    font-size: 56px;
-    letter-spacing: 6px;
-    margin: 0 0 14px;
+    font-size: 40px;
+    letter-spacing: 5px;
+    margin: 0 0 8px;
     color: var(--accent);
     text-transform: uppercase;
   }
@@ -121,18 +121,18 @@
   .tagline {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
-    font-size: 19px;
+    font-size: 16px;
     color: #a89878;
-    max-width: 680px;
-    margin: 0 auto 32px;
-    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto 16px;
+    line-height: 1.5;
     text-wrap: balance;
   }
   .actions {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     flex-wrap: wrap;
   }
   .btn {
@@ -150,34 +150,28 @@
   .btn:hover { background: var(--accent); color: var(--bg); }
   .btn.primary { background: var(--accent); color: var(--bg); }
   .btn.primary:hover { background: var(--accent-warm); border-color: var(--accent-warm); }
-  .note {
-    max-width: 680px;
-    margin: 24px auto 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-style: italic;
-    text-wrap: balance;
-  }
+  .note { display: none; }
   main {
-    max-width: 1400px;
+    max-width: 1680px;
     margin: 0 auto;
-    padding: 32px 24px 72px;
+    padding: 32px 40px 64px;
   }
   .group-label {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 14px;
-    letter-spacing: 6px;
+    font-size: 13px;
+    letter-spacing: 5px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin: 32px 8px 16px;
+    margin: 16px 8px 10px;
     border-bottom: 1px solid var(--border-soft);
-    padding-bottom: 10px;
+    padding-bottom: 8px;
   }
+  .group-label:first-of-type { margin-top: 0; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 240px);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, 280px);
+    gap: 28px;
     justify-content: center;
   }
   .card {
@@ -229,10 +223,19 @@
   }
   footer a { color: var(--accent-warm); text-decoration: none; }
   footer a:hover { color: var(--accent); }
-  @media (max-width: 600px) {
+  @media (max-width: 960px) {
+    main { padding: 24px 24px 48px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 720px; margin: 0 auto; }
     h1 { font-size: 36px; letter-spacing: 4px; }
-    header.hero { padding: 48px 20px 24px; }
-    .tagline { font-size: 16px; }
+    header.hero { padding: 20px 24px 16px; }
+  }
+  @media (max-width: 600px) {
+    main { padding: 20px 16px 40px; }
+    .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
+    h1 { font-size: 30px; letter-spacing: 3px; }
+    header.hero { padding: 16px 16px 12px; }
+    .tagline { font-size: 14px; }
+    .btn { padding: 10px 18px; font-size: 11px; letter-spacing: 3px; }
   }
 </style>
 </head>
@@ -257,193 +260,168 @@
   </header>
 
   <main>
-      <div class="group-label">中式</div>
-      <div class="grid">
-        <a class="card" href="style01-new-chinese.html">
-          <div class="thumb"><img src="thumbnails/style01-new-chinese.png" alt="new-chinese" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">new-chinese</div>
-            <div class="desc">新中式 · 雅致</div>
-            <div class="culture">中式</div>
-          </div>
-        </a>
-        <a class="card" href="style04-red-gold.html">
-          <div class="thumb"><img src="thumbnails/style04-red-gold.png" alt="red-gold" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">red-gold</div>
-            <div class="desc">红金传统宴</div>
-            <div class="culture">中式</div>
-          </div>
-        </a>
-        <a class="card" href="style09-gugong.html">
-          <div class="thumb"><img src="thumbnails/style09-gugong.png" alt="gugong" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">gugong</div>
-            <div class="desc">故宫工笔</div>
-            <div class="culture">中式</div>
-          </div>
-        </a>
-        <a class="card" href="style13-ink-flower.html">
-          <div class="thumb"><img src="thumbnails/style13-ink-flower.png" alt="ink-flower" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">ink-flower</div>
-            <div class="desc">水墨花卉</div>
-            <div class="culture">中式</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">日式</div>
-      <div class="grid">
-        <a class="card" href="style11-wabi-sabi.html">
-          <div class="thumb"><img src="thumbnails/style11-wabi-sabi.png" alt="wabi-sabi" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">wabi-sabi</div>
-            <div class="desc">日式侘寂</div>
-            <div class="culture">日式</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">韩式</div>
-      <div class="grid">
-        <a class="card" href="style20-korean-hanbok.html">
-          <div class="thumb"><img src="thumbnails/style20-korean-hanbok.png" alt="korean-hanbok" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">korean-hanbok</div>
-            <div class="desc">韩式 hanbok</div>
-            <div class="culture">韩式</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">南亚</div>
-      <div class="grid">
-        <a class="card" href="style16-indian.html">
-          <div class="thumb"><img src="thumbnails/style16-indian.png" alt="indian" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">indian</div>
-            <div class="desc">印度 mandala</div>
-            <div class="culture">南亚</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">中东</div>
-      <div class="grid">
-        <a class="card" href="style17-arabic.html">
-          <div class="thumb"><img src="thumbnails/style17-arabic.png" alt="arabic" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">arabic</div>
-            <div class="desc">阿拉伯 arabesque</div>
-            <div class="culture">中东</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">拉美</div>
-      <div class="grid">
-        <a class="card" href="style18-latin.html">
-          <div class="thumb"><img src="thumbnails/style18-latin.png" alt="latin" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">latin</div>
-            <div class="desc">拉美民俗</div>
-            <div class="culture">拉美</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">欧式</div>
-      <div class="grid">
-        <a class="card" href="style05-vogue.html">
-          <div class="thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">vogue</div>
-            <div class="desc">时尚杂志</div>
-            <div class="culture">欧式</div>
-          </div>
-        </a>
-        <a class="card" href="style07-newspaper.html">
-          <div class="thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">newspaper</div>
-            <div class="desc">复古报纸</div>
-            <div class="culture">欧式</div>
-          </div>
-        </a>
-        <a class="card" href="style08-letter.html">
-          <div class="thumb"><img src="thumbnails/style08-letter.png" alt="letter" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">letter</div>
-            <div class="desc">手写信笺</div>
-            <div class="culture">欧式</div>
-          </div>
-        </a>
-        <a class="card" href="style12-art-deco.html">
-          <div class="thumb"><img src="thumbnails/style12-art-deco.png" alt="art-deco" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">art-deco</div>
-            <div class="desc">Gatsby 装饰艺术</div>
-            <div class="culture">欧式</div>
-          </div>
-        </a>
-        <a class="card" href="style19-french-provence.html">
-          <div class="thumb"><img src="thumbnails/style19-french-provence.png" alt="french-provence" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">french-provence</div>
-            <div class="desc">法式普罗旺斯</div>
-            <div class="culture">欧式</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">当代</div>
-      <div class="grid">
-        <a class="card" href="style02-modern-minimal.html">
-          <div class="thumb"><img src="thumbnails/style02-modern-minimal.png" alt="modern-minimal" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">modern-minimal</div>
-            <div class="desc">极简主义</div>
-            <div class="culture">当代</div>
-          </div>
-        </a>
-        <a class="card" href="style03-morandi.html">
-          <div class="thumb"><img src="thumbnails/style03-morandi.png" alt="morandi" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">morandi</div>
-            <div class="desc">柔和当代</div>
-            <div class="culture">当代</div>
-          </div>
-        </a>
-        <a class="card" href="style06-black-gold.html">
-          <div class="thumb"><img src="thumbnails/style06-black-gold.png" alt="black-gold" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">black-gold</div>
-            <div class="desc">黑金 monogram</div>
-            <div class="culture">当代</div>
-          </div>
-        </a>
-        <a class="card" href="style10-mediterranean.html">
-          <div class="thumb"><img src="thumbnails/style10-mediterranean.png" alt="mediterranean" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">mediterranean</div>
-            <div class="desc">地中海目的地</div>
-            <div class="culture">当代</div>
-          </div>
-        </a>
-      </div>
-      <div class="group-label">主题</div>
-      <div class="grid">
-        <a class="card" href="style14-retro-poster.html">
-          <div class="thumb"><img src="thumbnails/style14-retro-poster.png" alt="retro-poster" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">retro-poster</div>
-            <div class="desc">复古旅行海报</div>
-            <div class="culture">主题</div>
-          </div>
-        </a>
-        <a class="card" href="style15-vintage-stars.html">
-          <div class="thumb"><img src="thumbnails/style15-vintage-stars.png" alt="vintage-stars" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">vintage-stars</div>
-            <div class="desc">星空夜空</div>
-            <div class="culture">主题</div>
-          </div>
-        </a>
-      </div>
+    <div class="grid">
+      <a class="card" href="style01-new-chinese.html">
+        <div class="thumb"><img src="thumbnails/style01-new-chinese.png" alt="new-chinese" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">new-chinese</div>
+          <div class="desc">新中式 · 雅致</div>
+          <div class="culture">中式</div>
+        </div>
+      </a>
+      <a class="card" href="style02-modern-minimal.html">
+        <div class="thumb"><img src="thumbnails/style02-modern-minimal.png" alt="modern-minimal" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">modern-minimal</div>
+          <div class="desc">极简主义</div>
+          <div class="culture">当代</div>
+        </div>
+      </a>
+      <a class="card" href="style03-morandi.html">
+        <div class="thumb"><img src="thumbnails/style03-morandi.png" alt="morandi" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">morandi</div>
+          <div class="desc">柔和当代</div>
+          <div class="culture">当代</div>
+        </div>
+      </a>
+      <a class="card" href="style04-red-gold.html">
+        <div class="thumb"><img src="thumbnails/style04-red-gold.png" alt="red-gold" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">red-gold</div>
+          <div class="desc">红金传统宴</div>
+          <div class="culture">中式</div>
+        </div>
+      </a>
+      <a class="card" href="style05-vogue.html">
+        <div class="thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">vogue</div>
+          <div class="desc">时尚杂志</div>
+          <div class="culture">欧式</div>
+        </div>
+      </a>
+      <a class="card" href="style06-black-gold.html">
+        <div class="thumb"><img src="thumbnails/style06-black-gold.png" alt="black-gold" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">black-gold</div>
+          <div class="desc">黑金 monogram</div>
+          <div class="culture">当代</div>
+        </div>
+      </a>
+      <a class="card" href="style07-newspaper.html">
+        <div class="thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">newspaper</div>
+          <div class="desc">复古报纸</div>
+          <div class="culture">欧式</div>
+        </div>
+      </a>
+      <a class="card" href="style08-letter.html">
+        <div class="thumb"><img src="thumbnails/style08-letter.png" alt="letter" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">letter</div>
+          <div class="desc">手写信笺</div>
+          <div class="culture">欧式</div>
+        </div>
+      </a>
+      <a class="card" href="style09-gugong.html">
+        <div class="thumb"><img src="thumbnails/style09-gugong.png" alt="gugong" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">gugong</div>
+          <div class="desc">故宫工笔</div>
+          <div class="culture">中式</div>
+        </div>
+      </a>
+      <a class="card" href="style10-mediterranean.html">
+        <div class="thumb"><img src="thumbnails/style10-mediterranean.png" alt="mediterranean" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">mediterranean</div>
+          <div class="desc">地中海目的地</div>
+          <div class="culture">当代</div>
+        </div>
+      </a>
+      <a class="card" href="style11-wabi-sabi.html">
+        <div class="thumb"><img src="thumbnails/style11-wabi-sabi.png" alt="wabi-sabi" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">wabi-sabi</div>
+          <div class="desc">日式侘寂</div>
+          <div class="culture">日式</div>
+        </div>
+      </a>
+      <a class="card" href="style12-art-deco.html">
+        <div class="thumb"><img src="thumbnails/style12-art-deco.png" alt="art-deco" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">art-deco</div>
+          <div class="desc">Gatsby 装饰艺术</div>
+          <div class="culture">欧式</div>
+        </div>
+      </a>
+      <a class="card" href="style13-ink-flower.html">
+        <div class="thumb"><img src="thumbnails/style13-ink-flower.png" alt="ink-flower" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">ink-flower</div>
+          <div class="desc">水墨花卉</div>
+          <div class="culture">中式</div>
+        </div>
+      </a>
+      <a class="card" href="style14-retro-poster.html">
+        <div class="thumb"><img src="thumbnails/style14-retro-poster.png" alt="retro-poster" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">retro-poster</div>
+          <div class="desc">复古旅行海报</div>
+          <div class="culture">主题</div>
+        </div>
+      </a>
+      <a class="card" href="style15-vintage-stars.html">
+        <div class="thumb"><img src="thumbnails/style15-vintage-stars.png" alt="vintage-stars" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">vintage-stars</div>
+          <div class="desc">星空夜空</div>
+          <div class="culture">主题</div>
+        </div>
+      </a>
+      <a class="card" href="style16-indian.html">
+        <div class="thumb"><img src="thumbnails/style16-indian.png" alt="indian" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">indian</div>
+          <div class="desc">印度 mandala</div>
+          <div class="culture">南亚</div>
+        </div>
+      </a>
+      <a class="card" href="style17-arabic.html">
+        <div class="thumb"><img src="thumbnails/style17-arabic.png" alt="arabic" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">arabic</div>
+          <div class="desc">阿拉伯 arabesque</div>
+          <div class="culture">中东</div>
+        </div>
+      </a>
+      <a class="card" href="style18-latin.html">
+        <div class="thumb"><img src="thumbnails/style18-latin.png" alt="latin" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">latin</div>
+          <div class="desc">拉美民俗</div>
+          <div class="culture">拉美</div>
+        </div>
+      </a>
+      <a class="card" href="style19-french-provence.html">
+        <div class="thumb"><img src="thumbnails/style19-french-provence.png" alt="french-provence" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">french-provence</div>
+          <div class="desc">法式普罗旺斯</div>
+          <div class="culture">欧式</div>
+        </div>
+      </a>
+      <a class="card" href="style20-korean-hanbok.html">
+        <div class="thumb"><img src="thumbnails/style20-korean-hanbok.png" alt="korean-hanbok" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">korean-hanbok</div>
+          <div class="desc">韩式 hanbok</div>
+          <div class="culture">韩式</div>
+        </div>
+      </a>
+    </div>
   </main>
 
   <footer>

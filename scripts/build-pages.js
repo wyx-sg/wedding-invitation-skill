@@ -169,15 +169,15 @@ const GALLERY_CSS = `
   header.hero {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 64px 32px 32px;
+    padding: 28px 32px 16px;
     text-align: center;
   }
   h1 {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
-    font-size: 56px;
-    letter-spacing: 6px;
-    margin: 0 0 14px;
+    font-size: 40px;
+    letter-spacing: 5px;
+    margin: 0 0 8px;
     color: var(--accent);
     text-transform: uppercase;
   }
@@ -189,18 +189,18 @@ const GALLERY_CSS = `
   .tagline {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
-    font-size: 19px;
+    font-size: 16px;
     color: #a89878;
-    max-width: 680px;
-    margin: 0 auto 32px;
-    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto 16px;
+    line-height: 1.5;
     text-wrap: balance;
   }
   .actions {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     flex-wrap: wrap;
   }
   .btn {
@@ -218,34 +218,28 @@ const GALLERY_CSS = `
   .btn:hover { background: var(--accent); color: var(--bg); }
   .btn.primary { background: var(--accent); color: var(--bg); }
   .btn.primary:hover { background: var(--accent-warm); border-color: var(--accent-warm); }
-  .note {
-    max-width: 680px;
-    margin: 24px auto 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-style: italic;
-    text-wrap: balance;
-  }
+  .note { display: none; }
   main {
-    max-width: 1400px;
+    max-width: 1680px;
     margin: 0 auto;
-    padding: 32px 24px 72px;
+    padding: 32px 40px 64px;
   }
   .group-label {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 14px;
-    letter-spacing: 6px;
+    font-size: 13px;
+    letter-spacing: 5px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin: 32px 8px 16px;
+    margin: 16px 8px 10px;
     border-bottom: 1px solid var(--border-soft);
-    padding-bottom: 10px;
+    padding-bottom: 8px;
   }
+  .group-label:first-of-type { margin-top: 0; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 240px);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, 280px);
+    gap: 28px;
     justify-content: center;
   }
   .card {
@@ -297,154 +291,254 @@ const GALLERY_CSS = `
   }
   footer a { color: var(--accent-warm); text-decoration: none; }
   footer a:hover { color: var(--accent); }
-  @media (max-width: 600px) {
+  @media (max-width: 960px) {
+    main { padding: 24px 24px 48px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 720px; margin: 0 auto; }
     h1 { font-size: 36px; letter-spacing: 4px; }
-    header.hero { padding: 48px 20px 24px; }
-    .tagline { font-size: 16px; }
+    header.hero { padding: 20px 24px 16px; }
+  }
+  @media (max-width: 600px) {
+    main { padding: 20px 16px 40px; }
+    .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
+    h1 { font-size: 30px; letter-spacing: 3px; }
+    header.hero { padding: 16px 16px 12px; }
+    .tagline { font-size: 14px; }
+    .btn { padding: 10px 18px; font-size: 11px; letter-spacing: 3px; }
   }
 `;
 
 const DETAIL_CSS = `
   ${SHARED_CSS}
-  main {
-    max-width: 880px;
+
+  /* Natural page scroll. Card stays vertically centered at any zoom; if it
+     exceeds the viewport, the page scrolls. Nothing is ever pinned to top. */
+  html, body { height: auto; }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at top, #110d08 0%, var(--bg) 60%);
+  }
+  .nav-bar { flex: 0 0 auto; }
+
+  main.detail {
+    flex: 0 0 auto;
+    min-height: calc(100vh - 56px);
+    width: 100%;
     margin: 0 auto;
-    padding: 56px 32px 64px;
+    padding: 24px 40px 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 56px;
+    box-sizing: border-box;
   }
-  .style-header {
-    text-align: center;
-    margin-bottom: 36px;
+
+  .preview {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    position: relative;
   }
-  .style-culture {
-    display: inline-block;
-    padding: 5px 14px;
-    font-size: 10px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent-warm);
+  /* Zoom controls overlay (PC only) — fade in on hover */
+  .zoom-controls {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    background: rgba(14, 11, 7, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 999px;
-    margin-bottom: 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .preview:hover .zoom-controls,
+  .zoom-controls:hover,
+  .zoom-controls:focus-within { opacity: 1; }
+  .zoom-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+  }
+  .zoom-btn:hover { background: rgba(212, 184, 150, 0.12); color: #f0d8b0; }
+  .zoom-btn:active { background: rgba(212, 184, 150, 0.2); }
+  .zoom-btn.reset { font-size: 14px; }
+  .zoom-level {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    min-width: 42px;
+    justify-content: center;
+  }
+  @media (max-width: 960px) {
+    .zoom-controls { display: none; }
+  }
+  /* The card frame: shadow + thin gold hairline. No outer box. */
+  .preview .frame {
+    width: calc(var(--tpl-w) * var(--iframe-scale));
+    height: calc(var(--tpl-h) * var(--iframe-scale));
+    overflow: hidden;
+    border-radius: 3px;
+    background: #fff;
+    box-shadow:
+      0 40px 90px -20px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(212, 184, 150, 0.08);
+    position: relative;
+  }
+  .preview .frame iframe {
+    width: var(--tpl-w);
+    height: var(--tpl-h);
+    transform: scale(var(--iframe-scale));
+    transform-origin: top left;
+    border: 0;
+    display: block;
+  }
+
+  /* Right column: fixed-width sidebar, content can flow naturally. */
+  .detail-info {
+    flex: 0 0 480px;
+    max-width: 480px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* Header block — magazine masthead style. */
+  .style-header { line-height: 1; }
+  .style-culture {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
   }
   .style-name {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
-    font-size: 48px;
-    letter-spacing: 4px;
+    font-size: 52px;
+    letter-spacing: 1px;
     color: var(--accent);
-    margin-bottom: 10px;
     text-transform: lowercase;
+    line-height: 1;
+    margin: 0 0 10px;
   }
   .style-short {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
     font-size: 17px;
-    color: #a89878;
+    color: #b9a47f;
+    line-height: 1.4;
   }
-  .preview {
-    display: flex;
-    justify-content: center;
-    margin: 32px 0 48px;
-    padding: 32px;
-    background: linear-gradient(180deg, #1a1410 0%, #110c08 100%);
-    border-radius: 8px;
-    border: 1px solid var(--border-soft);
-  }
-  /* Fixed-size wrapper that clips the iframe so it can never expand
-     beyond the card's logical 420 px width regardless of inner CSS. */
-  .preview .frame {
-    width: 420px;
-    flex: 0 0 420px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    background: white;
-    display: block;
-    border-radius: 2px;
-  }
-  .preview .frame iframe {
-    width: 420px !important;
-    max-width: 420px !important;
-    display: block;
-    border: 0;
-    margin: 0;
-  }
+
+  /* Long description — no box, just type. */
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 17px;
-    line-height: 1.8;
-    color: var(--text);
-    max-width: 640px;
-    margin: 0 auto 40px;
-    text-align: center;
-    font-style: italic;
-    text-wrap: balance;
-  }
-  .inspiration {
-    margin: 40px 0;
-    padding: 28px 32px;
-    background: var(--bg-card);
-    border-left: 3px solid var(--accent-warm);
-    border-radius: 4px;
-  }
-  .inspiration .insp-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-  .inspiration .insp-text {
-    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.75;
     color: var(--text);
     font-style: italic;
     text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin: 0;
+    max-width: 100%;
   }
-  .specs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
-    margin: 40px 0 48px;
-    padding: 28px;
-    background: var(--bg-card);
-    border-radius: 6px;
-    border: 1px solid var(--border-soft);
+
+  /* Inspiration — pulled quote with decorative mark. */
+  .inspiration {
+    position: relative;
+    padding: 0 0 0 28px;
+    border-left: 1px solid var(--accent-warm);
+    max-width: 100%;
   }
-  .spec-label {
-    font-size: 10px;
+  .inspiration .insp-label {
+    font-size: 9.5px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+  }
+  .inspiration .insp-text {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text);
+    font-style: italic;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  /* Specs — clean key/value rows, no card box. */
+  .specs {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    column-gap: 24px;
+    row-gap: 14px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    max-width: 100%;
+  }
+  .spec-label {
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
   .spec-value {
     font-size: 13px;
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
-  .palette-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
+  .palette-row { display: flex; gap: 8px; align-items: center; }
   .swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    cursor: default;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 184, 150, 0.18);
     position: relative;
+    cursor: default;
   }
   .swatch:hover::after {
     content: attr(data-color);
     position: absolute;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg-elevated);
     color: var(--accent);
-    padding: 4px 8px;
+    padding: 5px 9px;
     font-size: 10px;
     letter-spacing: 1px;
     border-radius: 3px;
@@ -452,69 +546,105 @@ const DETAIL_CSS = `
     border: 1px solid var(--border);
   }
   .fonts-row, .motifs-row {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
   }
+
+  /* Pager — minimal text + thumbnail, no box. */
   .pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 56px;
+    gap: 24px;
+    max-width: 100%;
   }
   .pager .step {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 6px;
+    gap: 14px;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.2s, transform 0.2s;
+    padding: 6px 0;
+    transition: opacity 0.2s, transform 0.2s;
+    min-width: 0;
   }
-  .pager .step:hover { border-color: var(--accent-warm); transform: translateY(-2px); }
+  .pager .step:hover { transform: translateX(2px); }
+  .pager .step.next:hover { transform: translateX(-2px); }
   .pager .step.next { flex-direction: row-reverse; text-align: right; }
   .pager .step-thumb {
-    width: 60px;
-    height: 80px;
+    width: 40px;
+    height: 54px;
     flex-shrink: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
     background: #000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   .pager .step-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .pager .step-info { flex: 1; min-width: 0; }
+  .pager .step-info { flex: 1; min-width: 0; overflow: hidden; }
   .pager .step-label {
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .pager .step-name {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 18px;
+    font-size: 15px;
     color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
   }
-  footer {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 48px 32px 72px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 13px;
-    border-top: 1px solid var(--border-soft);
+  .pager .step:hover .step-name { color: #f0d8b0; }
+
+  /* Tablet: still side-by-side but tighter */
+  @media (max-width: 1280px) {
+    main.detail { padding: 24px 32px; gap: 40px; }
+    .style-name { font-size: 44px; }
   }
-  footer a { color: var(--accent-warm); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
+
+  /* Mobile: stack vertically. */
+  @media (max-width: 960px) {
+    body { background: var(--bg); }
+    main.detail {
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px 48px;
+      gap: 28px;
+      min-height: auto;
+    }
+    .preview {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    .detail-info {
+      flex: 0 0 auto;
+      max-width: 560px;
+      width: 100%;
+      gap: 20px;
+    }
+    .style-long, .inspiration, .specs, .pager { max-width: 100%; }
+    .style-name { font-size: 36px; letter-spacing: 1px; }
+    .nav-bar .inner { padding: 14px 16px; gap: 12px; }
+  }
   @media (max-width: 600px) {
-    main { padding: 32px 16px 48px; }
-    .preview { padding: 16px; }
-    .style-name { font-size: 36px; letter-spacing: 2px; }
-    .pager { grid-template-columns: 1fr; }
+    main.detail { padding: 16px 12px 40px; gap: 24px; }
+    .style-name { font-size: 28px; letter-spacing: 1px; }
+    .style-culture { font-size: 9.5px; letter-spacing: 4px; margin-bottom: 12px; }
+    .pager { grid-template-columns: 1fr; gap: 14px; }
     .pager .step.next { flex-direction: row; text-align: left; }
+    .specs { grid-template-columns: 80px 1fr; column-gap: 16px; row-gap: 10px; padding: 14px 0; }
+    .nav-brand { font-size: 14px; letter-spacing: 2px; }
+    .nav-back { font-size: 11px; letter-spacing: 2px; }
+    .lang-switch { font-size: 11px; letter-spacing: 1px; }
+  }
+  /* Very narrow phones: hide brand to give back-link and lang-switch room */
+  @media (max-width: 380px) {
+    .nav-brand { display: none; }
   }
 `;
 
@@ -562,39 +692,21 @@ function indexHtml(templateIds, lang) {
   const otherLabel = otherLang === 'en' ? 'English' : '简体中文';
   const langLabel = lang === 'en' ? 'English' : '简体中文';
 
-  // Group templates by culture
-  const grouped = new Map();
-  for (const id of templateIds) {
-    const meta = STYLE_META[id];
-    const cult = meta?.culture[lang] || 'Other';
-    if (!grouped.has(cult)) grouped.set(cult, []);
-    grouped.get(cult).push(id);
-  }
-
-  // Stable group order
-  const groupOrder = lang === 'en'
-    ? ['Chinese', 'Japanese', 'Korean', 'South Asian', 'Middle Eastern', 'Latin', 'European', 'Contemporary', 'Themed']
-    : ['中式', '日式', '韩式', '南亚', '中东', '拉美', '欧式', '当代', '主题'];
-
-  const sections = groupOrder
-    .filter(g => grouped.has(g))
-    .map(g => {
-      const cards = grouped.get(g).map(id => {
-        const meta = STYLE_META[id] || {};
-        return `        <a class="card" href="${id}.html">
-          <div class="thumb"><img src="thumbnails/${id}.png" alt="${meta.name || id}" loading="lazy"></div>
-          <div class="meta">
-            <div class="name">${meta.name || id}</div>
-            <div class="desc">${meta.short?.[lang] || ''}</div>
-            <div class="culture">${meta.culture?.[lang] || ''}</div>
-          </div>
-        </a>`;
-      }).join('\n');
-      return `      <div class="group-label">${g}</div>
-      <div class="grid">
+  // Flat tile — no grouping
+  const cards = templateIds.map(id => {
+    const meta = STYLE_META[id] || {};
+    return `      <a class="card" href="${id}.html">
+        <div class="thumb"><img src="thumbnails/${id}.png" alt="${meta.name || id}" loading="lazy"></div>
+        <div class="meta">
+          <div class="name">${meta.name || id}</div>
+          <div class="desc">${meta.short?.[lang] || ''}</div>
+          <div class="culture">${meta.culture?.[lang] || ''}</div>
+        </div>
+      </a>`;
+  }).join('\n');
+  const sections = `    <div class="grid">
 ${cards}
-      </div>`;
-    }).join('\n');
+    </div>`;
 
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
@@ -647,8 +759,8 @@ function detailHtml(templateId, prevId, nextId, height) {
   ).join('');
   const fonts = (meta.fonts || []).join(' · ');
 
-  // Localized fields embedded via data attrs (JS toggle picks the right one)
-  const t = (en, zh) => `<span data-i18n data-en="${en.replace(/"/g, '&quot;')}" data-zh="${zh.replace(/"/g, '&quot;')}">${en}</span>`;
+  // Iframe scale handled by CSS variable --iframe-scale. The .frame
+  // wrapper computes its size via calc() so it always matches.
 
   const prevMeta = STYLE_META[prevId] || {};
   const nextMeta = STYLE_META[nextId] || {};
@@ -661,6 +773,43 @@ function detailHtml(templateId, prevId, nextId, height) {
   <title>${meta.name} — Wedding Invitation Skill</title>
   <meta name="description" content="${meta.long?.en || ''}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
+  <style>
+    :root {
+      --tpl-w: 420px;
+      --tpl-h: ${height}px;
+      /* Scale is computed by JS on load + resize (CSS calc with mixed units
+         had unreliable resolution across browsers). Fallback = native size. */
+      --iframe-scale-auto: 1;
+      --iframe-scale-default: 1.32;
+      --iframe-scale: var(--iframe-scale-override, var(--iframe-scale-default));
+    }
+  </style>
+  <script>
+    /* Compute scale BEFORE first paint to avoid a flash at the fallback size. */
+    (function () {
+      const TPL_H = ${height};
+      const isMobile = matchMedia('(max-width: 960px)').matches;
+      function compute() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let auto, def;
+        if (isMobile || matchMedia('(max-width: 960px)').matches) {
+          auto = Math.min(1, (vw - 48) / 420);
+          def = auto;
+        } else {
+          const byW = (vw - 616) / 420;
+          const byH = (vh - 108) / TPL_H;
+          auto = Math.max(0.9, Math.min(byW, byH, 2.5));
+          def = auto * 0.87;
+        }
+        const root = document.documentElement;
+        root.style.setProperty('--iframe-scale-auto', String(auto));
+        root.style.setProperty('--iframe-scale-default', String(def));
+      }
+      compute();
+      window.addEventListener('resize', compute);
+    })();
+  </script>
   <style>${DETAIL_CSS}</style>
 </head>
 <body>
@@ -679,71 +828,68 @@ function detailHtml(templateId, prevId, nextId, height) {
     </div>
   </nav>
 
-  <main>
-    <div class="style-header">
-      <div class="style-culture" data-i18n data-en="${meta.culture?.en || ''}" data-zh="${meta.culture?.zh || ''}">${meta.culture?.en || ''}</div>
-      <h1 class="style-name">${meta.name}</h1>
-      <div class="style-short" data-i18n data-en="${meta.short?.en || ''}" data-zh="${meta.short?.zh || ''}">${meta.short?.en || ''}</div>
-    </div>
-
+  <main class="detail">
     <div class="preview">
-      <div class="frame" style="height: ${height}px;">
-        <iframe src="invitations/${templateId}.html" width="420" height="${height}" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
+      <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+        <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
+        <span class="zoom-level" id="zoom-level">100%</span>
+        <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
+        <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
+      </div>
+      <div class="frame">
+        <iframe src="invitations/${templateId}.html" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
       </div>
     </div>
 
-    <p class="style-long" data-i18n data-en="${(meta.long?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.long?.zh || '').replace(/"/g, '&quot;')}">${meta.long?.en || ''}</p>
+    <div class="detail-info">
+      <div class="style-header">
+        <div class="style-culture" data-i18n data-en="${meta.culture?.en || ''}" data-zh="${meta.culture?.zh || ''}">${meta.culture?.en || ''}</div>
+        <h1 class="style-name">${meta.name}</h1>
+        <div class="style-short" data-i18n data-en="${meta.short?.en || ''}" data-zh="${meta.short?.zh || ''}">${meta.short?.en || ''}</div>
+      </div>
 
-    <div class="inspiration">
-      <div class="insp-label" data-i18n data-en="${COPY.en.inspirationLabel}" data-zh="${COPY.zh.inspirationLabel}">${COPY.en.inspirationLabel}</div>
-      <p class="insp-text" data-i18n data-en="${(meta.inspiration?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.inspiration?.zh || '').replace(/"/g, '&quot;')}">${meta.inspiration?.en || ''}</p>
-    </div>
+      <p class="style-long" data-i18n data-en="${(meta.long?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.long?.zh || '').replace(/"/g, '&quot;')}">${meta.long?.en || ''}</p>
 
-    <div class="specs">
-      <div>
+      <div class="inspiration">
+        <div class="insp-label" data-i18n data-en="${COPY.en.inspirationLabel}" data-zh="${COPY.zh.inspirationLabel}">${COPY.en.inspirationLabel}</div>
+        <p class="insp-text" data-i18n data-en="${(meta.inspiration?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.inspiration?.zh || '').replace(/"/g, '&quot;')}">${meta.inspiration?.en || ''}</p>
+      </div>
+
+      <div class="specs">
         <div class="spec-label" data-i18n data-en="${COPY.en.paletteLabel}" data-zh="${COPY.zh.paletteLabel}">${COPY.en.paletteLabel}</div>
         <div class="spec-value palette-row">${paletteSwatches}</div>
-      </div>
-      <div>
         <div class="spec-label" data-i18n data-en="${COPY.en.fontsLabel}" data-zh="${COPY.zh.fontsLabel}">${COPY.en.fontsLabel}</div>
         <div class="spec-value fonts-row">${fonts}</div>
-      </div>
-      <div>
         <div class="spec-label" data-i18n data-en="${COPY.en.motifsLabel}" data-zh="${COPY.zh.motifsLabel}">${COPY.en.motifsLabel}</div>
         <div class="spec-value motifs-row" data-i18n data-en="${(meta.motifs?.en || '').replace(/"/g, '&quot;')}" data-zh="${(meta.motifs?.zh || '').replace(/"/g, '&quot;')}">${meta.motifs?.en || ''}</div>
       </div>
+
+      <nav class="pager">
+        <a class="step prev" href="${prevId}.html">
+          <div class="step-thumb"><img src="thumbnails/${prevId}.png" alt="${prevMeta.name || ''}" loading="lazy"></div>
+          <div class="step-info">
+            <div class="step-label" data-i18n data-en="${COPY.en.prevLabel}" data-zh="${COPY.zh.prevLabel}">${COPY.en.prevLabel}</div>
+            <div class="step-name">${prevMeta.name || ''}</div>
+          </div>
+        </a>
+        <a class="step next" href="${nextId}.html">
+          <div class="step-thumb"><img src="thumbnails/${nextId}.png" alt="${nextMeta.name || ''}" loading="lazy"></div>
+          <div class="step-info">
+            <div class="step-label" data-i18n data-en="${COPY.en.nextLabel}" data-zh="${COPY.zh.nextLabel}">${COPY.en.nextLabel}</div>
+            <div class="step-name">${nextMeta.name || ''}</div>
+          </div>
+        </a>
+      </nav>
     </div>
-
-    <nav class="pager">
-      <a class="step prev" href="${prevId}.html">
-        <div class="step-thumb"><img src="thumbnails/${prevId}.png" alt="${prevMeta.name || ''}" loading="lazy"></div>
-        <div class="step-info">
-          <div class="step-label" data-i18n data-en="${COPY.en.prevLabel}" data-zh="${COPY.zh.prevLabel}">${COPY.en.prevLabel}</div>
-          <div class="step-name">${prevMeta.name || ''}</div>
-        </div>
-      </a>
-      <a class="step next" href="${nextId}.html">
-        <div class="step-thumb"><img src="thumbnails/${nextId}.png" alt="${nextMeta.name || ''}" loading="lazy"></div>
-        <div class="step-info">
-          <div class="step-label" data-i18n data-en="${COPY.en.nextLabel}" data-zh="${COPY.zh.nextLabel}">${COPY.en.nextLabel}</div>
-          <div class="step-name">${nextMeta.name || ''}</div>
-        </div>
-      </a>
-    </nav>
   </main>
-
-  <footer>
-    <span data-i18n data-en="${COPY.en.footerLead}" data-zh="${COPY.zh.footerLead}">${COPY.en.footerLead}</span>
-    <a href="https://github.com/wyx-sg/wedding-invitation-skill"><span data-i18n data-en="${COPY.en.footerLink}" data-zh="${COPY.zh.footerLink}">${COPY.en.footerLink}</span></a>
-    <span data-i18n data-en="${COPY.en.footerTail}" data-zh="${COPY.zh.footerTail}">${COPY.en.footerTail}</span>
-  </footer>
 
   <script>
     (function () {
+      // ----- Language toggle (persistent across pages) -----
       const saved = localStorage.getItem('wis-lang');
       const lang = saved === 'zh' ? 'zh' : 'en';
 
-      function apply(lang) {
+      function applyLang(lang) {
         document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
         document.querySelectorAll('[data-i18n]').forEach(el => {
           const v = el.getAttribute('data-' + lang);
@@ -752,23 +898,77 @@ function detailHtml(templateId, prevId, nextId, height) {
         document.querySelectorAll('.lang-switch button').forEach(b => {
           b.classList.toggle('current', b.dataset.setLang === lang);
         });
-        // Back link goes to the right gallery
         const backHref = lang === 'zh' ? 'index.zh.html' : 'index.html';
         const back = document.getElementById('back-link');
         const brand = document.getElementById('brand-link');
         if (back) back.setAttribute('href', backHref);
         if (brand) brand.setAttribute('href', backHref);
       }
-
       document.querySelectorAll('.lang-switch button').forEach(b => {
         b.addEventListener('click', () => {
           const l = b.dataset.setLang;
           localStorage.setItem('wis-lang', l);
-          apply(l);
+          applyLang(l);
+        });
+      });
+      applyLang(lang);
+
+      // ----- Zoom controls -----
+      const ZOOM_KEY = 'wis-zoom';
+      const root = document.documentElement;
+      const levelEl = document.getElementById('zoom-level');
+
+      function currentAuto() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale-auto').trim();
+        return parseFloat(v) || 1;
+      }
+      function currentDefault() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale-default').trim();
+        return parseFloat(v) || 1;
+      }
+      function currentScale() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale').trim();
+        return parseFloat(v) || 1;
+      }
+      /* % is relative to the default — so default shows 100%, zoom in shows >100%. */
+      function fmtPct(s) { return Math.round((s / currentDefault()) * 100) + '%'; }
+
+      function applyZoom(level) {
+        if (level === null) {
+          root.style.removeProperty('--iframe-scale-override');
+          sessionStorage.removeItem(ZOOM_KEY);
+        } else {
+          level = Math.max(0.4, Math.min(level, 4.0));
+          root.style.setProperty('--iframe-scale-override', String(level));
+          sessionStorage.setItem(ZOOM_KEY, String(level));
+        }
+        if (levelEl) levelEl.textContent = fmtPct(currentScale());
+      }
+
+      document.querySelectorAll('.zoom-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          const op = b.dataset.zoom;
+          if (op === 'reset') { applyZoom(null); return; }
+          const cur = currentScale();
+          applyZoom(op === 'in' ? cur * 1.15 : cur * 0.87);
         });
       });
 
-      apply(lang);
+      // Keyboard shortcuts: +/=/- and 0 for reset
+      document.addEventListener('keydown', e => {
+        if (e.target.matches('input, textarea')) return;
+        if (e.key === '+' || e.key === '=') { applyZoom(currentScale() * 1.15); e.preventDefault(); }
+        else if (e.key === '-' || e.key === '_') { applyZoom(currentScale() * 0.87); e.preventDefault(); }
+        else if (e.key === '0') { applyZoom(null); e.preventDefault(); }
+      });
+
+      // Restore session zoom (per-tab); update level display on resize
+      const restored = parseFloat(sessionStorage.getItem(ZOOM_KEY));
+      if (restored && !isNaN(restored)) applyZoom(restored);
+      else if (levelEl) levelEl.textContent = '100%';
+      window.addEventListener('resize', () => {
+        if (levelEl) levelEl.textContent = fmtPct(currentScale());
+      });
     })();
   </script>
 </body>

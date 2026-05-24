@@ -7,6 +7,43 @@
   <meta name="description" content="Deep black, gold rim photo frame, italic monogram of the couple's initials. Formal black-tie wedding energy.">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
   <style>
+    :root {
+      --tpl-w: 420px;
+      --tpl-h: 560px;
+      /* Scale is computed by JS on load + resize (CSS calc with mixed units
+         had unreliable resolution across browsers). Fallback = native size. */
+      --iframe-scale-auto: 1;
+      --iframe-scale-default: 1.32;
+      --iframe-scale: var(--iframe-scale-override, var(--iframe-scale-default));
+    }
+  </style>
+  <script>
+    /* Compute scale BEFORE first paint to avoid a flash at the fallback size. */
+    (function () {
+      const TPL_H = 560;
+      const isMobile = matchMedia('(max-width: 960px)').matches;
+      function compute() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let auto, def;
+        if (isMobile || matchMedia('(max-width: 960px)').matches) {
+          auto = Math.min(1, (vw - 48) / 420);
+          def = auto;
+        } else {
+          const byW = (vw - 616) / 420;
+          const byH = (vh - 108) / TPL_H;
+          auto = Math.max(0.9, Math.min(byW, byH, 2.5));
+          def = auto * 0.87;
+        }
+        const root = document.documentElement;
+        root.style.setProperty('--iframe-scale-auto', String(auto));
+        root.style.setProperty('--iframe-scale-default', String(def));
+      }
+      compute();
+      window.addEventListener('resize', compute);
+    })();
+  </script>
+  <style>
   
   :root {
     --bg: #0a0907;
@@ -98,145 +135,236 @@
     .nav-back { font-size: 11px; letter-spacing: 2px; }
   }
 
-  main {
-    max-width: 880px;
+
+  /* Natural page scroll. Card stays vertically centered at any zoom; if it
+     exceeds the viewport, the page scrolls. Nothing is ever pinned to top. */
+  html, body { height: auto; }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at top, #110d08 0%, var(--bg) 60%);
+  }
+  .nav-bar { flex: 0 0 auto; }
+
+  main.detail {
+    flex: 0 0 auto;
+    min-height: calc(100vh - 56px);
+    width: 100%;
     margin: 0 auto;
-    padding: 56px 32px 64px;
+    padding: 24px 40px 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 56px;
+    box-sizing: border-box;
   }
-  .style-header {
-    text-align: center;
-    margin-bottom: 36px;
+
+  .preview {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    position: relative;
   }
-  .style-culture {
-    display: inline-block;
-    padding: 5px 14px;
-    font-size: 10px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent-warm);
+  /* Zoom controls overlay (PC only) — fade in on hover */
+  .zoom-controls {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    background: rgba(14, 11, 7, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 999px;
-    margin-bottom: 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .preview:hover .zoom-controls,
+  .zoom-controls:hover,
+  .zoom-controls:focus-within { opacity: 1; }
+  .zoom-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+  }
+  .zoom-btn:hover { background: rgba(212, 184, 150, 0.12); color: #f0d8b0; }
+  .zoom-btn:active { background: rgba(212, 184, 150, 0.2); }
+  .zoom-btn.reset { font-size: 14px; }
+  .zoom-level {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    min-width: 42px;
+    justify-content: center;
+  }
+  @media (max-width: 960px) {
+    .zoom-controls { display: none; }
+  }
+  /* The card frame: shadow + thin gold hairline. No outer box. */
+  .preview .frame {
+    width: calc(var(--tpl-w) * var(--iframe-scale));
+    height: calc(var(--tpl-h) * var(--iframe-scale));
+    overflow: hidden;
+    border-radius: 3px;
+    background: #fff;
+    box-shadow:
+      0 40px 90px -20px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(212, 184, 150, 0.08);
+    position: relative;
+  }
+  .preview .frame iframe {
+    width: var(--tpl-w);
+    height: var(--tpl-h);
+    transform: scale(var(--iframe-scale));
+    transform-origin: top left;
+    border: 0;
+    display: block;
+  }
+
+  /* Right column: fixed-width sidebar, content can flow naturally. */
+  .detail-info {
+    flex: 0 0 480px;
+    max-width: 480px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* Header block — magazine masthead style. */
+  .style-header { line-height: 1; }
+  .style-culture {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
   }
   .style-name {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
-    font-size: 48px;
-    letter-spacing: 4px;
+    font-size: 52px;
+    letter-spacing: 1px;
     color: var(--accent);
-    margin-bottom: 10px;
     text-transform: lowercase;
+    line-height: 1;
+    margin: 0 0 10px;
   }
   .style-short {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
     font-size: 17px;
-    color: #a89878;
+    color: #b9a47f;
+    line-height: 1.4;
   }
-  .preview {
-    display: flex;
-    justify-content: center;
-    margin: 32px 0 48px;
-    padding: 32px;
-    background: linear-gradient(180deg, #1a1410 0%, #110c08 100%);
-    border-radius: 8px;
-    border: 1px solid var(--border-soft);
-  }
-  /* Fixed-size wrapper that clips the iframe so it can never expand
-     beyond the card's logical 420 px width regardless of inner CSS. */
-  .preview .frame {
-    width: 420px;
-    flex: 0 0 420px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    background: white;
-    display: block;
-    border-radius: 2px;
-  }
-  .preview .frame iframe {
-    width: 420px !important;
-    max-width: 420px !important;
-    display: block;
-    border: 0;
-    margin: 0;
-  }
+
+  /* Long description — no box, just type. */
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 17px;
-    line-height: 1.8;
-    color: var(--text);
-    max-width: 640px;
-    margin: 0 auto 40px;
-    text-align: center;
-    font-style: italic;
-    text-wrap: balance;
-  }
-  .inspiration {
-    margin: 40px 0;
-    padding: 28px 32px;
-    background: var(--bg-card);
-    border-left: 3px solid var(--accent-warm);
-    border-radius: 4px;
-  }
-  .inspiration .insp-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-  .inspiration .insp-text {
-    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.75;
     color: var(--text);
     font-style: italic;
     text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin: 0;
+    max-width: 100%;
   }
-  .specs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
-    margin: 40px 0 48px;
-    padding: 28px;
-    background: var(--bg-card);
-    border-radius: 6px;
-    border: 1px solid var(--border-soft);
+
+  /* Inspiration — pulled quote with decorative mark. */
+  .inspiration {
+    position: relative;
+    padding: 0 0 0 28px;
+    border-left: 1px solid var(--accent-warm);
+    max-width: 100%;
   }
-  .spec-label {
-    font-size: 10px;
+  .inspiration .insp-label {
+    font-size: 9.5px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+  }
+  .inspiration .insp-text {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text);
+    font-style: italic;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  /* Specs — clean key/value rows, no card box. */
+  .specs {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    column-gap: 24px;
+    row-gap: 14px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    max-width: 100%;
+  }
+  .spec-label {
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
   .spec-value {
     font-size: 13px;
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
-  .palette-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
+  .palette-row { display: flex; gap: 8px; align-items: center; }
   .swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    cursor: default;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 184, 150, 0.18);
     position: relative;
+    cursor: default;
   }
   .swatch:hover::after {
     content: attr(data-color);
     position: absolute;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg-elevated);
     color: var(--accent);
-    padding: 4px 8px;
+    padding: 5px 9px;
     font-size: 10px;
     letter-spacing: 1px;
     border-radius: 3px;
@@ -244,69 +372,105 @@
     border: 1px solid var(--border);
   }
   .fonts-row, .motifs-row {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
   }
+
+  /* Pager — minimal text + thumbnail, no box. */
   .pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 56px;
+    gap: 24px;
+    max-width: 100%;
   }
   .pager .step {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 6px;
+    gap: 14px;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.2s, transform 0.2s;
+    padding: 6px 0;
+    transition: opacity 0.2s, transform 0.2s;
+    min-width: 0;
   }
-  .pager .step:hover { border-color: var(--accent-warm); transform: translateY(-2px); }
+  .pager .step:hover { transform: translateX(2px); }
+  .pager .step.next:hover { transform: translateX(-2px); }
   .pager .step.next { flex-direction: row-reverse; text-align: right; }
   .pager .step-thumb {
-    width: 60px;
-    height: 80px;
+    width: 40px;
+    height: 54px;
     flex-shrink: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
     background: #000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   .pager .step-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .pager .step-info { flex: 1; min-width: 0; }
+  .pager .step-info { flex: 1; min-width: 0; overflow: hidden; }
   .pager .step-label {
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .pager .step-name {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 18px;
+    font-size: 15px;
     color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
   }
-  footer {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 48px 32px 72px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 13px;
-    border-top: 1px solid var(--border-soft);
+  .pager .step:hover .step-name { color: #f0d8b0; }
+
+  /* Tablet: still side-by-side but tighter */
+  @media (max-width: 1280px) {
+    main.detail { padding: 24px 32px; gap: 40px; }
+    .style-name { font-size: 44px; }
   }
-  footer a { color: var(--accent-warm); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
+
+  /* Mobile: stack vertically. */
+  @media (max-width: 960px) {
+    body { background: var(--bg); }
+    main.detail {
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px 48px;
+      gap: 28px;
+      min-height: auto;
+    }
+    .preview {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    .detail-info {
+      flex: 0 0 auto;
+      max-width: 560px;
+      width: 100%;
+      gap: 20px;
+    }
+    .style-long, .inspiration, .specs, .pager { max-width: 100%; }
+    .style-name { font-size: 36px; letter-spacing: 1px; }
+    .nav-bar .inner { padding: 14px 16px; gap: 12px; }
+  }
   @media (max-width: 600px) {
-    main { padding: 32px 16px 48px; }
-    .preview { padding: 16px; }
-    .style-name { font-size: 36px; letter-spacing: 2px; }
-    .pager { grid-template-columns: 1fr; }
+    main.detail { padding: 16px 12px 40px; gap: 24px; }
+    .style-name { font-size: 28px; letter-spacing: 1px; }
+    .style-culture { font-size: 9.5px; letter-spacing: 4px; margin-bottom: 12px; }
+    .pager { grid-template-columns: 1fr; gap: 14px; }
     .pager .step.next { flex-direction: row; text-align: left; }
+    .specs { grid-template-columns: 80px 1fr; column-gap: 16px; row-gap: 10px; padding: 14px 0; }
+    .nav-brand { font-size: 14px; letter-spacing: 2px; }
+    .nav-back { font-size: 11px; letter-spacing: 2px; }
+    .lang-switch { font-size: 11px; letter-spacing: 1px; }
+  }
+  /* Very narrow phones: hide brand to give back-link and lang-switch room */
+  @media (max-width: 380px) {
+    .nav-brand { display: none; }
   }
 </style>
 </head>
@@ -326,71 +490,68 @@
     </div>
   </nav>
 
-  <main>
-    <div class="style-header">
-      <div class="style-culture" data-i18n data-en="Contemporary" data-zh="当代">Contemporary</div>
-      <h1 class="style-name">black-gold</h1>
-      <div class="style-short" data-i18n data-en="monogram / formal" data-zh="黑金 monogram">monogram / formal</div>
-    </div>
-
+  <main class="detail">
     <div class="preview">
-      <div class="frame" style="height: 560px;">
-        <iframe src="invitations/style06-black-gold.html" width="420" height="560" frameborder="0" scrolling="no" loading="lazy" title="black-gold invitation preview"></iframe>
+      <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+        <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
+        <span class="zoom-level" id="zoom-level">100%</span>
+        <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
+        <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
+      </div>
+      <div class="frame">
+        <iframe src="invitations/style06-black-gold.html" frameborder="0" scrolling="no" loading="lazy" title="black-gold invitation preview"></iframe>
       </div>
     </div>
 
-    <p class="style-long" data-i18n data-en="Deep black, gold rim photo frame, italic monogram of the couple's initials. Formal black-tie wedding energy." data-zh="深黑底、金边照片框、新人首字母 monogram。正式 black-tie 婚礼感。">Deep black, gold rim photo frame, italic monogram of the couple's initials. Formal black-tie wedding energy.</p>
+    <div class="detail-info">
+      <div class="style-header">
+        <div class="style-culture" data-i18n data-en="Contemporary" data-zh="当代">Contemporary</div>
+        <h1 class="style-name">black-gold</h1>
+        <div class="style-short" data-i18n data-en="monogram / formal" data-zh="黑金 monogram">monogram / formal</div>
+      </div>
 
-    <div class="inspiration">
-      <div class="insp-label" data-i18n data-en="Design Inspiration" data-zh="设计灵感">Design Inspiration</div>
-      <p class="insp-text" data-i18n data-en="Drawn from Gatsby-era elegance and modern luxury hotel guest books. The italic Bodoni monogram echoes embossed brass plates." data-zh="Gatsby 时代的优雅 + 现代奢华酒店签到册。斜体 Bodoni monogram 呼应铜版浮雕铭牌。">Drawn from Gatsby-era elegance and modern luxury hotel guest books. The italic Bodoni monogram echoes embossed brass plates.</p>
-    </div>
+      <p class="style-long" data-i18n data-en="Deep black, gold rim photo frame, italic monogram of the couple's initials. Formal black-tie wedding energy." data-zh="深黑底、金边照片框、新人首字母 monogram。正式 black-tie 婚礼感。">Deep black, gold rim photo frame, italic monogram of the couple's initials. Formal black-tie wedding energy.</p>
 
-    <div class="specs">
-      <div>
+      <div class="inspiration">
+        <div class="insp-label" data-i18n data-en="Design Inspiration" data-zh="设计灵感">Design Inspiration</div>
+        <p class="insp-text" data-i18n data-en="Drawn from Gatsby-era elegance and modern luxury hotel guest books. The italic Bodoni monogram echoes embossed brass plates." data-zh="Gatsby 时代的优雅 + 现代奢华酒店签到册。斜体 Bodoni monogram 呼应铜版浮雕铭牌。">Drawn from Gatsby-era elegance and modern luxury hotel guest books. The italic Bodoni monogram echoes embossed brass plates.</p>
+      </div>
+
+      <div class="specs">
         <div class="spec-label" data-i18n data-en="Palette" data-zh="配色">Palette</div>
         <div class="spec-value palette-row"><span class="swatch" data-color="#0a0a0a" style="background:#0a0a0a"></span><span class="swatch" data-color="#d4af37" style="background:#d4af37"></span><span class="swatch" data-color="#8b6e3a" style="background:#8b6e3a"></span><span class="swatch" data-color="#e0d8c8" style="background:#e0d8c8"></span></div>
-      </div>
-      <div>
         <div class="spec-label" data-i18n data-en="Typography" data-zh="字体">Typography</div>
         <div class="spec-value fonts-row">Bodoni Moda · Noto Serif SC</div>
-      </div>
-      <div>
         <div class="spec-label" data-i18n data-en="Decorative Motifs" data-zh="装饰元素">Decorative Motifs</div>
         <div class="spec-value motifs-row" data-i18n data-en="initial monogram · gold rim · double frame" data-zh="首字母 monogram · 金边 · 双层框">initial monogram · gold rim · double frame</div>
       </div>
+
+      <nav class="pager">
+        <a class="step prev" href="style05-vogue.html">
+          <div class="step-thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
+          <div class="step-info">
+            <div class="step-label" data-i18n data-en="Previous" data-zh="上一个">Previous</div>
+            <div class="step-name">vogue</div>
+          </div>
+        </a>
+        <a class="step next" href="style07-newspaper.html">
+          <div class="step-thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
+          <div class="step-info">
+            <div class="step-label" data-i18n data-en="Next" data-zh="下一个">Next</div>
+            <div class="step-name">newspaper</div>
+          </div>
+        </a>
+      </nav>
     </div>
-
-    <nav class="pager">
-      <a class="step prev" href="style05-vogue.html">
-        <div class="step-thumb"><img src="thumbnails/style05-vogue.png" alt="vogue" loading="lazy"></div>
-        <div class="step-info">
-          <div class="step-label" data-i18n data-en="Previous" data-zh="上一个">Previous</div>
-          <div class="step-name">vogue</div>
-        </div>
-      </a>
-      <a class="step next" href="style07-newspaper.html">
-        <div class="step-thumb"><img src="thumbnails/style07-newspaper.png" alt="newspaper" loading="lazy"></div>
-        <div class="step-info">
-          <div class="step-label" data-i18n data-en="Next" data-zh="下一个">Next</div>
-          <div class="step-name">newspaper</div>
-        </div>
-      </a>
-    </nav>
   </main>
-
-  <footer>
-    <span data-i18n data-en="Built with the" data-zh="由">Built with the</span>
-    <a href="https://github.com/wyx-sg/wedding-invitation-skill"><span data-i18n data-en="wedding-invitation skill" data-zh="wedding-invitation skill">wedding-invitation skill</span></a>
-    <span data-i18n data-en="· MIT License · No data leaves your machine." data-zh="生成 · MIT 许可 · 数据不出本机。">· MIT License · No data leaves your machine.</span>
-  </footer>
 
   <script>
     (function () {
+      // ----- Language toggle (persistent across pages) -----
       const saved = localStorage.getItem('wis-lang');
       const lang = saved === 'zh' ? 'zh' : 'en';
 
-      function apply(lang) {
+      function applyLang(lang) {
         document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
         document.querySelectorAll('[data-i18n]').forEach(el => {
           const v = el.getAttribute('data-' + lang);
@@ -399,23 +560,77 @@
         document.querySelectorAll('.lang-switch button').forEach(b => {
           b.classList.toggle('current', b.dataset.setLang === lang);
         });
-        // Back link goes to the right gallery
         const backHref = lang === 'zh' ? 'index.zh.html' : 'index.html';
         const back = document.getElementById('back-link');
         const brand = document.getElementById('brand-link');
         if (back) back.setAttribute('href', backHref);
         if (brand) brand.setAttribute('href', backHref);
       }
-
       document.querySelectorAll('.lang-switch button').forEach(b => {
         b.addEventListener('click', () => {
           const l = b.dataset.setLang;
           localStorage.setItem('wis-lang', l);
-          apply(l);
+          applyLang(l);
+        });
+      });
+      applyLang(lang);
+
+      // ----- Zoom controls -----
+      const ZOOM_KEY = 'wis-zoom';
+      const root = document.documentElement;
+      const levelEl = document.getElementById('zoom-level');
+
+      function currentAuto() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale-auto').trim();
+        return parseFloat(v) || 1;
+      }
+      function currentDefault() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale-default').trim();
+        return parseFloat(v) || 1;
+      }
+      function currentScale() {
+        const v = getComputedStyle(root).getPropertyValue('--iframe-scale').trim();
+        return parseFloat(v) || 1;
+      }
+      /* % is relative to the default — so default shows 100%, zoom in shows >100%. */
+      function fmtPct(s) { return Math.round((s / currentDefault()) * 100) + '%'; }
+
+      function applyZoom(level) {
+        if (level === null) {
+          root.style.removeProperty('--iframe-scale-override');
+          sessionStorage.removeItem(ZOOM_KEY);
+        } else {
+          level = Math.max(0.4, Math.min(level, 4.0));
+          root.style.setProperty('--iframe-scale-override', String(level));
+          sessionStorage.setItem(ZOOM_KEY, String(level));
+        }
+        if (levelEl) levelEl.textContent = fmtPct(currentScale());
+      }
+
+      document.querySelectorAll('.zoom-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          const op = b.dataset.zoom;
+          if (op === 'reset') { applyZoom(null); return; }
+          const cur = currentScale();
+          applyZoom(op === 'in' ? cur * 1.15 : cur * 0.87);
         });
       });
 
-      apply(lang);
+      // Keyboard shortcuts: +/=/- and 0 for reset
+      document.addEventListener('keydown', e => {
+        if (e.target.matches('input, textarea')) return;
+        if (e.key === '+' || e.key === '=') { applyZoom(currentScale() * 1.15); e.preventDefault(); }
+        else if (e.key === '-' || e.key === '_') { applyZoom(currentScale() * 0.87); e.preventDefault(); }
+        else if (e.key === '0') { applyZoom(null); e.preventDefault(); }
+      });
+
+      // Restore session zoom (per-tab); update level display on resize
+      const restored = parseFloat(sessionStorage.getItem(ZOOM_KEY));
+      if (restored && !isNaN(restored)) applyZoom(restored);
+      else if (levelEl) levelEl.textContent = '100%';
+      window.addEventListener('resize', () => {
+        if (levelEl) levelEl.textContent = fmtPct(currentScale());
+      });
     })();
   </script>
 </body>

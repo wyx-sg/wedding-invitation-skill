@@ -242,7 +242,7 @@
   <div class="headline">
     <div class="headline-kicker">★ ANNOUNCEMENT ★</div>
     <div class="headline-main">A Summer <em>Wedding</em><br>at the Family Home</div>
-    <div class="headline-deck">— {{names.groom_zh}} 与 {{names.bride_zh}} 喜结良缘 —</div>
+    <div class="headline-deck">— {{names.groom_en}} weds {{names.bride_en}} —</div>
   </div>
 
   <div class="photo-block">
@@ -257,25 +257,25 @@
   <div class="schedule-box">
     <div class="schedule-title">— Programme —</div>
     <div class="schedule-row">
-      <b>Date</b><span class="v">{{date.en_year}}.{{date.en_month}}.{{date.en_day}} · THU</span>
+      <b>Date</b><span class="v">{{date.en_long}} · {{date.weekday_en}}</span>
     </div>
     <div class="schedule-row">
-      <b>农历</b><span class="v">{{date.lunar}}</span>
+      <b>Hour</b><span class="v">{{time.value}} noon · reception</span>
     </div>
     <div class="schedule-row">
-      <b>Hour</b><span class="v">{{time.value}} noon · 入席</span>
+      <b>Venue</b><span class="v">{{venue.lines_en.0}}</span>
     </div>
     <div class="schedule-row">
-      <b>Venue</b><span class="v">{{venue.city_zh}} · {{venue.lines_zh.0}} {{venue.lines_zh.1}}</span>
+      <b></b><span class="v">{{venue.lines_en.1}}</span>
     </div>
   </div>
 
   <div class="footer">
-    YOU ARE CORDIALLY INVITED · <em>敬 请 光 临</em>
+    YOU ARE CORDIALLY INVITED · <em>please join us</em>
   </div>
 
   <div class="stamp">
-    <div class="big">囍</div>
+    <div class="big">★</div>
     <div class="small">{{date.en_year}} · {{names.groom_surname_en}}</div>
   </div>
 </div>

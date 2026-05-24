@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alex Johnson & Maria Garcia · Wedding</title>
-<link href="https://fonts.font.im/css2?family=Noto+Serif+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.font.im/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -20,7 +20,7 @@
   }
   html, body { background: var(--paper); }
   body {
-    font-family: 'Noto Serif SC', serif;
+    font-family: 'Inter', sans-serif;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -114,10 +114,12 @@
     margin-bottom: 4px;
   }
   .header-zh {
+    font-family: 'Inter', sans-serif;
     font-size: 10px;
-    letter-spacing: 8px;
+    letter-spacing: 4px;
     color: var(--soft-green);
-    padding-left: 8px;
+    text-transform: uppercase;
+    font-weight: 300;
   }
 
   /* 照片放大 */
@@ -159,12 +161,13 @@
     position: relative; z-index: 2;
   }
   .names-zh {
-    font-size: 19px;
-    letter-spacing: 3px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    letter-spacing: 2px;
     color: var(--ink-green);
-    font-weight: 400;
+    font-weight: 300;
     margin-bottom: 3px;
-    line-height: 1.3;
+    line-height: 1.2;
   }
   .names-amp {
     font-family: 'Playfair Display', serif;
@@ -237,8 +240,9 @@
     margin-bottom: 3px;
   }
   .date-zh {
+    font-family: 'Inter', sans-serif;
     font-size: 10px;
-    letter-spacing: 3px;
+    letter-spacing: 1.5px;
     color: var(--soft-green);
   }
 
@@ -277,10 +281,12 @@
   }
   .footer-q .accent { color: var(--sand-deep); }
   .footer-zh {
-    font-size: 11px;
-    letter-spacing: 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
     color: var(--soft-green);
-    padding-left: 7px;
+    text-transform: uppercase;
+    font-weight: 300;
   }
 </style>
 <style id="__pages_frame__">
@@ -350,10 +356,10 @@
     </svg>
   </div>
 
-  <!-- 头部 -->
+  <!-- header -->
   <div class="header">
     <div class="header-en">save the date</div>
-    <div class="header-zh">我 们 结 婚 啦</div>
+    <div class="header-zh">10.01.2099</div>
   </div>
 
   <!-- 照片 -->
@@ -387,19 +393,19 @@
       <span>10</span><span class="sep">·</span><span><em>01</em></span>
     </div>
     <div class="date-line">October 1, 2099 · Monday</div>
-    <div class="date-zh">二〇九九 十月一日 · 农历 </div>
+    <div class="date-zh">at 18:00, reception to follow</div>
   </div>
 
-  <!-- 信息 -->
+  <!-- info -->
   <div class="info-block">
-    <div class="info-row"><span class="accent">18:00</span>&nbsp;noon · 恭候入席</div>
-    <div class="info-row" style="margin-top:2px;">Singapore·80 Collyer Quay, Marina Bay The Fullerton Bay Hotel</div>
+    <div class="info-row"><span class="accent">Singapore</span></div>
+    <div class="info-row" style="margin-top:2px;font-size:11px;">80 Collyer Quay, Marina Bay · The Fullerton Bay Hotel</div>
   </div>
 
-  <!-- 底部 -->
+  <!-- footer -->
   <div class="footer">
     <div class="footer-q">"by the sea, our summer <span class="accent">begins</span>"</div>
-    <div class="footer-zh">期 待 与 你 共 度</div>
+    <div class="footer-zh">with love, please join us</div>
   </div>
 </div>
 </body>
