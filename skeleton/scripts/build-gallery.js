@@ -504,7 +504,6 @@ const DETAIL_CSS = `
     flex-direction: column;
     gap: 18px;
     padding: 18px 0;
-    border-bottom: 1px solid var(--border-soft);
   }
   .tweak-group { display: flex; flex-direction: column; gap: 8px; }
   .tweak-group-label {
@@ -676,10 +675,6 @@ function detailHtml(design, index, isMulti) {
       <div class="photo-switcher-thumbs" id="photo-switcher-thumbs">${photoThumbs}</div>
     </div>` : '';
 
-  const navBack = isMulti
-    ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>`
-    : '<span></span>';
-
   const designName = (lang === 'zh' ? design.name_zh : design.name_en) || design.id;
 
   // Tweak panel — render only when design declares tweak_options.
@@ -696,7 +691,8 @@ function detailHtml(design, index, isMulti) {
         const name = (lang === 'zh' ? cs.name_zh : cs.name_en) || cs.name || `#${i + 1}`;
         const dots = Object.values(cs.vars || {}).slice(0, 4)
           .map(v => `<span class="dot" style="background:${safeColor(v)}"></span>`).join('');
-        return `<button type="button" class="tweak-swatch" data-tweak-color="${i}">
+        const activeClass = i === 0 ? ' active' : '';
+        return `<button type="button" class="tweak-swatch${activeClass}" data-tweak-color="${i}">
           <span class="dot-stack">${dots}</span>
           <span>${esc(name)}</span>
         </button>`;
@@ -734,9 +730,10 @@ function detailHtml(design, index, isMulti) {
         const subLabel = cssVar === '--font-headline' ? COPY.tweakHeadlineSub
                        : cssVar === '--font-body'     ? COPY.tweakBodySub
                        : cssVar;
-        const buttons = (Array.isArray(options) ? options : []).map(font =>
-          `<button type="button" class="tweak-font-btn" data-tweak-font-var="${esc(cssVar)}" data-tweak-font-value="${esc(font)}" style="font-family:'${safeFontName(font)}',sans-serif">${esc(font)}</button>`
-        ).join('');
+        const buttons = (Array.isArray(options) ? options : []).map((font, i) => {
+          const activeClass = i === 0 ? ' active' : '';
+          return `<button type="button" class="tweak-font-btn${activeClass}" data-tweak-font-var="${esc(cssVar)}" data-tweak-font-value="${esc(font)}" style="font-family:'${safeFontName(font)}',sans-serif">${esc(font)}</button>`;
+        }).join('');
         return `<div class="tweak-row">
           <div class="tweak-font-sub">${esc(subLabel)}</div>
           ${buttons}
@@ -751,9 +748,10 @@ function detailHtml(design, index, isMulti) {
 
     // Frames
     if (Array.isArray(tweak.frames) && tweak.frames.length) {
-      const frameButtons = tweak.frames.map((f, i) =>
-        `<button type="button" class="tweak-frame-btn" data-tweak-frame="${i}">${esc(f.name || `#${i+1}`)}</button>`
-      ).join('');
+      const frameButtons = tweak.frames.map((f, i) => {
+        const activeClass = i === 0 ? ' active' : '';
+        return `<button type="button" class="tweak-frame-btn${activeClass}" data-tweak-frame="${i}">${esc(f.name || `#${i+1}`)}</button>`;
+      }).join('');
 
       sections.push(`<div class="tweak-group" data-section="frame">
         <div class="tweak-group-label">${esc(COPY.tweakFrameLabel)}</div>
@@ -845,14 +843,6 @@ function detailHtml(design, index, isMulti) {
   <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
 </head>
 <body>
-  <nav class="nav-bar">
-    <div class="inner">
-      ${navBack}
-      <a class="nav-brand" href="${isMulti ? 'index.html' : '#'}">${esc(COPY.brand)}</a>
-      <span></span>
-    </div>
-  </nav>
-
   <main class="detail">
     <div class="preview">
       <div class="frame">
@@ -1024,6 +1014,20 @@ function detailHtml(design, index, isMulti) {
           panel.querySelectorAll('.tweak-swatch.active,.tweak-font-btn.active,.tweak-frame-btn.active').forEach(function (b) {
             b.classList.remove('active');
           });
+          // Re-mark the first preset of each section as active (matches the template's :root defaults)
+          var firstSwatch = panel.querySelector('.tweak-swatch');
+          if (firstSwatch) firstSwatch.classList.add('active');
+          // Group font buttons by their data-tweak-font-var and mark first per group
+          var seenFontVars = {};
+          panel.querySelectorAll('.tweak-font-btn').forEach(function (b) {
+            var v = b.getAttribute('data-tweak-font-var');
+            if (!seenFontVars[v]) {
+              b.classList.add('active');
+              seenFontVars[v] = true;
+            }
+          });
+          var firstFrame = panel.querySelector('.tweak-frame-btn');
+          if (firstFrame) firstFrame.classList.add('active');
           panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
             var id = cb.getAttribute('data-tweak-component');
             var def = (TWEAK.components || []).find(function (c) { return c.id === id; });
