@@ -123,7 +123,7 @@ const COPY = {
     tweakSaveExportLabel: 'Export JSON',
     tweakSaveInfoLabel: 'Saved locally · refresh keeps your changes',
     tweakContributeLabel: 'Love this design? Open a PR to add it to the skill — share with others →',
-    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
+    tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
   },
   zh: {
     brand: '婚礼请帖',
@@ -161,7 +161,7 @@ const COPY = {
     tweakSaveExportLabel: '导出 JSON',
     tweakSaveInfoLabel: '已保存到本地 · 刷新后仍在',
     tweakContributeLabel: '设计得不错？欢迎给项目提 PR，加进 skill 让更多人用 →',
-    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
+    tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
   }
 }[lang];
 
@@ -1001,20 +1001,23 @@ function detailHtml(design, index, isMulti) {
         <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
       </div>`);
       sections.push(`<div class="tweak-save-row">
-        <button type="button" class="tweak-save-btn" id="tweak-save">★ ${esc(COPY.tweakSaveLabel)}</button>
-        <button type="button" class="tweak-export-btn" id="tweak-export">${esc(COPY.tweakSaveExportLabel)}</button>
-      </div>
-      <div class="tweak-save-info">${esc(COPY.tweakSaveInfoLabel)}</div>
-      <a class="tweak-contribute" href="${esc(COPY.tweakContributeHref)}" target="_blank" rel="noopener">${esc(COPY.tweakContributeLabel)}</a>`);
+  <button type="button" class="tweak-save-btn" id="tweak-save" data-prompt="${esc(COPY.tweakSavePromptLabel)}">★ ${esc(COPY.tweakSaveLabel)}</button>
+  <button type="button" class="tweak-export-btn" id="tweak-export" data-prompt="${esc(COPY.tweakSavePromptLabel)}">${esc(COPY.tweakSaveExportLabel)}</button>
+</div>
+<div class="tweak-save-info">${esc(COPY.tweakSaveInfoLabel)}</div>
+<a class="tweak-contribute" href="${esc(COPY.tweakContributeHref)}" target="_blank" rel="noopener">${esc(COPY.tweakContributeLabel)}</a>`);
       tweakHtml = `<div class="tweak-panel" id="tweak-panel" data-design-id="${esc(design.id)}">${sections.join('')}</div>`;
-      const enrichedTweak = Object.assign({}, tweak, {
-        __designId: design.id,
-        __designTemplate: design.template || (design.id + '.html'),
-        __designPrimaryPhoto: design.primary_photo,
-        __designWidth: design.width || 420,
-        __designHeight: design.height || 560
-      });
-      tweakConfigJson = JSON.stringify(enrichedTweak)
+      const tweakConfigShape = {
+        tweak: tweak,
+        design: {
+          id: design.id,
+          template: design.template || (design.id + '.html'),
+          primary_photo: design.primary_photo,
+          width: design.width || 420,
+          height: design.height || 560
+        }
+      };
+      tweakConfigJson = JSON.stringify(tweakConfigShape)
         .replace(/</g, '\\u003c')
         .replace(/>/g, '\\u003e')
         .replace(/&/g, '\\u0026');
@@ -1219,14 +1222,16 @@ function detailHtml(design, index, isMulti) {
       var cfg = window.__TWEAK_CONFIG__;
       var panel = document.getElementById('tweak-panel');
       var iframe = document.getElementById('design-iframe');
-      if (!cfg || !panel || !iframe) return;
+      if (!cfg || !cfg.tweak || !panel || !iframe) return;
+
+      var TWEAK = cfg.tweak;
+      var DESIGN = cfg.design || {};
+      var DESIGN_ID = DESIGN.id || panel.getAttribute('data-design-id') || 'design';
 
       function send(msg) {
         if (!iframe.contentWindow) return;
         try { iframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
       }
-
-      var DESIGN_ID = (cfg && cfg.__designId) || panel.getAttribute('data-design-id') || 'design';
       var STORAGE_KEY = 'wis-tweak-' + DESIGN_ID;
 
       function collectState() {
@@ -1236,7 +1241,7 @@ function detailHtml(design, index, isMulti) {
         var activeColor = panel.querySelector('.tweak-swatch.active');
         if (activeColor) {
           var idx = +activeColor.getAttribute('data-tweak-color');
-          var cs = (cfg.color_schemes || [])[idx];
+          var cs = (TWEAK.color_schemes || [])[idx];
           if (cs && cs.vars) Object.assign(state.vars, cs.vars);
         }
         // Custom color overrides
@@ -1255,7 +1260,7 @@ function detailHtml(design, index, isMulti) {
         var activeFrame = panel.querySelector('.tweak-frame-btn.active');
         if (activeFrame) {
           var fi = +activeFrame.getAttribute('data-tweak-frame');
-          var fr = (cfg.frames || [])[fi];
+          var fr = (TWEAK.frames || [])[fi];
           if (fr) state.frame = { radius: fr.radius, aspect: fr.aspect };
         }
         // Custom frame
@@ -1303,8 +1308,8 @@ function detailHtml(design, index, isMulti) {
       });
 
       function applyDefaults() {
-        if (Array.isArray(cfg.components)) {
-          cfg.components.forEach(function (c) {
+        if (Array.isArray(TWEAK.components)) {
+          TWEAK.components.forEach(function (c) {
             if (c && c.id && c.default === false) {
               send({ type: 'toggle-component', id: c.id, visible: false });
             }
@@ -1336,7 +1341,7 @@ function detailHtml(design, index, isMulti) {
           });
           panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
             var id = cb.getAttribute('data-tweak-component');
-            var def = (cfg.components || []).find(function (c) { return c.id === id; });
+            var def = (TWEAK.components || []).find(function (c) { return c.id === id; });
             var on = def ? !!def.default : true;
             cb.classList.toggle('checked', on);
             var input = cb.querySelector('input');
@@ -1347,7 +1352,7 @@ function detailHtml(design, index, isMulti) {
 
         if (t.hasAttribute('data-tweak-color')) {
           var idx = +t.getAttribute('data-tweak-color');
-          var cs = (cfg.color_schemes || [])[idx];
+          var cs = (TWEAK.color_schemes || [])[idx];
           if (!cs) return;
           send({ type: 'set-css-vars', vars: cs.vars || {} });
           panel.querySelectorAll('[data-tweak-color]').forEach(function (b) {
@@ -1361,7 +1366,8 @@ function detailHtml(design, index, isMulti) {
           var value = t.getAttribute('data-tweak-font-value');
           var vars = {}; vars[cssVar] = value;
           send({ type: 'set-css-vars', vars: vars });
-          panel.querySelectorAll('[data-tweak-font-var="' + cssVar + '"]').forEach(function (b) {
+          var safeCssVar = cssVar.replace(/["\\]/g, '\\$&');
+          panel.querySelectorAll('[data-tweak-font-var="' + safeCssVar + '"]').forEach(function (b) {
             b.classList.toggle('active', b === t);
           });
           return;
@@ -1369,7 +1375,7 @@ function detailHtml(design, index, isMulti) {
 
         if (t.hasAttribute('data-tweak-frame')) {
           var fi = +t.getAttribute('data-tweak-frame');
-          var fr = (cfg.frames || [])[fi];
+          var fr = (TWEAK.frames || [])[fi];
           if (!fr) return;
           send({ type: 'set-frame', radius: fr.radius || '', aspect: fr.aspect || '' });
           panel.querySelectorAll('[data-tweak-frame]').forEach(function (b) {
@@ -1411,7 +1417,7 @@ function detailHtml(design, index, isMulti) {
       var saveBtn = document.getElementById('tweak-save');
       if (saveBtn) {
         saveBtn.addEventListener('click', function () {
-          var name = prompt(panel.querySelector('.tweak-save-btn').textContent.replace(/^[★\s]+/, ''));
+          var name = prompt(saveBtn.getAttribute('data-prompt') || 'Name this design');
           if (!name) return;
           var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
           if (!slug) return;
@@ -1430,7 +1436,7 @@ function detailHtml(design, index, isMulti) {
       var exportBtn = document.getElementById('tweak-export');
       if (exportBtn) {
         exportBtn.addEventListener('click', function () {
-          var name = prompt('Name for the design entry:');
+          var name = prompt(exportBtn.getAttribute('data-prompt') || 'Name for the design entry:');
           if (!name) return;
           var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
           if (!slug) return;
@@ -1439,10 +1445,10 @@ function detailHtml(design, index, isMulti) {
             id: slug,
             name_en: name,
             name_zh: name,
-            template: cfg.__designTemplate || (DESIGN_ID + '.html'),
-            primary_photo: cfg.__designPrimaryPhoto || 'photo-01',
-            width: cfg.__designWidth || 420,
-            height: cfg.__designHeight || 560,
+            template: DESIGN.template || (DESIGN_ID + '.html'),
+            primary_photo: DESIGN.primary_photo || 'photo-01',
+            width: DESIGN.width || 420,
+            height: DESIGN.height || 560,
             meta: { short: 'Saved from ' + DESIGN_ID + ' on ' + new Date().toLocaleDateString() },
             tweak_options: {
               color_schemes: (state.vars && Object.keys(state.vars).length)
