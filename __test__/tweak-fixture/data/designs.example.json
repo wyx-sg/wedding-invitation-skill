@@ -1,0 +1,56 @@
+[
+  {
+    "id": "my-design",
+    "name_zh": "我的请帖",
+    "name_en": "MY INVITATION",
+    "template": "my-design.html",
+    "primary_photo": "photo-01",
+    "width": 420,
+    "height": 560,
+    "meta": {
+      "short": "Short subtitle for the design (1 line)",
+      "long": "Optional longer description shown in the gallery / detail page.",
+      "palette": ["#f6efe1", "#b8362b", "#d4af37", "#1a1a1a"],
+      "fonts": ["Songti SC", "Cormorant Garamond"],
+      "motifs": "Decorative motifs (comma separated, optional)"
+    },
+    "tweak_options": {
+      "color_schemes": [
+        {
+          "name_en": "Warm",
+          "name_zh": "暖调",
+          "vars": {
+            "--card-bg": "#e8e4dc",
+            "--card-text": "#2c2c2c",
+            "--card-accent-1": "#7a8a6d",
+            "--card-accent-2": "#a59585"
+          }
+        },
+        {
+          "name_en": "Cool",
+          "name_zh": "冷调",
+          "vars": {
+            "--card-bg": "#dde2dd",
+            "--card-text": "#2a3236",
+            "--card-accent-1": "#7a8a96",
+            "--card-accent-2": "#95a0a5"
+          }
+        }
+      ],
+      "fonts": {
+        "--font-headline": ["Inter", "Manrope", "DM Sans"],
+        "--font-body":     ["Inter", "Manrope"]
+      },
+      "frames": [
+        { "name": "oval",          "radius": "50%",                "aspect": "4/5" },
+        { "name": "rounded-rect",  "radius": "8px",                "aspect": "4/5" },
+        { "name": "arch",          "radius": "50% 50% 4px 4px",    "aspect": "4/5" }
+      ],
+      "components": [
+        { "id": "tagline",      "label_en": "Tagline",        "label_zh": "寄语",    "default": true  },
+        { "id": "lunar-date",   "label_en": "Lunar date",     "label_zh": "农历",    "default": false },
+        { "id": "address-full", "label_en": "Full address",   "label_zh": "完整地址", "default": true  }
+      ]
+    }
+  }
+]
