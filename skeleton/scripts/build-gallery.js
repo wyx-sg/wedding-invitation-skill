@@ -181,11 +181,12 @@ const SHARED_CSS = `
   .nav-bar .inner {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 16px 32px;
+    padding: 12px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
+    position: relative;
   }
   .nav-brand {
     font-family: 'Cormorant Garamond', serif;
@@ -208,19 +209,32 @@ const SHARED_CSS = `
     transition: color 0.2s;
   }
   .nav-back:hover { color: var(--accent); }
-  .nav-powered-by {
-    font-size: 10px;
+  .nav-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .nav-center .nav-brand {
+    /* same as .nav-brand above */
+  }
+  .nav-center .nav-powered-by {
+    font-size: 9.5px;
     letter-spacing: 1.2px;
     color: var(--text-muted);
     font-family: 'Inter', sans-serif;
   }
-  .nav-powered-by a {
+  .nav-center .nav-powered-by a {
     color: var(--text-dim);
     text-decoration: none;
     border-bottom: 1px dotted var(--border-soft);
     transition: color 0.18s, border-color 0.18s;
   }
-  .nav-powered-by a:hover {
+  .nav-center .nav-powered-by a:hover {
     color: var(--accent);
     border-bottom-color: var(--accent);
   }
@@ -298,25 +312,6 @@ const GALLERY_CSS = `
     h1 { font-size: 28px; letter-spacing: 3px; }
     .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
     main { padding: 20px 16px 40px; }
-  }
-  .powered-by {
-    text-align: center;
-    padding: 24px 16px;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--text-muted);
-    opacity: 0.7;
-    font-family: 'Inter', sans-serif;
-  }
-  .powered-by a {
-    color: var(--text-dim);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--border-soft);
-    transition: color 0.18s, border-color 0.18s;
-  }
-  .powered-by a:hover {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
   }
 `;
 
@@ -1256,10 +1251,6 @@ function detailHtml(design, index, isMulti) {
 
   const switcherHtml = buildSwitcherHtml(design);
 
-  const navBack = isMulti
-    ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>`
-    : '<span></span>';
-
   const designName = localizedName(design, 'name', design.id);
 
   const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
@@ -1336,11 +1327,14 @@ function detailHtml(design, index, isMulti) {
 <body>
   <nav class="nav-bar">
     <div class="inner">
-      ${navBack}
-      <span class="nav-brand">${esc(COPY.brand)}</span>
-      <span class="nav-powered-by">
-        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-      </span>
+      ${isMulti ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>` : '<span></span>'}
+      <div class="nav-center">
+        <span class="nav-brand">${esc(COPY.brand)}</span>
+        <span class="nav-powered-by">
+          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+        </span>
+      </div>
+      <span></span>
     </div>
   </nav>
   <main class="detail">
@@ -1481,10 +1475,13 @@ function studioHtml(design, index, isMulti) {
   <nav class="nav-bar">
     <div class="inner">
       <span></span>
-      <span class="nav-brand">${esc(COPY.brand)}</span>
-      <span class="nav-powered-by">
-        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-      </span>
+      <div class="nav-center">
+        <span class="nav-brand">${esc(COPY.brand)}</span>
+        <span class="nav-powered-by">
+          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+        </span>
+      </div>
+      <span></span>
     </div>
   </nav>
 
@@ -1550,7 +1547,12 @@ function galleryHtml() {
   <nav class="nav-bar">
     <div class="inner">
       <span></span>
-      <a class="nav-brand" href="index.html">${esc(COPY.brand)}</a>
+      <div class="nav-center">
+        <a class="nav-brand" href="index.html">${esc(COPY.brand)}</a>
+        <span class="nav-powered-by">
+          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+        </span>
+      </div>
       <span></span>
     </div>
   </nav>
@@ -1563,9 +1565,6 @@ function galleryHtml() {
       ${cards}
     </div>
   </main>
-  <footer class="powered-by">
-    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-  </footer>
 </body>
 </html>
 `;

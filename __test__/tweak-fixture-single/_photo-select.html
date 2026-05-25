@@ -5,7 +5,12 @@
 <title>挑照片</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
 <style>
-  body { margin: 0; background: #0a0907; color: #d4c4a8; font-family: 'Inter', -apple-system, "Noto Serif SC", sans-serif; padding: 32px 24px 80px; min-height: 100vh; }
+  .wis-nav { text-align: center; padding: 22px 16px 8px; }
+  .wis-brand { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; letter-spacing: 3px; color: #d4b896; text-transform: uppercase; }
+  .wis-pb { font-size: 9.5px; letter-spacing: 1.2px; color: #5a4a36; margin-top: 4px; font-family: 'Inter', sans-serif; }
+  .wis-pb a { color: #8a7a5e; text-decoration: none; border-bottom: 1px dotted #2a2218; transition: color .18s, border-color .18s; }
+  .wis-pb a:hover { color: #d4b896; border-bottom-color: #d4b896; }
+  body { margin: 0; background: #0a0907; color: #d4c4a8; font-family: 'Inter', -apple-system, "Noto Serif SC", sans-serif; padding: 16px 24px 80px; min-height: 100vh; }
   h1 { text-align: center; font-weight: 300; font-family: 'Cormorant Garamond', serif; font-size: 32px; letter-spacing: 4px; color: #d4b896; margin: 0 0 12px; }
   .note { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 14px; color: #a89878; max-width: 680px; margin: 0 auto 36px; line-height: 1.55; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, 220px); gap: 20px; max-width: 1280px; margin: 0 auto; justify-content: center; }
@@ -24,9 +29,6 @@
   .summary strong { font-family: 'Cormorant Garamond', serif; font-style: italic; color: #d4b896; font-weight: 400; font-size: 16px; margin: 0 6px; letter-spacing: 1px; }
   .summary.empty { color: #5a4a36; }
   .summary .hint { font-size: 11px; color: #5a4a36; margin-left: 12px; }
-  .summary .powered-by { font-size: 10px; letter-spacing: 1.2px; color: #5a4a36; font-family: 'Inter', sans-serif; }
-  .summary .powered-by a { color: #8a7a5e; text-decoration: none; border-bottom: 1px dotted #2a2218; transition: color .18s, border-color .18s; }
-  .summary .powered-by a:hover { color: #d4b896; border-bottom-color: #d4b896; }
   .copy-btn { display: none; margin-left: 8px; padding: 4px 12px; background: transparent; border: 1px solid #b8956a; border-radius: 999px; color: #d4b896; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background .18s, color .18s; }
   .copy-btn:hover { background: rgba(212,184,150,0.12); }
   .copy-btn.copied { background: #d4b896; color: #0a0907; border-color: #d4b896; }
@@ -36,6 +38,10 @@
   @media (max-width: 600px) { .summary { flex-direction: column; gap: 6px; padding: 10px 16px; } }
 </style></head>
 <body>
+  <nav class="wis-nav">
+    <div class="wis-brand">婚礼请帖</div>
+    <div class="wis-pb">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</div>
+  </nav>
   <h1>挑一张照片</h1>
   <p class="note">点击下面的照片选中（可多选）。主图 1 张，其余备选给微调时切换照片用。</p>
   <p class="back-to-agent">挑完点 <strong>复制</strong>，然后回到 <strong>Claude Code 对话窗口</strong> 把内容粘贴过去 — 我会接着帮你做请帖。</p>
@@ -54,7 +60,6 @@
   <div class="summary empty" id="summary">
     <span class="picks-area">未选 · 点击照片选中</span>
     <button type="button" class="copy-btn" id="copy-btn">复制</button>
-    <span class="powered-by">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</span>
   </div>
   <script>
     (function () {

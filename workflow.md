@@ -93,8 +93,9 @@ Never start with Tier 3 if the choice is visual. A wedding invitation is a visua
    - Read all the photos with the Read tool (they're images — Claude can see them).
    - Surface what you see: "I see N photos. Some are portrait pose, some are outdoor candid, some are full-length. Which 1-3 would you like to use on the invitation?"
    - Build a Tier-1 visual preview (`_photo-select.html`) with all photos as numbered cards. The user clicks to select (multi-select supported), then clicks a **Copy** button in the bottom summary bar — that writes a chat-ready sentence like `我选了 p01、p03` (or `I picked p01, p03` for en) to the clipboard. The user pastes it back into Claude Code chat. The page MUST include:
-     - A short note near the top reminding the user of the flow: pick → click Copy → paste back into Claude Code chat (localized to primary language).
-     - A sticky bottom summary bar with: current selection (`已选 p01 p02` left), a **Copy** button (hidden when nothing selected) that uses `navigator.clipboard.writeText` (with `document.execCommand('copy')` fallback), and the attribution `Made with wedding-invitation-skill` / `由 wedding-invitation-skill 设计制作` (localized) on the right.
+     - A centered **two-line header at the top**: brand (婚礼请帖 / Wedding Invitation) on top, "Made with wedding-invitation-skill" / "由 wedding-invitation-skill 设计制作" small below (localized). Linked to https://github.com/wyx-sg/wedding-invitation-skill.
+     - A short reminder note: pick → click Copy → paste back into Claude Code chat (localized).
+     - A sticky bottom summary bar with: current selection (left), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence to clipboard via `navigator.clipboard.writeText` (with `document.execCommand('copy')` fallback).
 
    When telling the user in chat: "Open `file://…/_photo-select.html`, click the photos you like, hit **Copy** in the bottom bar, then paste back here. I'll take it from there." (Localized.) Don't proceed until the user pastes their picks.
    - Wait for an explicit selection. Note their primary choice — that goes into `designs.json` as `primary_photo`. Keep the rest copied in `photos/` so the gallery's photo-switcher can offer them.
@@ -229,8 +230,9 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - Aesthetics here are **directions**, not finished templates. The picker should communicate direction, not destination.
 
    Build `_style-preview.html` in the user's working directory. Each card shows: aesthetic name, palette swatches (the suggested starting-point colors from `design-principles.md`), a small typography sample (a few characters in the aesthetic's font family), and one line of spirit / motif description. Cards are **clickable** — clicking selects (single-select; click again to deselect). The page MUST include:
+   - A centered **two-line header at the top**: brand (婚礼请帖 / Wedding Invitation) on top, "Made with wedding-invitation-skill" / "由 wedding-invitation-skill 设计制作" small below (localized). Linked to https://github.com/wyx-sg/wedding-invitation-skill.
    - A short note near the top reminding the user of the flow: pick → click Copy → paste back into Claude Code chat (localized).
-   - A sticky bottom summary bar with: current selection (`已选 morandi`), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence like `我选 morandi` to clipboard (uses `navigator.clipboard.writeText` with `document.execCommand('copy')` fallback), and the attribution `Made with wedding-invitation-skill` / `由 wedding-invitation-skill 设计制作` (localized) on the right.
+   - A sticky bottom summary bar with: current selection (`已选 morandi`), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence like `我选 morandi` to clipboard (uses `navigator.clipboard.writeText` with `document.execCommand('copy')` fallback).
 
    When telling the user in chat (Stage 3 step 4 below), explicitly tell them: pick → Copy → paste back.
 

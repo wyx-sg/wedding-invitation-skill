@@ -30,6 +30,15 @@ function loadJson(file) {
 const wedding = loadJson('wedding.json');
 const designs = loadJson('designs.json');
 
+const primaryLang = (wedding.languages && wedding.languages[0]) || 'en';
+const BRAND_BY_LANG = { en: 'Wedding Invitation', zh: '婚礼请帖' };
+const POWERED_BY_BY_LANG = {
+  en: { prefix: 'Made with ', suffix: '' },
+  zh: { prefix: '由 ', suffix: ' 设计制作' }
+};
+const BRAND_STRING = BRAND_BY_LANG[primaryLang] || BRAND_BY_LANG.en;
+const { prefix: pbPrefix, suffix: pbSuffix } = POWERED_BY_BY_LANG[primaryLang] || POWERED_BY_BY_LANG.en;
+
 if (!Array.isArray(designs) || designs.length === 0) {
   console.error('[build] designs.json must be a non-empty array');
   process.exit(1);
@@ -149,6 +158,31 @@ for (const d of designs) {
       //     own frame styling does the centering)
       if (location.hash !== '#render' && window.self === window.top) {
         document.documentElement.classList.add('preview-mode');
+        // Inject a two-line header ABOVE the card in preview mode only.
+        // Hidden in iframe embeds (gallery) and during PNG render.
+        window.addEventListener('DOMContentLoaded', function () {
+          var nav = document.createElement('nav');
+          nav.className = 'wis-nav';
+          var center = document.createElement('div');
+          center.className = 'wis-nav-center';
+          var brand = document.createElement('div');
+          brand.className = 'wis-brand';
+          brand.textContent = ${JSON.stringify(BRAND_STRING)};
+          var pb = document.createElement('div');
+          pb.className = 'wis-pb';
+          pb.appendChild(document.createTextNode(${JSON.stringify(pbPrefix)}));
+          var a = document.createElement('a');
+          a.href = 'https://github.com/wyx-sg/wedding-invitation-skill';
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'wedding-invitation-skill';
+          pb.appendChild(a);
+          pb.appendChild(document.createTextNode(${JSON.stringify(pbSuffix)}));
+          center.appendChild(brand);
+          center.appendChild(pb);
+          nav.appendChild(center);
+          document.body.insertBefore(nav, document.body.firstChild);
+        });
       }
       var SAFE_ID = /^[a-zA-Z][a-zA-Z0-9-]*$/;
       window.addEventListener('message', function (e) {
@@ -211,9 +245,41 @@ for (const d of designs) {
     html.preview-mode body{
       background:#222;
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
       min-height:100vh;
+      gap:32px;
+      padding:32px 0;
+      box-sizing:border-box;
+    }
+    html.preview-mode .wis-nav{
+      text-align:center;
+    }
+    html.preview-mode .wis-brand{
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic;
+      font-size:18px;
+      letter-spacing:3px;
+      color:#d4b896;
+      text-transform:uppercase;
+    }
+    html.preview-mode .wis-pb{
+      font-size:9.5px;
+      letter-spacing:1.2px;
+      color:#5a4a36;
+      margin-top:4px;
+      font-family:'Inter',-apple-system,sans-serif;
+    }
+    html.preview-mode .wis-pb a{
+      color:#8a7a5e;
+      text-decoration:none;
+      border-bottom:1px dotted #2a2218;
+      transition:color 0.18s, border-color 0.18s;
+    }
+    html.preview-mode .wis-pb a:hover{
+      color:#d4b896;
+      border-bottom-color:#d4b896;
     }
   </style></head>`;
   const framed = bakedHtml.replace(/<\/head>/, frameCss);
