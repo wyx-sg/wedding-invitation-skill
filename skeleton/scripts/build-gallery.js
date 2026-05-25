@@ -62,6 +62,14 @@ if (missing.html.length || missing.social.length || missing.print.length) {
   if (missing.print.length)  console.warn(`[gallery]   missing dist/png/print/<id>.png:  ${missing.print.join(', ')}`);
 }
 
+// Font names land in inline style="font-family:'…'" — strip any characters that
+// could break out of the quoted string or inject CSS. Allows ASCII alphanumerics,
+// whitespace, hyphen, dot, underscore, and any non-ASCII character (covering
+// CJK font names like "Noto Serif SC", "ZCOOL XiaoWei", "Source Han Serif").
+function safeFontName(s) {
+  return String(s ?? '').replace(/[^\w\s\-. \xa0-￿]/g, '');
+}
+
 // HTML-escape arbitrary user strings (names, meta text, ids) before interpolating
 // into the generated gallery markup. A wedding could have couples like "Tom & Jerry"
 // or design ids with characters that would break the HTML otherwise.
@@ -98,7 +106,14 @@ const COPY = {
     zoomOutLabel: 'Zoom out',
     zoomInLabel: 'Zoom in',
     zoomResetLabel: 'Fit to screen',
-    multiTagline: 'Generated alternatives — pick a favorite and download.'
+    multiTagline: 'Generated alternatives — pick a favorite and download.',
+    tweakColorLabel: 'Color',
+    tweakFontLabel: 'Typography',
+    tweakFrameLabel: 'Photo frame',
+    tweakComponentsLabel: 'Show / hide',
+    tweakResetLabel: 'Reset',
+    tweakHeadlineSub: 'Headline',
+    tweakBodySub: 'Body',
   },
   zh: {
     brand: '婚礼请帖',
@@ -119,7 +134,14 @@ const COPY = {
     zoomOutLabel: '缩小',
     zoomInLabel: '放大',
     zoomResetLabel: '适应屏幕',
-    multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。'
+    multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。',
+    tweakColorLabel: '配色',
+    tweakFontLabel: '字体',
+    tweakFrameLabel: '照片框',
+    tweakComponentsLabel: '显示 / 隐藏',
+    tweakResetLabel: '重置',
+    tweakHeadlineSub: '标题字体',
+    tweakBodySub: '正文字体',
   }
 }[lang];
 
@@ -743,6 +765,91 @@ function detailHtml(design, index, isMulti) {
 
   const designName = (lang === 'zh' ? design.name_zh : design.name_en) || design.id;
 
+  // Tweak panel — render only when design declares tweak_options.
+  // Each section is omitted if the design didn't declare it.
+  const tweak = design.tweak_options || null;
+  let tweakHtml = '';
+  let tweakConfigJson = 'null';
+  if (tweak) {
+    const sections = [];
+
+    // Colors
+    if (Array.isArray(tweak.color_schemes) && tweak.color_schemes.length) {
+      const swatches = tweak.color_schemes.map((cs, i) => {
+        const name = (lang === 'zh' ? cs.name_zh : cs.name_en) || cs.name || `#${i + 1}`;
+        const dots = Object.values(cs.vars || {}).slice(0, 4)
+          .map(v => `<span class="dot" style="background:${safeColor(v)}"></span>`).join('');
+        return `<button type="button" class="tweak-swatch" data-tweak-color="${i}">
+          <span class="dot-stack">${dots}</span>
+          <span>${esc(name)}</span>
+        </button>`;
+      }).join('');
+      sections.push(`<div class="tweak-group" data-section="color">
+        <div class="tweak-group-label">${esc(COPY.tweakColorLabel)}</div>
+        <div class="tweak-row">${swatches}</div>
+      </div>`);
+    }
+
+    // Fonts (one row per font variable)
+    if (tweak.fonts && typeof tweak.fonts === 'object') {
+      const fontRows = Object.entries(tweak.fonts).map(([cssVar, options]) => {
+        const subLabel = cssVar === '--font-headline' ? COPY.tweakHeadlineSub
+                       : cssVar === '--font-body'     ? COPY.tweakBodySub
+                       : cssVar;
+        const buttons = (Array.isArray(options) ? options : []).map(font =>
+          `<button type="button" class="tweak-font-btn" data-tweak-font-var="${esc(cssVar)}" data-tweak-font-value="${esc(font)}" style="font-family:'${safeFontName(font)}',sans-serif">${esc(font)}</button>`
+        ).join('');
+        return `<div class="tweak-row">
+          <div class="tweak-font-sub">${esc(subLabel)}</div>
+          ${buttons}
+        </div>`;
+      }).join('');
+      sections.push(`<div class="tweak-group" data-section="fonts">
+        <div class="tweak-group-label">${esc(COPY.tweakFontLabel)}</div>
+        ${fontRows}
+      </div>`);
+    }
+
+    // Frames
+    if (Array.isArray(tweak.frames) && tweak.frames.length) {
+      const frameButtons = tweak.frames.map((f, i) =>
+        `<button type="button" class="tweak-frame-btn" data-tweak-frame="${i}">${esc(f.name || `#${i+1}`)}</button>`
+      ).join('');
+      sections.push(`<div class="tweak-group" data-section="frame">
+        <div class="tweak-group-label">${esc(COPY.tweakFrameLabel)}</div>
+        <div class="tweak-row">${frameButtons}</div>
+      </div>`);
+    }
+
+    // Components
+    if (Array.isArray(tweak.components) && tweak.components.length) {
+      const checkboxes = tweak.components.map(c => {
+        const label = (lang === 'zh' ? c.label_zh : c.label_en) || c.label || c.id;
+        const stateAttr = c.default ? ' checked' : '';
+        return `<label class="tweak-checkbox${stateAttr}" data-tweak-component="${esc(c.id)}">
+          <input type="checkbox"${stateAttr}>
+          <span>${esc(label)}</span>
+        </label>`;
+      }).join('');
+      sections.push(`<div class="tweak-group" data-section="components">
+        <div class="tweak-group-label">${esc(COPY.tweakComponentsLabel)}</div>
+        <div class="tweak-row">${checkboxes}</div>
+      </div>`);
+    }
+
+    // Reset — only rendered when at least one section exists
+    if (sections.length > 0) {
+      sections.push(`<div class="tweak-row tweak-reset">
+        <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
+      </div>`);
+      tweakHtml = `<div class="tweak-panel" id="tweak-panel">${sections.join('')}</div>`;
+      tweakConfigJson = JSON.stringify(tweak)
+        .replace(/</g, '\\u003c')
+        .replace(/>/g, '\\u003e')
+        .replace(/&/g, '\\u0026');
+    }
+  }
+
   const specsBlocks = [];
   if (palette) specsBlocks.push(`<div class="spec-label">${esc(COPY.paletteLabel)}</div><div class="spec-value palette-row">${palette}</div>`);
   if (fonts) specsBlocks.push(`<div class="spec-label">${esc(COPY.fontsLabel)}</div><div class="spec-value fonts-row">${fonts}</div>`);
@@ -813,6 +920,7 @@ function detailHtml(design, index, isMulti) {
     })();
   </script>
   <style>${DETAIL_CSS}</style>
+  <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
 </head>
 <body>
   <nav class="nav-bar">
@@ -848,6 +956,8 @@ function detailHtml(design, index, isMulti) {
       ${longHtml}
 
       ${specsHtml}
+
+      ${tweakHtml}
 
       <div class="download-group">
         <div class="download-group-label">${esc(COPY.downloadGroupLabel)}</div>
