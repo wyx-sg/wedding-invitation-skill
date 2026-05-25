@@ -307,6 +307,27 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
             direction: dominant background color, photo placement, key motifs, symmetry
             vs asymmetry. Use the palette + motifs from design-principles.md as your
             vocabulary. NEVER include real names, dates, or venues in the sketch. -->
+
+       <!-- Pinned Custom card — ALWAYS rendered as the last card, regardless of how
+            many aesthetic cards the agent curated. The user can pick this to skip the
+            curated set and go straight into the design-from-scratch flow (see Stage 4
+            handling). Localize the name / spirit / motif strings to the user's primary
+            language before writing the file. -->
+       <div class="card custom-card">
+         <svg class="sketch" viewBox="0 0 240 320" xmlns="http://www.w3.org/2000/svg">
+           <rect width="240" height="320" fill="#1a1a1a"/>
+           <rect x="40" y="50" width="160" height="220" fill="none" stroke="#d4b896" stroke-width="0.7" stroke-dasharray="4 4" opacity="0.6"/>
+           <g transform="translate(120 160)" stroke="#d4b896" stroke-width="1" opacity="0.7">
+             <line x1="-10" y1="0" x2="10" y2="0"/>
+             <line x1="0" y1="-10" x2="0" y2="10"/>
+           </g>
+         </svg>
+         <div class="name">custom · 自定义</div>
+         <div class="spirit">从零开始 · 自己挑配色、字体、组件</div>
+         <div class="swatches"><span style="background:#e8e4dc"></span><span style="background:#dde2dd"></span><span style="background:#a59585"></span><span style="background:#1a1a1a"></span></div>
+         <div class="type-sample" style="font-family:system-ui,sans-serif">Aa · 字 · ✨</div>
+         <div class="motifs">fully tweakable · 完全自定义</div>
+       </div>
      </div>
    </body></html>
    ```
@@ -319,12 +340,37 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - **Text suggestion**: thin gray lines hinting at where names / dates would go. **Never** real text.
    - **Symmetry / asymmetry**: should mirror the aesthetic's spirit. Art-deco is centered + symmetric; morandi is off-center; wabi-sabi has lots of empty space.
 
-4. Tell the user:
-   > "I've prepared some aesthetic directions for you to compare. Open this file in your browser: `file://<absolute-path>/_style-preview.html`"
+4. Tell the user — translate the message to the user's primary language at runtime. Chinese example:
+   > "我准备了 N 个风格方向给你看。在浏览器里打开：`file://…/_style-preview.html`
+   >
+   > 看看哪个最对味，告诉我名字（比如 `morandi`）就行。如果都不喜欢，回复 **"换一批"** 我就重新选 N 个。也可以选最后那张 **Custom / 自定义** —— 我们直接进设计台，所有颜色字体组件你自己挑。"
 
-5. After the user picks (AskUserQuestion or open text):
-   - **Single mode**: user picks 1 aesthetic name → move to Stage 4 to design that one
-   - **Multi mode**: user can either confirm all `multi_count` candidates or trim/swap a few. Move to Stage 4 to design all of them.
+   English equivalent:
+   > "I've prepared N aesthetic directions for you. Open in your browser: `file://…/_style-preview.html`
+   >
+   > Tell me the name of the one you like (e.g. `morandi`). If none feel right, reply **"换一批" / "show me others"** and I'll pick a different N. Or pick the **Custom** card to skip the curated set — we'll go straight to the design studio where you pick everything yourself."
+
+5. **AskUserQuestion fallback**: when offering an AskUserQuestion modal as Tier 2 backup, include `Custom / 自定义` as one of the options alongside the N curated aesthetic names. AskUserQuestion only supports 4 options total — if N+1 > 4, drop down to 3 curated aesthetics + Custom.
+
+   Branch on the user's response:
+
+   - **User named an aesthetic** (e.g. "morandi", "art-deco"):
+     - Single mode → proceed to Stage 4 to design that one.
+     - Multi mode → confirm or trim/swap the `multi_count` candidates, then design all of them in Stage 4.
+
+   - **User said "换一批" / "再来一批" / "再换" / "看看别的" / "show me others" / similar**:
+     - Pick a DIFFERENT set of N aesthetics from `design-principles.md`.
+     - Track which aesthetics you've already shown so you don't repeat (until you've cycled through all 14).
+     - Regenerate `_style-preview.html` with the new N curated cards (Custom card still pinned at the end).
+     - Tell the user to refresh their browser.
+     - Repeat as needed.
+
+   - **User picked Custom / 自定义**:
+     - DO NOT design a fresh aesthetic in Stage 4. Instead:
+       a. Copy `references/blank-canvas.html` into `templates/<chosen-id>.html` (replace placeholder field names — e.g. `groom_zh` → `groom_es` — to match the active languages).
+       b. Configure `data/designs.json` with the contents of `references/blank-canvas-designs.json` (adjusted: set `id`, `primary_photo`, `name_*`, ensure the `template` filename matches what you wrote).
+     - Skip the iterative-feedback loop of Stage 5. The tweak page (loaded via `npm run gallery`) IS the user's design surface — they pick colors, fonts, frame, components there.
+     - Move directly to Stage 6 to render and open the gallery.
 
 **You are designing, not picking.** The user picked a direction (`morandi`, `art-deco`, etc.). In Stage 4 you will design a fresh template in their language, with their actual data, adapting the palette/typography to their photo and preferences — using `design-principles.md` as your vocabulary, not as a fixed recipe.
 
