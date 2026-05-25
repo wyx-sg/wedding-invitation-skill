@@ -1,0 +1,62 @@
+{
+  "languages": [
+    "zh",
+    "en"
+  ],
+  "font_cdn": "googleapis",
+  "names": {
+    "groom_zh": "林知言",
+    "groom_en": "LIN ZHIYAN",
+    "bride_zh": "沈安然",
+    "bride_en": "SHEN ANRAN",
+    "groom_surname_en": "LIN",
+    "bride_surname_en": "SHEN",
+    "couple_en_short": "L & S"
+  },
+  "date": {
+    "iso": "2099-10-01",
+    "zh_formal": "公元 二〇九九 年 十月一日",
+    "zh_short": "二〇九九年十月一日",
+    "weekday_zh": "星期四",
+    "zh_year": "二〇九九",
+    "zh_month_day": "十月一日",
+    "lunar": "",
+    "en_long": "October 1, 2099",
+    "en_short": "10.01.2099",
+    "en_compact": "10 · 01",
+    "weekday_en": "Thursday",
+    "en_month": "10",
+    "en_day": "01",
+    "en_year": "2099",
+    "roman_year": "MMXCIX"
+  },
+  "time": {
+    "value": "18:00",
+    "hours": "18",
+    "minutes": "00",
+    "zh_full": "晚上 18:00 入席",
+    "zh_label": "恭候"
+  },
+  "venue": {
+    "city_zh": "上海",
+    "city_en": "Shanghai",
+    "province_zh": "上海",
+    "province_en": "SHANGHAI",
+    "lines_zh": [
+      "黄浦区 永宁路 188 号",
+      "锦绣花园酒店 宴会厅"
+    ],
+    "lines_en": [
+      "188 Yongning Road, Huangpu District",
+      "Eternal Garden Hotel Ballroom"
+    ],
+    "name_zh": "锦绣花园酒店",
+    "name_en": "Eternal Garden Hotel",
+    "type_zh": "酒店 · 宴会"
+  },
+  "site": {
+    "title": "林知言 & 沈安然 · 婚礼请帖",
+    "subtitle": "2099.10.01 · Shanghai",
+    "newspaper_title": "The LIN Times"
+  }
+}

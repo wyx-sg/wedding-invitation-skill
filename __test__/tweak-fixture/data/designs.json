@@ -1,0 +1,39 @@
+[
+  {
+    "id": "morandi-tweak",
+    "name_zh": "莫兰迪 · 可调",
+    "name_en": "MORANDI · TWEAKABLE",
+    "template": "morandi-tweak.html",
+    "primary_photo": "photo-01",
+    "width": 420,
+    "height": 560,
+    "meta": {
+      "short": "soft contemporary · tweakable",
+      "palette": ["#e8e4dc", "#7a8a6d", "#a59585", "#2c2c2c"],
+      "fonts": ["Inter"],
+      "motifs": "oval photo · hairline dividers"
+    },
+    "tweak_options": {
+      "color_schemes": [
+        { "name_en": "Warm", "name_zh": "暖调",
+          "vars": { "--card-bg": "#e8e4dc", "--card-text": "#2c2c2c", "--card-accent-1": "#7a8a6d", "--card-accent-2": "#a59585" } },
+        { "name_en": "Cool", "name_zh": "冷调",
+          "vars": { "--card-bg": "#dde2dd", "--card-text": "#2a3236", "--card-accent-1": "#7a8a96", "--card-accent-2": "#95a0a5" } }
+      ],
+      "fonts": {
+        "--font-headline": ["Inter", "Manrope", "DM Sans"],
+        "--font-body":     ["Inter", "Manrope"]
+      },
+      "frames": [
+        { "name": "oval",          "radius": "50%",                "aspect": "4/5" },
+        { "name": "rounded-rect",  "radius": "8px",                "aspect": "4/5" },
+        { "name": "arch",          "radius": "50% 50% 4px 4px",    "aspect": "4/5" }
+      ],
+      "components": [
+        { "id": "tagline",      "label_en": "Tagline",      "label_zh": "寄语",    "default": true  },
+        { "id": "lunar-date",   "label_en": "Lunar date",   "label_zh": "农历",    "default": false },
+        { "id": "address-full", "label_en": "Full address", "label_zh": "完整地址", "default": true  }
+      ]
+    }
+  }
+]
