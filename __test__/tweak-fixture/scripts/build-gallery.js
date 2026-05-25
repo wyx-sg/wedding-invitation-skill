@@ -110,6 +110,8 @@ const COPY = {
     multiTagline: 'Generated alternatives — pick a favorite and download.',
     singleTagline: 'Click the card to view or download.',
     previewTagline: 'Click a design to preview and tweak. Tell the agent when you are ready for downloads.',
+    previewHeading: 'Preview + Tweak',
+    deliverHeading: 'Your Wedding Invitation',
     tweakColorLabel: 'Color',
     tweakFontLabel: 'Typography',
     tweakFrameLabel: 'Photo frame',
@@ -147,6 +149,8 @@ const COPY = {
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。',
     singleTagline: '点击卡片查看详情或下载。',
     previewTagline: '点击卡片预览 + 微调。调好后告诉 Agent 出最终下载页。',
+    previewHeading: '预览 + 微调',
+    deliverHeading: '你的婚礼请帖',
     tweakColorLabel: '配色',
     tweakFontLabel: '字体',
     tweakFrameLabel: '照片框',
@@ -252,8 +256,16 @@ const GALLERY_CSS = `
   header.hero {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 22px 32px 4px;
+    padding: 28px 32px 10px;
     text-align: center;
+  }
+  header.hero h1 {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-weight: 300;
+    font-size: 36px;
+    letter-spacing: 4px;
+    margin: 0 0 14px;
+    color: var(--accent);
   }
   .tagline {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
@@ -263,6 +275,9 @@ const GALLERY_CSS = `
     margin: 0 auto;
     max-width: 640px;
     line-height: 1.55;
+  }
+  @media (max-width: 600px) {
+    header.hero h1 { font-size: 26px; letter-spacing: 2px; }
   }
   main {
     max-width: 1680px;
@@ -1843,6 +1858,7 @@ export function finalGalleryHtml() {
 
   return galleryShellHtml({
     title: COPY.pageTitle,
+    heading: COPY.deliverHeading,
     tagline: designs.length === 1 ? COPY.singleTagline : COPY.multiTagline,
     cardsHtml: cards,
   });
@@ -1910,16 +1926,19 @@ export function navGalleryHtml() {
 
   return galleryShellHtml({
     title: COPY.pageTitle,
+    heading: COPY.previewHeading,
     tagline: COPY.previewTagline,
     cardsHtml: cards,
     headerExtraHtml: exportHeader,
   });
 }
 
-// Shared HTML shell used by both galleries — nav bar + tagline +
-// optional `headerExtraHtml` slot (above the grid) + grid + optional
-// `footerHtml` slot. No big h1 — the nav bar already says "婚礼请帖".
-function galleryShellHtml({ title, tagline, cardsHtml, headerExtraHtml = '', footerHtml = '' }) {
+// Shared HTML shell used by both galleries — nav bar + page heading +
+// tagline + optional `headerExtraHtml` slot (above the grid) + grid +
+// optional `footerHtml` slot. The h1 is stage-specific (e.g. "预览 + 微调"
+// for Stage 4, "你的婚礼请帖" for Stage 5) — matches the picker pages'
+// big-headline style ("挑照片", "挑风格方向").
+function galleryShellHtml({ title, heading, tagline, cardsHtml, headerExtraHtml = '', footerHtml = '' }) {
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
 <head>
@@ -1935,6 +1954,7 @@ function galleryShellHtml({ title, tagline, cardsHtml, headerExtraHtml = '', foo
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
   <header class="hero">
+    <h1>${esc(heading || title)}</h1>
     <p class="tagline">${esc(tagline)}</p>
   </header>
   ${headerExtraHtml}
