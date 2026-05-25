@@ -327,22 +327,24 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - **Symmetry / asymmetry**: should mirror the aesthetic's spirit. Art-deco is centered + symmetric; morandi is off-center; wabi-sabi has lots of empty space.
 
 4. Tell the user — translate the message to the user's primary language at runtime. Chinese example:
-   > "我看了你的照片，挑了 5 个最合适的风格方向。在浏览器里打开：`file://…/_style-preview.html`
+   > "我看了你的照片，挑了 5 个最合适的风格方向。在浏览器里打开：`http://localhost:8765/_style-preview.html`
    >
-   > 看哪几个对味就点哪几张（**可多选**）。挑好了点底部 **复制** 把内容粘到对话里，我接着帮你做。
+   > 看哪几个对味就点哪几张（**可多选**）。如果 picker-server 没起，挑好了点底部 **复制** 把内容粘到对话里。
    >
-   > 如果都不喜欢、或者想多看几个，回复 **"换一批"** 我会再挑 5 个新的（已选的不会被换掉）。或者回复 **Custom / 自定义** —— 我们直接进设计台，所有颜色字体组件你自己挑。"
+   > 都不喜欢或者想多看几个，回复 **"换一批"** 我会再挑 5 个新的（已选的不会被换掉）。或者回复 **自定义** —— 我们直接进设计台，所有颜色字体组件你自己挑。"
 
    English equivalent:
-   > "I picked the 5 aesthetic directions that fit your photos best. Open in your browser: `file://…/_style-preview.html`
+   > "I picked the 5 aesthetic directions that fit your photos best. Open in your browser: `http://localhost:8765/_style-preview.html`
    >
-   > Click the ones you like (**multi-select**). When done, click **Copy** at the bottom and paste back into chat.
+   > Click the ones you like (**multi-select**). If picker-server isn't running, click **Copy** at the bottom and paste back into chat.
    >
-   > Want more options? Reply **"show me others" / "换一批"** and I'll pick 5 fresh ones (your existing selections stay). Or reply **Custom** to skip the curated set — we'll go straight to the design studio where you pick everything yourself."
+   > Want more options? Reply **"show me others"** and I'll pick 5 fresh ones (your existing selections stay). Or reply **Custom** to skip the curated set — we'll go straight to the design studio where you pick everything yourself."
+
+   For any other primary language, use that language's word for "custom" / "tailored from scratch" as the reply keyword (e.g. Spanish `Personalizado`, Japanese `カスタム`, Korean `직접`, French `Personnalisé`). Don't force English "Custom" or Chinese "自定义" on speakers of other languages — match the chat language.
 
 5. **AskUserQuestion fallback**: AskUserQuestion only supports 4 options. If using Tier-2 fallback, list 3-4 of the 5 curated aesthetics; otherwise stick with Tier-1 page picker.
 
-   **The picker page MUST NOT include a Custom card.** Custom is a chat-only escape hatch — surfacing it on the picker biases users to pick it without trying any curated direction. The chat prompt above mentions it as a reply option ("回复 Custom / 自定义"), which is enough.
+   **The picker page MUST NOT include a Custom card.** Custom is a chat-only escape hatch — surfacing it on the picker biases users to pick it without trying any curated direction. The chat prompt above mentions it as a reply option (in whichever language the user picked), which is enough.
 
    Branch on the user's response:
 
@@ -360,9 +362,13 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
 
    - **User replied "Custom" / "自定义" / "I want to design from scratch" / similar** (in chat, not via picker):
      - DO NOT design a fresh aesthetic in Stage 4. Instead:
-       a. Copy `references/blank-canvas.html` into `templates/<chosen-id>.html` (replace placeholder field names — e.g. `groom_zh` → `groom_es` — to match the active languages).
-       b. Configure `data/designs.json` with the contents of `references/blank-canvas-designs.json` (adjusted: set `id`, `primary_photo`, `name_*`, ensure the `template` filename matches what you wrote).
+       a. **Naming**. Don't hardcode "自定义设计" / "Custom design" as the name — it makes the gallery feel templated. Two options, your call based on the conversation:
+          - **Ask the user**: "想给这个设计起个名字吗？比如 'Lin Shen 暖光'、'我们的第一个家' 之类的，留空我就先用 my-design。"
+          - **Suggest one after they tweak**: leave the initial `name_*` as something neutral like `my-design`, and after the user spends time in the studio settling on a palette / font / vibe, propose a name that captures that vibe ("我觉得叫 'Quiet Morning' 挺合适？暖灰加椭圆框那种安静感"). The user can accept or pick their own.
+       b. Copy `references/blank-canvas.html` into `templates/<chosen-id>.html` (replace placeholder field names — e.g. `groom_zh` → `groom_es` — to match the active languages). Pick `<chosen-id>` as a slug derived from the name (`lin-shen-warm-light`, `my-design`, etc.). The id only needs to be filesystem-safe; the user-facing label is `name_<lang>`.
+       c. Configure `data/designs.json` with the contents of `references/blank-canvas-designs.json` (adjusted: set `id`, `primary_photo`, `name_<lang>` for each active language, ensure the `template` filename matches what you wrote).
      - The tweak page (`dist/<id>-studio.html`, opened from the gallery) IS the user's design surface — they pick colors, fonts, frame, components there. Move to Stage 5 to render and open the gallery.
+     - If you chose option (b), come back to rename `name_*` in `data/designs.json` once the user has tweaked the design, then re-run `npm run gallery` to refresh the gallery card label. No need to rebuild the template HTML.
 
 **You are designing, not picking.** The user picked a direction (`morandi`, `art-deco`, etc.). In Stage 4 you will design a fresh template in their language, with their actual data, adapting the palette/typography to their photo and preferences — using `design-principles.md` as your vocabulary, not as a fixed recipe.
 

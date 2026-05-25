@@ -1,14 +1,15 @@
 {
-  "id": "custom-canvas",
-  "name_zh": "自定义设计",
-  "name_en": "CUSTOM",
-  "template": "custom-canvas.html",
+  "_comment": "Reference starting point for Stage-3 Custom flow. Agent: replace `id` with a slug, `name_<lang>` with the user-provided name OR a name you suggest based on the final design (see workflow.md Stage 3 Custom branch). Don't ship the literal '自定义设计' / 'CUSTOM' label to the user — it makes the gallery feel templated.",
+  "id": "my-design",
+  "name_zh": "我的设计",
+  "name_en": "MY DESIGN",
+  "template": "my-design.html",
   "primary_photo": "photo-01",
   "width": 420,
   "height": 560,
   "custom": true,
   "meta": {
-    "short": "从零自定义",
+    "short": "",
     "palette": ["#f5f1e8", "#8a9882", "#a59585", "#2c2c2c"],
     "fonts": ["Cormorant Garamond", "Inter"],
     "motifs": "完全可调"

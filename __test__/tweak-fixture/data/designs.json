@@ -84,8 +84,8 @@
   },
   {
     "id": "custom-canvas",
-    "name_zh": "自定义设计",
-    "name_en": "CUSTOM",
+    "name_zh": "暖光晨",
+    "name_en": "WARM MORNING",
     "template": "custom-canvas.html",
     "primary_photo": "photo-02",
     "width": 420,
