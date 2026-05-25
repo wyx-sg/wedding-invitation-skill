@@ -2,6 +2,8 @@
 
 # Wedding Invitation
 
+[![Download Latest Release](https://img.shields.io/github/v/release/wyx-sg/wedding-invitation-skill?label=Download%20skill%20zip&color=2c2c2c&style=for-the-badge)](https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip)
+
 > An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
 **🎨 [Open the live gallery](https://wyx-sg.github.io/wedding-invitation-skill/)** — click any of the 20 examples to see it rendered full-size.
@@ -18,31 +20,51 @@
 
 ## Quick start
 
+Download the latest release into Claude Code's skills directory:
+
 ```bash
-git clone https://github.com/wyx-sg/wedding-invitation-skill \
-  ~/.claude/skills/wedding-invitation
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
+curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-Then in [Claude Code](https://claude.ai/code), invoke the skill:
+Then in [Claude Code](https://claude.ai/code):
 
 ```
 /wedding-invitation
 ```
 
-Or just tell Claude: "Help me make a wedding invitation." Either way works — Claude takes it from there. No restart needed.
+Or just say "help me make a wedding invitation" — Claude takes it from there, no restart needed.
+
+The release zip is under 100 KB and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`.
+
+### Requirements
+
+- Node.js 18+
+- A Chromium-family browser (Google Chrome, Chromium, or Microsoft Edge) — used by `render.js` for PNG export. If missing, the skill prints install instructions for your OS.
+- macOS, Linux, or Windows
+
+### Contributing? Clone the source instead
+
+```bash
+git clone https://github.com/wyx-sg/wedding-invitation-skill ~/.claude/skills/wedding-invitation
+```
+
+The repo includes extras not needed to *use* the skill but useful for development:
+- `examples/` — 20 showcase invitations (source of truth for the README gallery)
+- `docs/` — the GitHub Pages site, generated from `examples/` via `scripts/build-pages.js`
+- `__test__/tweak-fixture/` — end-to-end test fixture
+- `scripts/` — maintainer build tools
 
 ## What you'll get
 
 - A **bespoke HTML design** created for you — not picked from a generic gallery
 - **Two PNG sizes per design** — 1080×1440 for messaging/email, 2160×2880 at 300 DPI for printing
-- A **local gallery page** that opens in your browser with download buttons
+- A **local browser tweak studio** to fine-tune color / font / photo-frame / optional components on each design — live, no rebuild needed
 - Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, French, Hindi, Arabic, or any combination
 - Your photos, names, and address **never leave your machine**
 
-You pick a **mode** at the start:
-
-- **Single design + iterate** (default) — Claude designs one template tailored to you and refines with your feedback. ~30 minutes, 3-5 rounds.
-- **Multiple alternatives** — Claude generates 3 / 5 / 8 different aesthetics in parallel using your actual data. You browse them in a local gallery and either download a favorite or pick one to keep iterating.
+You pick **how many designs** by how many style directions you select. Pick one direction → one design. Pick three → three designs side-by-side in the gallery. You can also tell Claude to skip the curated picker and design from a conversation about your specific vision.
 
 The 20 examples in the image above span world cultures and contemporary aesthetics, showing the visual range available:
 
@@ -56,35 +78,25 @@ The 20 examples in the image above span world cultures and contemporary aestheti
 - **Contemporary** — `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
 - **Themed** — `retro-poster`, `vintage-stars`
 
-Whatever mode you pick, each invitation is custom-designed from scratch — not pulled from a template library.
+Each invitation is custom-designed from scratch — not pulled from a template library.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[💬 You talk] --> B[language · names<br/>date · venue · photos]
-    B --> M{mode?}
-    M -->|Single| S[Claude designs 1 template<br/>· iterate with feedback]
-    M -->|Multi N| G[Claude generates N variants<br/>· each a different aesthetic]
-    S --> R[Render PNG · 2 sizes<br/>Social 1080 · Print 2160]
-    G --> R
-    R --> O[Local gallery opens in browser<br/>📥 Download buttons]
+    A[💬 Talk: language<br/>names · date · venue] --> P[📷 Pick photos]
+    P --> S[🎨 Pick style direction<br/>multi-select]
+    S --> D[Claude writes one HTML<br/>template per direction]
+    D --> ST[🛠 Stage 4 · Preview + tweak<br/>dist/preview.html<br/>live studio per design]
+    ST --> DL[📥 Stage 5 · Deliver<br/>dist/index.html<br/>download Social / Print PNG]
 ```
 
-1. **Talk** — Claude asks your language(s), names, date, venue, style preference
-2. **Mode** — Single design or compare alternatives
-3. **Preview** — Claude shows aesthetic directions visually in your browser
-4. **Design** — Claude writes unique HTML template(s) from scratch in your language
-5. **Iterate** (single mode) — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
-6. **Open gallery** — `dist/index.html` opens in your browser with download buttons for two PNG sizes
-
-## Requirements
-
-- **Node.js 18+**
-- **Google Chrome, Chromium, or Microsoft Edge** — used to render the PNG. The skill ships with a cross-platform Node script (`render.js`) that locates whichever you have.
-- **macOS, Linux, or Windows**
-
-If you don't have a Chromium-family browser, the skill prints install instructions for your OS.
+1. **Talk** — language(s), names, date, venue
+2. **Pick photos** — Claude shows every photo you provided as a card; tap to select (multi-select or "Select All"). First selected becomes primary; the rest stay available as alternates the design can switch to
+3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or just tell Claude in chat "I want something custom" / "我想要自定义" to skip the curated picker and design from a conversation about your specific vision
+4. **Design** — Claude writes a fresh HTML template per direction you picked
+5. **Preview + tweak** (Stage 4 — `dist/preview.html`) — live iframe thumbnails of every design; click any card to open its **studio** with color / font / photo-frame / show-hide controls. Tweaks save to disk so Claude knows what you picked. Tell Claude in chat for anything the studio can't do
+6. **Deliver** (Stage 5 — `dist/index.html`) — final gallery with PNG thumbnails; click a card → detail page with **Social** (1080×1440) and **Print** (2160×2880) download buttons. You can flip back to Stage 4 anytime to tweak more
 
 ## Use with other coding agents
 

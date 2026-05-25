@@ -65,7 +65,7 @@ Pick fonts that match the language(s) AND the aesthetic.
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:ital,wght@0,400;0,500&display=swap">
 ```
 
-`fonts.font.im` is a Google-Fonts mirror reachable from CN; `fonts.googleapis.com` is the official Google CDN (faster outside CN, partially blocked inside CN). The skill asks the user at Stage 2; if `font_cdn` is missing, default to `googleapis`.
+`fonts.font.im` is a Google-Fonts mirror reachable from CN; `fonts.googleapis.com` is the official Google CDN (faster outside CN, partially blocked inside CN). The skill picks one at Stage 2 silently (no question to the user) — default to `googleapis`, switch to `fontim` only when there's clear signal the user is in mainland China.
 
 ### Chinese (zh)
 Always include the system fallback chain:
@@ -391,6 +391,77 @@ If the crop is wrong, fix it before showing the user:
 ## Mobile-first
 
 The final output is a PNG, but users will preview the HTML on phones too. The card sits centered on a dark `<body>` background. No responsive breakpoints needed (fixed 420 px wide), but font sizes must be readable when the PNG is opened on a phone (1080-wide PNG ≈ fills a phone screen).
+
+## Tweakable templates (CSS variable contract)
+
+The studio-page tweak panel can change a template's color scheme, fonts, photo frame, and component visibility in real time without rebuilding. For this to work, your template MUST follow this contract.
+
+### 1. Use CSS variables for tweak-able properties
+
+In `:root`, declare defaults for everything the user is allowed to tweak. Templates that hardcode `color: #2c2c2c` directly on `.names` cannot be tweaked — the gallery has no way to override.
+
+```css
+:root {
+  --card-bg: #e8e4dc;
+  --card-text: #2c2c2c;
+  --card-accent-1: #7a8a6d;
+  --card-accent-2: #a59585;
+  --font-headline: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --photo-radius: 50%;
+  --photo-aspect: 4/5;
+}
+.card {
+  background: var(--card-bg);
+  color: var(--card-text);
+  font-family: var(--font-body);
+}
+.names { font-family: var(--font-headline); }
+.amp, .divider { background: var(--card-accent-1); color: var(--card-accent-1); }
+.photo-wrap {
+  border-radius: var(--photo-radius);
+  aspect-ratio: var(--photo-aspect);
+}
+```
+
+The `:root` declarations are the standalone preview's defaults; the gallery's panel overrides them by setting inline style on `documentElement`. A "Reset" click removes the inline styles, falling back to `:root`.
+
+### 2. Mark optional components with a class hook
+
+Each optional component (tagline, lunar date, full address, seal, etc.) needs a stable class that matches the `id` declared in `designs.json` → `tweak_options.components`.
+
+```html
+<div class="tagline optional">A quiet promise, kept in light.</div>
+<div class="lunar-date optional">戊辰年 八月 十五</div>
+<div class="address-full optional">{{venue.lines_zh.0}}</div>
+```
+
+Add this rule once at the bottom of your `<style>`:
+
+```css
+.hidden { display: none !important; }
+```
+
+When the user unchecks a component, the gallery sends `{type:'toggle-component', id:'tagline', visible:false}` and the listener adds `.hidden` to every `.tagline` element. Conversely, when a component declares `default: false` in `designs.json`, `build.js` bakes the `hidden` class into the rendered HTML at build time — so the PNG and standalone preview match the gallery's initial state.
+
+### 3. The `optional` class is purely documentation
+
+It signals "this element is allowed to be toggled" to a reader of the template. The runtime only cares about the id-matching class (`.tagline`, `.lunar-date`, …) and the `.hidden` toggle. Feel free to use `.optional` for your own styling if you want.
+
+### 4. Component ids must match the regex `[a-zA-Z][a-zA-Z0-9-]*`
+
+The id is interpolated into a CSS class selector in the iframe's postMessage listener. Anything outside `[a-zA-Z][a-zA-Z0-9-]*` is rejected (the message is silently dropped). Stick to lowercase letters, digits, and hyphens: `tagline`, `lunar-date`, `address-full`, `seal`, `pinyin`. Avoid underscores or non-ASCII.
+
+### 5. After writing the template, populate `tweak_options`
+
+Edit `data/designs.json` and add a `tweak_options` block (see Stage 4 in `workflow.md` for the schema). The agent's job is to choose meaningful variants:
+
+- **Color schemes**: at least 2 (e.g. warm / cool, or palette A / B). Each is a complete vars override — don't ship a "cool" scheme that only swaps the accent and leaves a warm bg.
+- **Fonts**: 2–3 options per font variable, all in the aesthetic's family (see Typography above). Don't put a brush script in the "headline" set of a Morandi card.
+- **Frames** (optional): the shapes that work for the photo (see "Photo handling"). Each frame entry uses `name_zh` / `name_en` (and optionally a bare `name` fallback) so the panel labels match the user's primary language. If only oval works for your photo, omit the frame switcher. The localized lookup follows `<field>_<lang>` → `<field>_en` → bare `<field>`, where `<lang>` is `data/wedding.json` `languages[0]`. So for a Spanish-language card, the agent writes `name_es` / `label_es`; for Japanese, `name_ja` / `label_ja`. Any user-facing prose (color scheme names, frame names, component labels, design name + description) must be localized this way.
+- **Components**: every element you marked `.optional` should appear in `components`. Pick a sensible default (lunar-date defaults to off for most modern Chinese weddings; tagline defaults to on if you wrote one).
+
+If the design doesn't make sense to tweak (e.g. `red-gold`'s red dominance IS the aesthetic — color schemes don't apply), omit `tweak_options` entirely. The panel just won't render.
 
 ## Forbidden patterns
 

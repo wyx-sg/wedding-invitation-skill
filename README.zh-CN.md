@@ -2,6 +2,8 @@
 
 # 婚礼请帖
 
+[![下载最新 release](https://img.shields.io/github/v/release/wyx-sg/wedding-invitation-skill?label=%E4%B8%8B%E8%BD%BD%20skill%20zip&color=2c2c2c&style=for-the-badge)](https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip)
+
 > 一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。
 
 **🎨 [打开在线 gallery](https://wyx-sg.github.io/wedding-invitation-skill/index.zh.html)** — 点任意一张样例看完整渲染效果。
@@ -18,31 +20,52 @@
 
 ## 快速开始
 
+把最新 release 直接下到 Claude Code 的 skills 目录：
+
 ```bash
-git clone https://github.com/wyx-sg/wedding-invitation-skill \
-  ~/.claude/skills/wedding-invitation
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
+curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-然后在 [Claude Code](https://claude.ai/code) 里调用 skill：
+然后在 [Claude Code](https://claude.ai/code) 里：
 
 ```
 /wedding-invitation
 ```
 
-或者直接说"帮我做一张婚礼请帖"。两种都行 — Claude 会接着引导对话，不需要重启 Claude Code。
+或者直接说"帮我做一张婚礼请帖" — Claude 会接着引导对话，不用重启。
+
+release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。
+
+### 系统要求
+
+- Node.js 18+
+- Chromium 系浏览器（Google Chrome、Chromium 或 Microsoft Edge）— `render.js` 用来导出 PNG。如果没装，skill 会按你的操作系统打印安装指引。
+- macOS、Linux 或 Windows
+
+### 想贡献代码？直接 clone 源码
+
+```bash
+git clone https://github.com/wyx-sg/wedding-invitation-skill \
+  ~/.claude/skills/wedding-invitation
+```
+
+仓库包含以下额外目录，使用 skill 时不需要，但贡献代码时有用：
+- `examples/` — 20 张展示请帖（README gallery 的原始素材）
+- `docs/` — GitHub Pages 站点，由 `scripts/build-pages.js` 从 `examples/` 生成
+- `__test__/tweak-fixture/` — 端到端测试 fixture
+- `scripts/` — 维护者构建工具
 
 ## 你将得到
 
 - 一张**为你专属设计**的 HTML 请帖 — 而不是从模板库里挑一张
 - **每张请帖两个尺寸的 PNG** — 1080×1440（社交版，微信/邮件）+ 2160×2880（印刷版，300 DPI）
-- **本地展示页** — 在浏览器里打开，配下载按钮
+- **本地浏览器微调台** — 实时切配色 / 字体 / 相框 / 可选组件，不用重 build
 - 用**你选择的语言**设计 — 中文、英文、西班牙文、日文、韩文、法文、印地、阿拉伯，或任意组合
 - 你的照片、姓名、地址**全程不出本机**
 
-开始时你选一种**模式**：
-
-- **单张深度打磨**（默认）— Claude 为你设计一张，结合你的反馈反复打磨。约 30 分钟，3-5 轮迭代。
-- **多张对比**— Claude 并行生成 3 / 5 / 8 张不同 aesthetic 的设计，全部用你的真实数据。你在本地 gallery 里浏览，下载最喜欢的，或者挑一张继续打磨。
+**生成几张设计取决于你选几个风格方向。** 选 1 个 → 1 张；选 3 个 → 3 张并排在 gallery 里。也可以让 Claude 跳过候选 picker，从对话沟通你的想法开始设计。
 
 上图中 20 张样例覆盖了世界各种文化和当代风格，展示能做到什么程度：
 
@@ -56,35 +79,25 @@ git clone https://github.com/wyx-sg/wedding-invitation-skill \
 - **当代** — `莫兰迪`、`现代极简`、`地中海`、`黑金`
 - **主题** — `复古海报`、`复古星空`
 
-不管哪种模式，每张请帖都是从零定制的 — 不是从模板库里抓的。
+每张请帖都是从零定制的 — 不是从模板库里抓的。
 
 ## 工作流程
 
 ```mermaid
 flowchart LR
-    A[💬 对话] --> B[语言 · 姓名<br/>日期 · 场地 · 照片]
-    B --> M{模式?}
-    M -->|单张| S[Claude 设计 1 张模板<br/>· 反馈式迭代]
-    M -->|多张 N| G[Claude 并行生成 N 张<br/>· 每张不同 aesthetic]
-    S --> R[渲染 PNG · 两个尺寸<br/>社交 1080 · 印刷 2160]
-    G --> R
-    R --> O[本地 gallery 浏览器打开<br/>📥 下载按钮]
+    A[💬 对话：语言<br/>姓名 · 日期 · 场地] --> P[📷 挑照片]
+    P --> S[🎨 挑风格方向<br/>可多选]
+    S --> D[Claude 每个方向都<br/>从零写一份 HTML 模板]
+    D --> ST[🛠 Stage 4 · 预览 + 微调<br/>dist/preview.html<br/>每张设计的实时微调台]
+    ST --> DL[📥 Stage 5 · 出成品<br/>dist/index.html<br/>下载社交 / 印刷 PNG]
 ```
 
-1. **对话** — Claude 问你的语言、姓名、日期、场地、风格偏好
-2. **模式** — 单张深做 / 多张对比
-3. **预览** — Claude 在浏览器里展示几个候选风格方向供你视觉选择
-4. **设计** — Claude 用你选的语言从零写 HTML 模板
-5. **迭代**（单张模式）— "字大点""换张照片""配色柔和"，Claude 实时调
-6. **打开 gallery** — `dist/index.html` 在浏览器里打开，含两个尺寸的下载按钮
-
-## 系统要求
-
-- **Node.js 18+**
-- **Google Chrome、Chromium 或 Microsoft Edge** — 用于把 HTML 渲染成 PNG。skill 自带跨平台 Node 脚本 (`render.js`) 会自动定位你已装的浏览器。
-- **macOS、Linux 或 Windows**
-
-如果你没装 Chromium 系浏览器，脚本会按你的操作系统打印安装指引。
+1. **对话** — 语言、姓名、日期、场地
+2. **挑照片** — Claude 把你给的所有照片做成卡片；点击多选（或"全选"）。第一张作为主图，其他作为可切换的备选
+3. **挑风格方向** — Claude 看你的照片挑出 5 个最匹配的方向；可单选可多选。回复"换一批"换 5 个新的（已选的不会被换），或者直接在对话里说"我想自定义" / "I want something custom"，跳过候选 picker，从对话开始设计你想要的方向
+4. **设计** — Claude 为每个方向都从零写一份 HTML 模板
+5. **预览 + 微调**（Stage 4 — `dist/preview.html`）— 每张设计的实时 iframe 缩略图；点卡片进**微调台**，切配色 / 字体 / 相框 / 显示隐藏。微调结果自动保存到本地文件，Claude 看得到。微调台搞不定的事跟 Claude 说就行
+6. **出成品**（Stage 5 — `dist/index.html`）— 最终 gallery（PNG 缩略图），点卡片进详情页，**社交版** (1080×1440) + **印刷版** (2160×2880) 下载按钮。看完想再调？随时跳回 Stage 4
 
 ## 兼容其他编程 agent
 

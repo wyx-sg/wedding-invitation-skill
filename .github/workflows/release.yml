@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build release zip
+        run: node scripts/build-release.js
+
+      - name: Compute zip size + sha
+        id: meta
+        run: |
+          ZIP=release/wedding-invitation-skill.zip
+          BYTES=$(stat -c%s "$ZIP")
+          MAX=$((150 * 1024))
+          if [ "$BYTES" -gt "$MAX" ]; then
+            echo "::error::release zip is $BYTES bytes (> $MAX). README claims under 100 KB; tighten build-release.js or update the README."
+            exit 1
+          fi
+          echo "size=$(du -h $ZIP | cut -f1)" >> $GITHUB_OUTPUT
+          echo "sha256=$(sha256sum $ZIP | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/wedding-invitation-skill.zip
+          generate_release_notes: true
+          body: |
+            ## Wedding Invitation Skill — ${{ github.ref_name }}
+
+            **Clean install:** download `wedding-invitation-skill.zip` (${{ steps.meta.outputs.size }}) below.
+
+            ```
+            unzip wedding-invitation-skill.zip
+            ```
+
+            Contains only the runtime files needed to use the skill:
+            `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`,
+            `references/`, `skeleton/`.
+
+            Excludes `examples/`, `docs/`, `__test__/`, and maintainer scripts
+            — those live in the source repo for development only.
+
+            SHA256: `${{ steps.meta.outputs.sha256 }}`

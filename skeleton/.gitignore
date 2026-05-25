@@ -6,6 +6,8 @@ photos/*
 !photos/.gitkeep
 data/wedding.json
 data/designs.json
+data/picker-state.json
+data/tweak-state.json
 
 # Node
 node_modules/

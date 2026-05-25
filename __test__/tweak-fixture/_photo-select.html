@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>挑照片</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
+<style>
+  .wis-nav { position: sticky; top: 0; z-index: 50; text-align: center; padding: 18px 16px 12px; background: rgba(10,9,7,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #1f1a14; }
+  .wis-brand { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; letter-spacing: 3px; color: #d4b896; text-transform: uppercase; }
+  .wis-pb { font-size: 9.5px; letter-spacing: 1.2px; color: #5a4a36; margin-top: 4px; font-family: 'Inter', sans-serif; }
+  .wis-pb a { color: #8a7a5e; text-decoration: none; border-bottom: 1px dotted #2a2218; transition: color .18s, border-color .18s; }
+  .wis-pb a:hover { color: #d4b896; border-bottom-color: #d4b896; }
+  body { margin: 0; background: #0a0907; color: #d4c4a8; font-family: 'Inter', -apple-system, "Noto Serif SC", sans-serif; padding: 16px 24px 80px; min-height: 100vh; }
+  h1 { text-align: center; font-weight: 300; font-family: 'Cormorant Garamond', serif; font-size: 32px; letter-spacing: 4px; color: #d4b896; margin: 0 0 12px; }
+  .note { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 14px; color: #a89878; max-width: 680px; margin: 0 auto 36px; line-height: 1.55; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, 220px); gap: 20px; max-width: 1280px; margin: 0 auto; justify-content: center; }
+  .card { background: #14110d; border: 2px solid transparent; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 10px; transition: border-color .18s, transform .15s, background .18s; cursor: pointer; user-select: none; position: relative; }
+  .card:hover { transform: translateY(-2px); border-color: #2a2218; }
+  .card.selected { border-color: #d4b896; background: #1a1410; }
+  .check { position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; background: #d4b896; color: #0a0907; display: none; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+  .card.selected .check { display: flex; }
+  .thumb { width: 100%; aspect-ratio: 3/4; overflow: hidden; border-radius: 3px; background: #000; pointer-events: none; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .label { display: flex; align-items: baseline; justify-content: space-between; }
+  .id { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: #d4b896; letter-spacing: 1px; }
+  .note-text { font-size: 10px; letter-spacing: 1.5px; color: #5a4a36; text-transform: uppercase; }
+  .summary { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px 20px; background: rgba(10, 9, 7, 0.92); backdrop-filter: blur(12px); border-top: 1px solid #2a2218; font-size: 13px; letter-spacing: 1.2px; color: #a89878; transition: color .18s; display: flex; align-items: center; justify-content: center; gap: 32px; }
+  .summary .picks-area { display: flex; align-items: baseline; gap: 6px; }
+  .summary strong { font-family: 'Cormorant Garamond', serif; font-style: italic; color: #d4b896; font-weight: 400; font-size: 16px; margin: 0 6px; letter-spacing: 1px; }
+  .summary.empty { color: #5a4a36; }
+  .summary .hint { font-size: 11px; color: #5a4a36; margin-left: 12px; }
+  .summary-btn { margin-left: 8px; padding: 4px 12px; background: transparent; border: 1px solid #b8956a; border-radius: 999px; color: #d4b896; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background .18s, color .18s; }
+  .summary-btn:hover { background: rgba(212,184,150,0.12); }
+  .copy-btn { display: none; }
+  .copy-btn.copied { background: #d4b896; color: #0a0907; border-color: #d4b896; }
+  .summary:not(.empty) .copy-btn { display: inline-block; }
+  .back-to-agent { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 12px; color: #5a4a36; max-width: 540px; margin: 0 auto 28px; line-height: 1.6; }
+  .back-to-agent strong { color: #b9a47f; font-style: normal; font-weight: 400; }
+  @media (max-width: 600px) { .summary { flex-direction: column; gap: 6px; padding: 10px 16px; } }
+</style></head>
+<body>
+  <nav class="wis-nav">
+    <div class="wis-brand">婚礼请帖</div>
+    <div class="wis-pb">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</div>
+  </nav>
+  <h1>挑照片</h1>
+  <p class="note">点击下面的照片选中（可多选 / 全选）。</p>
+  <p class="back-to-agent">你挑的照片会自动同步给 Agent。如果 Agent 没看到，点 <strong>复制</strong> 粘回对话窗口 — Agent 接着帮你做请帖。</p>
+  <div class="grid" id="grid">
+    <div class="card" data-id="p01">
+      <div class="check">✓</div>
+      <div class="thumb"><img src="photos/photo-01.jpg" alt="photo 01"></div>
+      <div class="label"><span class="id">p01</span><span class="note-text">竖构图 · 暖光</span></div>
+    </div>
+    <div class="card" data-id="p02">
+      <div class="check">✓</div>
+      <div class="thumb"><img src="photos/photo-02.jpg" alt="photo 02"></div>
+      <div class="label"><span class="id">p02</span><span class="note-text">竖构图 · 中式礼服</span></div>
+    </div>
+  </div>
+  <div class="summary empty" id="summary">
+    <span class="picks-area">未选 · 点击照片选中</span>
+    <button type="button" class="summary-btn select-all-btn" id="select-all-btn">全选</button>
+    <button type="button" class="summary-btn copy-btn" id="copy-btn">复制</button>
+  </div>
+  <script>
+    (function () {
+      var STAGE = 'photo';
+      var grid = document.getElementById('grid');
+      var summary = document.getElementById('summary');
+      var copyBtn = document.getElementById('copy-btn');
+      var selectAllBtn = document.getElementById('select-all-btn');
+      var currentMessage = '';
+      var serverBacked = location.protocol === 'http:' || location.protocol === 'https:';
+      function postState(picks) {
+        if (!serverBacked) return;
+        fetch('/api/picker-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: STAGE, picks: picks }),
+        }).catch(function () { /* server gone — Copy button still works */ });
+      }
+      function refresh() {
+        var allCards = grid.querySelectorAll('.card');
+        var picks = Array.from(grid.querySelectorAll('.card.selected')).map(function (c) { return c.getAttribute('data-id'); });
+        var picksEl = summary.querySelector('.picks-area');
+        if (picks.length === 0) {
+          summary.classList.add('empty');
+          picksEl.textContent = '未选 · 点击照片选中';
+          currentMessage = '';
+        } else {
+          summary.classList.remove('empty');
+          picksEl.innerHTML = '已选 <strong>' + picks.join(' ') + '</strong>';
+          currentMessage = '我选了 ' + picks.join('、');
+        }
+        copyBtn.classList.remove('copied');
+        copyBtn.textContent = '复制';
+        selectAllBtn.textContent = (picks.length === allCards.length && allCards.length > 0) ? '取消全选' : '全选';
+        postState(picks);
+      }
+      grid.addEventListener('click', function (e) {
+        var card = e.target.closest('.card');
+        if (!card) return;
+        card.classList.toggle('selected');
+        refresh();
+      });
+      selectAllBtn.addEventListener('click', function () {
+        var allCards = grid.querySelectorAll('.card');
+        var anyUnselected = Array.from(allCards).some(function (c) { return !c.classList.contains('selected'); });
+        allCards.forEach(function (c) {
+          if (anyUnselected) c.classList.add('selected');
+          else c.classList.remove('selected');
+        });
+        refresh();
+      });
+      if (serverBacked) {
+        fetch('/api/picker-state')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (state) {
+            if (!state || state.stage !== STAGE || !Array.isArray(state.picks)) return;
+            state.picks.forEach(function (id) {
+              var card = grid.querySelector('[data-id="' + id.replace(/"/g, '\\"') + '"]');
+              if (card) card.classList.add('selected');
+            });
+            refresh();
+          })
+          .catch(function () { /* ignore */ });
+      }
+      copyBtn.addEventListener('click', function () {
+        if (!currentMessage) return;
+        var done = function () {
+          copyBtn.classList.add('copied');
+          copyBtn.textContent = '已复制 ✓';
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(currentMessage).then(done).catch(function () {
+            // Fallback to execCommand
+            var ta = document.createElement('textarea');
+            ta.value = currentMessage; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); done(); } catch (_) {}
+            document.body.removeChild(ta);
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = currentMessage; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+      refresh();
+    })();
+  </script>
+</body>
+</html>

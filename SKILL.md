@@ -1,6 +1,6 @@
 ---
 name: wedding-invitation
-description: Use this skill when the user wants to design and generate a wedding invitation card in any language. The skill drives a conversational workflow — you gather the couple's info and style preferences, design a bespoke HTML template from scratch (no template selection), render it locally with headless Chrome, and produce a print-ready PNG. All data stays on the user's machine; no cloud, no signups, no data leaves.
+description: Use this skill when the user wants to design and generate a wedding invitation card in any language. The skill drives a conversational workflow — you gather the couple's info and style preferences, design a bespoke HTML template from scratch (no template selection), render it locally with headless Chrome, produce a print-ready PNG, and include a live tweak panel so the user can adjust colors, fonts, frames, and optional components without rebuilding. All data stays on the user's machine; no cloud, no signups, no data leaves.
 ---
 
 # Wedding Invitation Skill
@@ -11,24 +11,28 @@ The user asks for help making a wedding invitation, save-the-date, or a similar 
 
 ## Core principle: design, don't pick
 
-This skill **does not** have a generic template gallery the user picks from. Whatever the mode, every invitation is **designed from scratch for this specific couple** in the language(s) they want.
+This skill **does not** have a generic template gallery the user picks from. Every invitation is **designed from scratch for this specific couple** in the language(s) they want.
 
-The user picks one of two **modes** (see Stage 2.5 in workflow.md):
+How many designs end up in the final gallery depends entirely on the **style picker** in Stage 3 — it's multi-select. Pick 1 aesthetic → 1 design. Pick 3 → 3 designs. Stage 4 produces a navigation gallery (`dist/preview.html`) + a tweak studio per design (`dist/<id>-studio.html`); Stage 5 produces the final gallery (`dist/index.html`) + detail page per design (`dist/<id>-page.html`). No mode flag, no upfront mode choice — count emerges naturally from picker selections.
 
-- **Single mode (default)** — design 1 custom template, iterate with feedback to perfection. Fastest path when the user has a strong direction.
-- **Multi mode** — generate N variants in parallel (3 / 5 / 8, or user-specified), each a different aesthetic but all using the user's actual data. The user browses them in a local gallery and either downloads a favorite or picks one to keep iterating (drops back into single-mode flow).
-
-Even in multi mode, **each variant is custom-designed**, not pulled from a frozen template library.
+Each design is custom-built (not pulled from a frozen template library) using `design-principles.md` as the visual vocabulary.
 
 Your job:
-1. Talk with the user to learn who they are, what language(s), and what aesthetic
-2. Have them pick a mode
-3. Design **fresh** HTML template(s) tailored to them, using `design-principles.md` as your visual vocabulary
-4. Render them locally and present in a local gallery page with download buttons
+1. Talk with the user to learn who they are, what language(s), and which aesthetic direction(s) fit their photos
+2. Design **fresh** HTML template(s) tailored to them, one per direction they picked
+3. Render them locally + open the gallery, where each design can be downloaded or tweaked via a live tweak panel
 
 **The aesthetic vocabulary in `design-principles.md` is directional, not prescriptive.** Each aesthetic entry has a **Spirit** (the soul), a **Starting palette** (a reference, not a recipe — shift hues to match the photo), a **Typography family** (pick within the family for the formality the couple wants), and a **NEVER list** (hard constraints — those are non-negotiable). Some culturally-specific aesthetics also have **Hard cultural requirements** (e.g. `red-gold` must be red-dominant, `arabic` must use a mihrab arch). Otherwise, you are designing — using judgment to adapt the direction to the couple's photo, language, and preferences.
 
 **The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of reference invitations used in the README gallery — each in its own native cultural language. Reading those files is forbidden: they bias you toward copying a specific design, and their language may not match the user's chosen language. Use `design-principles.md` as your sole visual reference. **Do not show `examples/thumbnails/*.png` to the user during the Stage 3 style picker either** — the user fixates on "I want THAT one" and the agent gets pulled toward literal copy. Instead, present aesthetic directions as **mood-board cards** (palette swatches + type sample + spirit description). See `workflow.md` Stage 3 for the picker template.
+
+The `references/` directory IS readable at runtime — it ships agent-side **structural scaffolds** (a blank-canvas template + a maximal tweak_options snippet). When the user picks Custom in Stage 3 (a chat-only escape hatch — see workflow.md), the agent runs a discovery dialogue to understand their vision, then designs candidate templates from scratch; the blank-canvas scaffold is an OPTIONAL structural starting point the agent can copy and design on top of. Unlike `examples/`, these are not finished designs to copy — they're skeletons.
+
+### Repository layout note (for skill maintainers)
+
+The 20 showcase invitations live in `examples/` as authoritative master copies. The GitHub Pages site at `docs/` is **generated** from `examples/` by `scripts/build-pages.js` and committed — GH Pages serves static files, so the generated artifacts are checked in. If you see two `styleNN-…html` files (one in each directory) and wonder which to edit, edit the `examples/` copy and re-run `node scripts/build-pages.js` to regenerate `docs/`. Don't hand-edit `docs/*.html`.
+
+This layout matters only to the skill author. At runtime — when a user runs the wedding-invitation skill — neither `examples/` nor `docs/` is read. The skill works exclusively from `skeleton/`, `references/`, `workflow.md`, and `design-principles.md`.
 
 ## Language
 
@@ -54,15 +58,13 @@ Wedding data (photos, names, dates, venues, family info) is **highly sensitive**
 
 Never suggest external services (image hosting, online editors, cloud rendering, web-based invitation builders) for any step.
 
-The only network egress is at preview time: the browser loads webfonts from a Google Fonts CDN. The skill asks the user at Stage 2 which to use:
-- `fonts.font.im` if the user is in mainland China (CN mirror, reachable from inside the GFW)
-- `fonts.googleapis.com` everywhere else (official, faster, partially blocked in CN)
+The only network egress is at preview time: the browser loads webfonts from a Google Fonts CDN. The skill picks one at Stage 2 silently (no question to the user) — default to `fonts.googleapis.com` (official, faster outside CN), switch to `fonts.font.im` (a CN-reachable mirror) only when there's clear signal the user is in mainland China.
 
 If the user is offline, the templates degrade to system fonts; the PNG export still works.
 
 ## Workflow
 
-Read `workflow.md` before you start interacting with the user. It walks through 6 dialogue stages.
+Read `workflow.md` before you start interacting with the user. It walks through 5 dialogue stages.
 
 ## Interaction principle (3-tier degradation)
 
@@ -100,19 +102,36 @@ This file is your **only** design reference. Do not read `examples/*.html`.
 
 ```
 SKILL.md                  ← you are here
-workflow.md               ← 6-stage dialogue and decision guide
+workflow.md               ← 5-stage dialogue and decision guide
 design-principles.md      ← visual / technical constraints + per-aesthetic vocabulary
-examples/                 ← frozen Chinese showcase artifacts; DO NOT READ at runtime
-  *.html                    (20 example invitations — README gallery use only)
+docs/                     ← GitHub Pages site (https://wyx-sg.github.io/wedding-invitation-skill/)
+                            GENERATED from examples/ via scripts/build-pages.js — do NOT hand-edit
+  index.html / index.zh.html   (EN/ZH landing pages with the 20-style gallery)
+  invitations/<style>.html     (raw rendered invitation HTML — iframe sources for the detail pages)
+  <style>.html                 (per-style detail page with iframe + meta + EN/ZH toggle)
+  thumbnails/*.png             (copied from examples/thumbnails/)
+  photos/*.jpg                 (copied from examples/photos/)
+examples/                 ← skill-author source of truth; DO NOT READ at runtime
+  *.html                    (20 example invitation templates — the master copies)
   thumbnails/*.png          (rendered thumbnails for README + inspiration display)
-  photos/                   (stock placeholder images bundled for thumbnails)
+  photos/*.jpg              (per-template AI-generated couple photos)
+references/                 ← agent-copyable starting points (runtime-readable, unlike examples/)
+  blank-canvas.html           (neutral structural scaffold — optional starting skeleton for Custom flow)
+  blank-canvas-designs.json   (maximal tweak_options snippet to crib for any design entry)
+scripts/                  ← skill-author build tools (NOT used at user runtime)
+  build-pages.js            (regenerates docs/ from examples/ — run before deploying GH Pages)
+  build-thumbnails.js       (renders examples/*.html → examples/thumbnails/*.png at 2x)
+  build-example-photos.js   (AI-generates examples/photos/*.jpg via Nano Banana Pro)
+  fixtures.js / style-meta.js (shared placeholders + per-style metadata for the above)
 skeleton/                 ← starting project copied into the user's workspace
   package.json
   scripts/
     derive.js               (expands seed → all required fields per declared languages)
     build.js                (renders templates with user data into dist/<id>.html)
     render.js               (cross-platform headless-Chrome → PNGs at 2 sizes)
-    build-gallery.js        (generates dist/index.html + per-design detail pages)
+    build-studio.js         (Stage 4: writes dist/preview.html + dist/<id>-studio.html)
+    build-gallery.js        (Stage 5: writes dist/index.html + dist/<id>-page.html)
+    picker-server.js        (optional loopback HTTP server for picker pages — npm run pick)
     template-engine.js      (tiny {{path.to.value}} replacer)
   templates/                (where new templates you write live)
   data/
@@ -125,11 +144,12 @@ skeleton/                 ← starting project copied into the user's workspace
 ## Output: what success looks like
 
 A directory like `~/my-wedding/` containing:
-- `dist/<design-id>.html` — the rendered invitation (iframe source for the gallery)
+- `dist/<design-id>.html` — the rendered invitation (iframe source for galleries / detail / studio)
+- `dist/preview.html` — Stage-4 nav gallery with live iframe thumbnails; entry to the studio
+- `dist/<id>-studio.html` — per-design tweak studio: live color/font/frame/component switchers, no rebuild
 - `dist/png/social/<design-id>.png` — 1080×1440, for messaging / email / social media
 - `dist/png/print/<design-id>.png` — 2160×2880 at 300 DPI, for printing physical cards
-- `dist/index.html` — local gallery page that opens in the user's browser:
-  - **Single mode** (1 design): a detail page with iframe preview, palette/typography meta, and two download buttons
-  - **Multi mode** (N designs): a grid of all N + per-design detail pages with prev/next/back
+- `dist/index.html` — Stage-5 final gallery (PNG thumbnails), each card links to its detail page
+- `dist/<id>-page.html` — per-design detail page: iframe preview, palette/typography meta, two download buttons, prev/next pager (only when >1 design)
 
-The user opens `dist/index.html`, sees their invitation(s) in a polished page, and downloads the size they need. They can also continue iterating with you to refine.
+In Stage 4 the user opens `dist/preview.html` and tweaks; in Stage 5 they open `dist/index.html` to download. The two files coexist — flipping back to Stage 4 doesn't overwrite the Stage 5 deliverable.

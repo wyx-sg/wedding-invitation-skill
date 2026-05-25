@@ -1,0 +1,31 @@
+{
+  "languages": ["zh", "en"],
+  "font_cdn": "googleapis",
+
+  "names": {
+    "groom_zh": "林知言",
+    "groom_en": "LIN ZHIYAN",
+    "bride_zh": "沈安然",
+    "bride_en": "SHEN ANRAN"
+  },
+
+  "date": {
+    "iso": "2099-10-01"
+  },
+
+  "time": {
+    "value": "18:00"
+  },
+
+  "venue": {
+    "city_zh": "上海",
+    "city_en": "Shanghai",
+    "province_zh": "上海",
+    "province_en": "SHANGHAI",
+    "lines_zh": ["黄浦区 永宁路 188 号", "锦绣花园酒店 宴会厅"],
+    "lines_en": ["188 Yongning Road, Huangpu District", "Eternal Garden Hotel Ballroom"],
+    "name_zh": "锦绣花园酒店",
+    "name_en": "Eternal Garden Hotel",
+    "type_zh": "酒店 · 宴会"
+  }
+}

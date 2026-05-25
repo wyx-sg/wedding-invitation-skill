@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Morandi · {{names.groom_zh}} & {{names.bride_zh}}</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500|Manrope:300,400,500|DM+Sans:400,500&display=swap">
+<style>
+  :root {
+    --card-bg: #e8e4dc;
+    --card-text: #2c2c2c;
+    --card-accent-1: #7a8a6d;
+    --card-accent-2: #a59585;
+    --font-headline: 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --photo-radius: 50%;
+    --photo-aspect: 4/5;
+  }
+  body { margin: 0; }
+  .card {
+    width: 420px; height: 560px;
+    background: var(--card-bg);
+    color: var(--card-text);
+    position: relative; overflow: hidden;
+    font-family: var(--font-body);
+    padding: 40px 36px;
+    box-sizing: border-box;
+  }
+  .photo-wrap {
+    width: 200px;
+    aspect-ratio: var(--photo-aspect);
+    margin: 16px auto 24px;
+    border-radius: var(--photo-radius);
+    overflow: hidden;
+  }
+  .photo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center 18%;
+  }
+  .names {
+    text-align: center;
+    font-family: var(--font-headline);
+    font-size: 22px;
+    letter-spacing: 4px;
+    margin: 0 0 4px;
+  }
+  .amp { color: var(--card-accent-1); margin: 0 8px; }
+  .pinyin {
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: var(--card-accent-2);
+    margin: 0 0 24px;
+  }
+  .divider {
+    width: 40px; height: 1px;
+    background: var(--card-accent-1);
+    margin: 0 auto 16px;
+  }
+  .date {
+    text-align: center;
+    font-family: var(--font-headline);
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--card-text);
+  }
+  .lunar-date {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--card-accent-2);
+    margin-top: 4px;
+  }
+  .tagline {
+    text-align: center;
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--card-accent-1);
+    margin-top: 18px;
+  }
+  .venue {
+    text-align: center;
+    font-size: 11px;
+    color: var(--card-text);
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+  .address-full { font-size: 10px; color: var(--card-accent-2); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="photo-wrap">
+      <img id="main-photo" src="{{design.primary_photo_url}}" alt="couple">
+    </div>
+    <h1 class="names">{{names.groom_zh}}<span class="amp">&amp;</span>{{names.bride_zh}}</h1>
+    <p class="pinyin">{{names.groom_en}} &middot; {{names.bride_en}}</p>
+    <div class="divider"></div>
+    <div class="date">{{date.iso}}</div>
+    <div class="lunar-date optional">戊辰年 八月 十五</div>
+    <div class="tagline optional">A quiet promise, kept in light.</div>
+    <div class="venue">
+      <div>{{venue.name_zh}}</div>
+      <div class="address-full optional">{{venue.lines_zh.0}}</div>
+    </div>
+  </div>
+</body>
+</html>

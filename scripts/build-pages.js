@@ -909,7 +909,7 @@ ${cards}
     <p class="tagline">${c.tagline}</p>
     <div class="actions">
       <a class="btn primary" href="https://github.com/wyx-sg/wedding-invitation-skill">${c.btnGithub}</a>
-      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#quick-start">${c.btnQuickStart}</a>
+      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#install">${c.btnQuickStart}</a>
     </div>
     <p class="note">${c.note}</p>
   </header>

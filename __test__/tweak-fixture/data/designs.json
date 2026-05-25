@@ -1,0 +1,222 @@
+[
+  {
+    "id": "morandi-tweak",
+    "name_zh": "莫兰迪",
+    "name_en": "morandi",
+    "template": "morandi-tweak.html",
+    "primary_photo": "photo-01",
+    "width": 420,
+    "height": 560,
+    "meta": {
+      "category_zh": "当代",
+      "category_en": "Contemporary",
+      "short": "柔和当代",
+      "long": "莫兰迪柔和色调 — 暖灰、苔绿、沙色。非对称构图，留白驱动。细线分隔加椭圆人像，整张请帖安静下来，把焦点让给照片本身。",
+      "inspiration_zh": "意大利画家 Giorgio Morandi 的静物写生 — 柔和大地色调、克制笔触、漫长的看。让现代极简和老世界的安静相遇。",
+      "inspiration_en": "Inspired by Italian painter Giorgio Morandi's still lifes — muted earth-tones, restrained brushwork, the long look. Modern minimalism meets old-world quiet.",
+      "palette": [
+        "#e8e4dc",
+        "#7a8a6d",
+        "#a59585",
+        "#2c2c2c"
+      ],
+      "fonts": [
+        "Inter"
+      ],
+      "motifs": "椭圆人像 · 细线分隔 · 留白驱动 · 无装饰主义"
+    },
+    "tweak_options": {
+      "color_schemes": [
+        {
+          "name_en": "Warm",
+          "name_zh": "暖调",
+          "vars": {
+            "--card-bg": "#e8e4dc",
+            "--card-text": "#2c2c2c",
+            "--card-accent-1": "#7a8a6d",
+            "--card-accent-2": "#a59585"
+          }
+        },
+        {
+          "name_en": "Cool",
+          "name_zh": "冷调",
+          "vars": {
+            "--card-bg": "#dde2dd",
+            "--card-text": "#2a3236",
+            "--card-accent-1": "#7a8a96",
+            "--card-accent-2": "#95a0a5"
+          }
+        }
+      ],
+      "fonts": {
+        "--font-headline": [
+          "Inter",
+          "Manrope",
+          "DM Sans"
+        ],
+        "--font-body": [
+          "Inter",
+          "Manrope"
+        ]
+      },
+      "frames": [
+        { "name_zh": "椭圆", "name_en": "Oval", "radius": "50%", "aspect": "4/5" },
+        { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px", "aspect": "4/5" },
+        { "name_zh": "拱形", "name_en": "Arch", "radius": "50% 50% 4px 4px", "aspect": "4/5" }
+      ],
+      "components": [
+        {
+          "id": "tagline",
+          "label_en": "Tagline",
+          "label_zh": "寄语",
+          "default": true
+        },
+        {
+          "id": "lunar-date",
+          "label_en": "Lunar date",
+          "label_zh": "农历",
+          "default": false
+        },
+        {
+          "id": "address-full",
+          "label_en": "Full address",
+          "label_zh": "完整地址",
+          "default": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "custom-canvas",
+    "name_zh": "暖光晨",
+    "name_en": "warm morning",
+    "template": "custom-canvas.html",
+    "primary_photo": "photo-02",
+    "width": 420,
+    "height": 560,
+    "custom": true,
+    "meta": {
+      "category_zh": "定制",
+      "category_en": "Custom",
+      "short": "中式礼服 · 暖色定制",
+      "long": "用户描述的方向：晨光打在窗棂上的暖色，圆形人像聚焦面孔，配合中式礼服的色调。版式克制，字体不抢戏，把仪式感留给人物本身。",
+      "inspiration_zh": "新郎中山装、新娘红色秀禾的全景照触发的灵感 — 把摄影中暖橙色的高光抽出来，让整张请帖像在一个晴朗的清晨。圆形相框是肖像摄影里最稳的取景。",
+      "inspiration_en": "Inspired by the warm-orange highlights of the couple's portrait in traditional Chinese dress — extract the morning-sun warmth from the photo and let the whole card sit in that light. Circle frame is the most stable crop for a portrait.",
+      "palette": [
+        "#f5f1e8",
+        "#8a9882",
+        "#a59585",
+        "#2c2c2c"
+      ],
+      "fonts": [
+        "Cormorant Garamond",
+        "Inter"
+      ],
+      "motifs": "圆形人像 · 暖橙高光 · 极简版式"
+    },
+    "tweak_options": {
+      "color_schemes": [
+        {
+          "name_en": "Warm cream",
+          "name_zh": "暖米",
+          "vars": {
+            "--card-bg": "#f5f1e8",
+            "--card-text": "#2c2c2c",
+            "--card-accent-1": "#8a9882",
+            "--card-accent-2": "#a59585"
+          }
+        },
+        {
+          "name_en": "Cool stone",
+          "name_zh": "冷石",
+          "vars": {
+            "--card-bg": "#dde2dd",
+            "--card-text": "#2a3236",
+            "--card-accent-1": "#7a8a96",
+            "--card-accent-2": "#95a0a5"
+          }
+        },
+        {
+          "name_en": "Black-gold",
+          "name_zh": "黑金",
+          "vars": {
+            "--card-bg": "#1a1a1a",
+            "--card-text": "#e0d8c8",
+            "--card-accent-1": "#d4af37",
+            "--card-accent-2": "#b8956a"
+          }
+        },
+        {
+          "name_en": "Ink wash",
+          "name_zh": "水墨",
+          "vars": {
+            "--card-bg": "#fafafa",
+            "--card-text": "#1a1a1a",
+            "--card-accent-1": "#1a1a1a",
+            "--card-accent-2": "#888888"
+          }
+        }
+      ],
+      "fonts": {
+        "--font-headline": [
+          "Cormorant Garamond",
+          "Playfair Display",
+          "Inter",
+          "Manrope",
+          "DM Sans"
+        ],
+        "--font-body": [
+          "Inter",
+          "Manrope",
+          "DM Sans",
+          "Cormorant Garamond"
+        ]
+      },
+      "frames": [
+        { "name_zh": "椭圆", "name_en": "Oval", "radius": "50%", "aspect": "4/5" },
+        { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px", "aspect": "4/5" },
+        { "name_zh": "拱形", "name_en": "Arch", "radius": "50% 50% 4px 4px", "aspect": "4/5" },
+        { "name_zh": "圆形", "name_en": "Circle", "radius": "50%", "aspect": "1/1" },
+        { "name_zh": "方形", "name_en": "Rectangle", "radius": "2px", "aspect": "4/5" }
+      ],
+      "components": [
+        {
+          "id": "tagline",
+          "label_en": "Tagline",
+          "label_zh": "寄语",
+          "default": false
+        },
+        {
+          "id": "lunar-date",
+          "label_en": "Lunar date",
+          "label_zh": "农历",
+          "default": false
+        },
+        {
+          "id": "address-full",
+          "label_en": "Full address",
+          "label_zh": "完整地址",
+          "default": true
+        },
+        {
+          "id": "pinyin",
+          "label_en": "Romanization",
+          "label_zh": "拼音",
+          "default": true
+        },
+        {
+          "id": "divider",
+          "label_en": "Divider",
+          "label_zh": "分隔线",
+          "default": true
+        },
+        {
+          "id": "seal",
+          "label_en": "Seal",
+          "label_zh": "印章",
+          "default": false
+        }
+      ]
+    }
+  }
+]
