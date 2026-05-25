@@ -375,6 +375,46 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
 
    In single mode the array has length 1. In multi mode it has length N. All other downstream behavior is automatic from the array length.
 
+5. **Populate `tweak_options` in `data/designs.json`** (recommended for most aesthetics, see `design-principles.md` → "Tweakable templates").
+
+   The tweak panel renders only if a design declares `tweak_options`. Skip it only if the aesthetic resists variation (e.g. `red-gold` — the red is the aesthetic).
+
+   Required fields (omit any section to hide that section in the panel):
+
+   - `color_schemes` — array of `{ name_en, name_zh, vars: { '--card-bg': '#…', '--card-text': '#…', '--card-accent-1': '#…', ... } }`. At least 2 schemes; each must be a complete override (don't leave hue gaps). Stay within the aesthetic's palette — for morandi, all schemes are muted; for art-deco, all are gold-on-dark with different golds.
+   - `fonts` — object keyed by font CSS var (`--font-headline`, `--font-body`); each value is an array of 2–3 font-family strings already loaded by the template's `<link>`. Stay within the aesthetic's typography family (Latin serif for art-deco; sans for morandi; brush for red-gold).
+   - `frames` — array of `{ name, radius, aspect }` for photo-frame variants. Pick shapes that the photo's framing supports (see "Photo crop is template-specific" in `design-principles.md`).
+   - `components` — array of `{ id, label_en, label_zh, default }` matching the `.optional` class hooks in the template. `default: false` for elements the user usually wants off (lunar-date for non-traditional couples).
+
+   Example for a morandi design:
+
+   ```json
+   "tweak_options": {
+     "color_schemes": [
+       { "name_en": "Warm", "name_zh": "暖调",
+         "vars": { "--card-bg": "#e8e4dc", "--card-text": "#2c2c2c", "--card-accent-1": "#7a8a6d", "--card-accent-2": "#a59585" } },
+       { "name_en": "Cool", "name_zh": "冷调",
+         "vars": { "--card-bg": "#dde2dd", "--card-text": "#2a3236", "--card-accent-1": "#7a8a96", "--card-accent-2": "#95a0a5" } }
+     ],
+     "fonts": {
+       "--font-headline": ["Inter", "Manrope", "DM Sans"],
+       "--font-body":     ["Inter", "Manrope"]
+     },
+     "frames": [
+       { "name": "oval", "radius": "50%", "aspect": "4/5" },
+       { "name": "rounded-rect", "radius": "8px", "aspect": "4/5" }
+     ],
+     "components": [
+       { "id": "tagline",    "label_en": "Tagline",    "label_zh": "寄语", "default": true  },
+       { "id": "lunar-date", "label_en": "Lunar date", "label_zh": "农历", "default": false }
+     ]
+   }
+   ```
+
+   **Template contract reminder** — for the tweak panel to do anything useful, the template MUST use CSS variables for tweak-able properties (`var(--card-bg)`, `var(--font-headline)`, `var(--photo-radius)`, `var(--photo-aspect)`) and class hooks for optional components (`.lunar-date.hidden { display: none !important; }`). See `design-principles.md` → "Tweakable templates" for the full contract.
+
+   `build.js` also bakes `default: false` components into the rendered HTML — meaning the standalone preview and PNG output match the gallery's initial state.
+
 ## Stage 5 — Build, preview, iterate
 
 ```bash
@@ -406,6 +446,8 @@ Feedback patterns (single mode iteration) and what they map to:
 |---|---|
 | "Font too small" | bump `font-size` 2-4 px on the relevant rule |
 | "Color too dark" | lighten the hex / drop opacity |
+| "I want to try a different color" | Open the gallery (`npm run gallery`), use the tweak panel's color-scheme swatches — no rebuild needed |
+| "Hide the lunar date" | Tweak panel → uncheck "Lunar date" (or set `default: false` in `designs.json` if it should be off by default) |
 | "Head is cropped" | `object-position: center 12%` → `8%` or `4%` |
 | "Make the frame square instead of oval" | `.photo-wrap { border-radius: 50% → 4px }` |
 | "Swap the photo" | edit `data/designs.json` `primary_photo` |
