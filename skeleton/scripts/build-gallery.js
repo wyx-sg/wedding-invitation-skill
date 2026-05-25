@@ -463,6 +463,44 @@ const NAV_EXPORT_IIFE_SCRIPT = `
         document.body.removeChild(ta2);
       }
     });
+
+    // --- thumbnail live tweak sync ---
+    // Each thumbnail iframe loads dist/<id>.html and fires a 'photo-iframe-ready'
+    // message when its postMessage listener is hooked up. We catch that, read
+    // the user's tweak state for that design, and forward the same postMessage
+    // events the studio sends — so the thumbnail mirrors the user's tweaks.
+    var statesPromise = getStates();
+    function applyStateToIframe(iframe, tweak, state) {
+      function send(msg) { try { iframe.contentWindow.postMessage(msg, '*'); } catch (_) {} }
+      if (typeof state.colorIdx === 'number' && state.colorIdx >= 0) {
+        var cs = (tweak.color_schemes || [])[state.colorIdx];
+        if (cs && cs.vars) send({ type: 'set-css-vars', vars: cs.vars });
+      }
+      if (state.fontValues && Object.keys(state.fontValues).length) {
+        send({ type: 'set-css-vars', vars: state.fontValues });
+      }
+      if (typeof state.frameIdx === 'number' && state.frameIdx >= 0) {
+        var fr = (tweak.frames || [])[state.frameIdx];
+        if (fr) send({ type: 'set-frame', radius: fr.radius || '', aspect: fr.aspect || '' });
+      }
+      if (state.components) {
+        Object.keys(state.components).forEach(function (id) {
+          send({ type: 'toggle-component', id: id, visible: !!state.components[id] });
+        });
+      }
+    }
+    window.addEventListener('message', async function (e) {
+      if (!e.data || e.data.type !== 'photo-iframe-ready') return;
+      var designId = e.data.id;
+      if (!designId) return;
+      var states = await statesPromise;
+      var state = states[designId];
+      if (!state) return;
+      var design = data.designs.find(function (d) { return d.id === designId; });
+      if (!design || !design.tweak) return;
+      var iframe = document.querySelector('iframe[data-design-id="' + designId.replace(/"/g, '\\"') + '"]');
+      if (iframe && iframe.contentWindow) applyStateToIframe(iframe, design.tweak, state);
+    });
   })()`;
 
 const DETAIL_CSS = `
@@ -1821,7 +1859,7 @@ export function navGalleryHtml() {
     const short = d.meta?.short || '';
     return `<a class="card" href="${esc(d.id)}-studio.html">
       <div class="thumb thumb-iframe">
-        <iframe src="${esc(d.id)}.html" loading="lazy" scrolling="no" frameborder="0" title="${esc(name)}"></iframe>
+        <iframe src="${esc(d.id)}.html" data-design-id="${esc(d.id)}" loading="lazy" scrolling="no" frameborder="0" title="${esc(name)}"></iframe>
       </div>
       <div class="meta">
         <div class="name">${esc(name)}</div>
