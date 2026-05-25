@@ -413,17 +413,18 @@ const DETAIL_CSS = `
     pointer-events: none;
   }
   /* Zoom controls (PC only).
-     Sit OUTSIDE the card: an invisible hover-zone strip just below the card
-     is what triggers visibility — moving onto the card itself does NOT show
-     them. When shown they're semi-transparent so they don't overpower the
-     design behind. Direct hover on the controls bumps opacity higher. */
+     The hover-zone is the BOTTOM strip of the card (the last ~60px). Moving
+     onto the top / middle of the card does NOT show controls — only when the
+     cursor enters the bottom strip near where the controls will render.
+     The strip is inside .frame so it's always accessible regardless of
+     viewport size. When shown, controls are semi-transparent so they don't
+     overpower the design behind; direct hover bumps opacity higher. */
   .zoom-zone {
     position: absolute;
-    bottom: -56px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 240px;
-    height: 56px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1024,16 +1025,16 @@ function detailHtml(templateId, prevId, nextId, height) {
     <div class="preview">
       <div class="frame">
         <iframe id="design-iframe" src="invitations/${templateId}.html" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
-      </div>
-${switcherHtml}      <div class="zoom-zone">
-        <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
-          <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
-          <span class="zoom-level" id="zoom-level">100%</span>
-          <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
-          <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
+        <div class="zoom-zone">
+          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+            <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
+            <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
+          </div>
         </div>
       </div>
-    </div>
+${switcherHtml}    </div>
 
     <div class="detail-info">
       <div class="style-header">

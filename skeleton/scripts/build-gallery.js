@@ -343,17 +343,18 @@ const DETAIL_CSS = `
     pointer-events: none;
   }
   /* Zoom controls (PC only).
-     The hover zone sits OUTSIDE the card (below the photo switcher), so
-     moving onto the design itself does NOT show the controls — only
-     hovering the strip immediately below them triggers them. Default
-     state is semi-transparent so they don't obscure the design behind. */
+     The hover-zone is the bottom strip of the card itself (last ~64px),
+     positioned inside .frame so it's always accessible regardless of
+     viewport size. Hovering the top/middle of the card does NOT show
+     controls; only when the cursor enters the bottom strip near where
+     they render. Semi-transparent when shown so the design behind
+     isn't obscured; direct hover bumps opacity higher. */
   .zoom-zone {
     position: absolute;
-    bottom: -56px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 240px;
-    height: 56px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -724,16 +725,16 @@ function detailHtml(design, index, isMulti) {
     <div class="preview">
       <div class="frame">
         <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
-      </div>
-      ${switcherHtml}
-      <div class="zoom-zone">
-        <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
-          <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
-          <span class="zoom-level" id="zoom-level">100%</span>
-          <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
-          <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
+        <div class="zoom-zone">
+          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+            <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
+            <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
+          </div>
         </div>
       </div>
+      ${switcherHtml}
     </div>
 
     <div class="detail-info">
