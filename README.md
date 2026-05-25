@@ -20,11 +20,12 @@
 
 ## Quick start
 
-Download the latest release and drop it into your coding agent's skills directory (e.g. `~/.claude/skills/` for Claude Code):
+Drop the latest release into your coding agent's skills directory. For [Claude Code](https://claude.ai/code):
 
 ```bash
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip
 ```
 
 Then say "help me make a wedding invitation" — the skill takes it from there.
@@ -42,8 +43,6 @@ The release zip is under 100 KB and contains only the runtime files: `SKILL.md`,
 ```bash
 git clone https://github.com/wyx-sg/wedding-invitation-skill
 ```
-
-Then point your agent at `wedding-invitation-skill/SKILL.md` (or, for Claude Code, clone into `~/.claude/skills/wedding-invitation` for auto-discovery).
 
 The repo includes extras not needed to *use* the skill but useful for development:
 - `examples/` — 20 showcase invitations (source of truth for the README gallery)

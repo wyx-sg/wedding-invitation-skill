@@ -20,11 +20,12 @@
 
 ## 快速开始
 
-下载最新 release，解压到你编程 agent 的 skill 目录（比如 Claude Code 是 `~/.claude/skills/`）：
+把最新 release 解压到你编程 agent 的 skill 目录。以 [Claude Code](https://claude.ai/code) 为例：
 
 ```bash
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip
 ```
 
 然后跟你的 agent 说"帮我做一张婚礼请帖" —— skill 会接管对话。
@@ -42,8 +43,6 @@ release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`w
 ```bash
 git clone https://github.com/wyx-sg/wedding-invitation-skill
 ```
-
-然后把 agent 指向 `wedding-invitation-skill/SKILL.md`（用 Claude Code 的话，直接 clone 到 `~/.claude/skills/wedding-invitation/` 就能自动发现）。
 
 仓库包含以下额外目录，使用 skill 时不需要，但贡献代码时有用：
 - `examples/` — 20 张展示请帖（README gallery 的原始素材）
