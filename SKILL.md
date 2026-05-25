@@ -32,6 +32,12 @@ Your job:
 
 The `references/` directory IS readable at runtime — it ships agent-copyable starting points (a blank-canvas template + a maximal tweak_options snippet) used when the user picks Custom in Stage 3. Unlike `examples/`, these are not finished designs to copy — they're skeletons to fill in with the user's data.
 
+### Repository layout note (for skill maintainers)
+
+The 20 showcase invitations live in `examples/` as authoritative master copies. The GitHub Pages site at `docs/` is **generated** from `examples/` by `scripts/build-pages.js` and committed — GH Pages serves static files, so the generated artifacts are checked in. If you see two `styleNN-…html` files (one in each directory) and wonder which to edit, edit the `examples/` copy and re-run `node scripts/build-pages.js` to regenerate `docs/`. Don't hand-edit `docs/*.html`.
+
+This layout matters only to the skill author. At runtime — when a user runs the wedding-invitation skill — neither `examples/` nor `docs/` is read. The skill works exclusively from `skeleton/`, `references/`, `workflow.md`, and `design-principles.md`.
+
 ## Language
 
 The user's language choice is the FIRST design decision. Ask it before you ask anything else (see `workflow.md` Stage 1).
@@ -104,13 +110,25 @@ This file is your **only** design reference. Do not read `examples/*.html`.
 SKILL.md                  ← you are here
 workflow.md               ← 6-stage dialogue and decision guide
 design-principles.md      ← visual / technical constraints + per-aesthetic vocabulary
-examples/                 ← frozen Chinese showcase artifacts; DO NOT READ at runtime
-  *.html                    (20 example invitations — README gallery use only)
+docs/                     ← GitHub Pages site (https://wyx-sg.github.io/wedding-invitation-skill/)
+                            GENERATED from examples/ via scripts/build-pages.js — do NOT hand-edit
+  index.html / index.zh.html   (EN/ZH landing pages with the 20-style gallery)
+  invitations/<style>.html     (raw rendered invitation HTML — iframe sources for the detail pages)
+  <style>.html                 (per-style detail page with iframe + meta + EN/ZH toggle)
+  thumbnails/*.png             (copied from examples/thumbnails/)
+  photos/*.jpg                 (copied from examples/photos/)
+examples/                 ← skill-author source of truth; DO NOT READ at runtime
+  *.html                    (20 example invitation templates — the master copies)
   thumbnails/*.png          (rendered thumbnails for README + inspiration display)
-  photos/                   (stock placeholder images bundled for thumbnails)
-references/                 ← agent-copyable starting points (NOT runtime-read like examples/)
+  photos/*.jpg              (per-template AI-generated couple photos)
+references/                 ← agent-copyable starting points (runtime-readable, unlike examples/)
   blank-canvas.html           (neutral template used when user picks Custom in Stage 3)
   blank-canvas-designs.json   (maximal tweak_options snippet for the Custom design entry)
+scripts/                  ← skill-author build tools (NOT used at user runtime)
+  build-pages.js            (regenerates docs/ from examples/ — run before deploying GH Pages)
+  build-thumbnails.js       (renders examples/*.html → examples/thumbnails/*.png at 2x)
+  build-example-photos.js   (AI-generates examples/photos/*.jpg via Nano Banana Pro)
+  fixtures.js / style-meta.js (shared placeholders + per-style metadata for the above)
 skeleton/                 ← starting project copied into the user's workspace
   package.json
   scripts/
