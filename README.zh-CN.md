@@ -16,12 +16,39 @@
   <img alt="macOS · Linux · Windows" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-lightgrey">
 </p>
 
-## 快速开始
+## 安装
+
+### 方案 1 — 下载 release zip（推荐用户使用）
+
+```bash
+# 最新版本
+curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
+unzip wedding-invitation-skill.zip
+# 结果：./wedding-invitation-skill/ — 将此目录复制或软链到 Claude Code 读取 skill 的位置。
+```
+
+release zip 体积小（100 KB 以内），仅包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。不含 `examples/`、`docs/`、`__test__/` 及维护者脚本。
+
+### 方案 2 — 克隆源码（供 skill 作者 / 贡献者使用）
 
 ```bash
 git clone https://github.com/wyx-sg/wedding-invitation-skill \
   ~/.claude/skills/wedding-invitation
 ```
+
+仓库包含以下额外目录，使用 skill 时不需要，但贡献代码时有用：
+- `examples/` — 20 张展示请帖（README gallery 的原始素材）
+- `docs/` — GitHub Pages 站点，由 `scripts/build-pages.js` 从 `examples/` 生成
+- `__test__/tweak-fixture/` — 端到端测试 fixture
+- `scripts/` — 维护者构建工具
+
+### 系统要求
+
+- Node.js 18+
+- Chromium 系浏览器（Google Chrome、Chromium 或 Microsoft Edge）— `render.js` 用于 PNG 导出。
+- macOS、Linux 或 Windows
+
+如果你没装 Chromium 系浏览器，脚本会按你的操作系统打印安装指引。
 
 然后在 [Claude Code](https://claude.ai/code) 里调用 skill：
 
@@ -77,14 +104,6 @@ flowchart LR
 4. **设计** — Claude 用你选的语言从零写 HTML 模板
 5. **迭代**（单张模式）— "字大点""换张照片""配色柔和"，Claude 实时调
 6. **打开 gallery** — `dist/index.html` 在浏览器里打开，含两个尺寸的下载按钮
-
-## 系统要求
-
-- **Node.js 18+**
-- **Google Chrome、Chromium 或 Microsoft Edge** — 用于把 HTML 渲染成 PNG。skill 自带跨平台 Node 脚本 (`render.js`) 会自动定位你已装的浏览器。
-- **macOS、Linux 或 Windows**
-
-如果你没装 Chromium 系浏览器，脚本会按你的操作系统打印安装指引。
 
 ## 兼容其他编程 agent
 

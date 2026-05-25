@@ -16,12 +16,39 @@
   <img alt="macOS · Linux · Windows" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-lightgrey">
 </p>
 
-## Quick start
+## Install
+
+### Option 1 — Download the release zip (recommended for users)
+
+```bash
+# Latest release
+curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
+unzip wedding-invitation-skill.zip
+# Result: ./wedding-invitation-skill/ — copy or symlink this into wherever Claude Code looks for skills.
+```
+
+The release zip is small (under 100 KB) and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`. It does NOT include `examples/`, `docs/`, `__test__/`, or maintainer scripts.
+
+### Option 2 — Clone the source (for skill authors / contributors)
 
 ```bash
 git clone https://github.com/wyx-sg/wedding-invitation-skill \
   ~/.claude/skills/wedding-invitation
 ```
+
+The repo includes additional folders that you don't need to use the skill but that are useful if you want to contribute:
+- `examples/` — 20 showcase invitations (source of truth for the README gallery)
+- `docs/` — the GitHub Pages site, generated from `examples/` via `scripts/build-pages.js`
+- `__test__/tweak-fixture/` — end-to-end test fixture
+- `scripts/` — maintainer build tools
+
+### Requirements
+
+- Node.js 18+
+- A Chromium-family browser (Google Chrome, Chromium, or Microsoft Edge) — used by `render.js` for PNG export.
+- macOS, Linux, or Windows
+
+If you don't have a Chromium-family browser, the skill prints install instructions for your OS.
 
 Then in [Claude Code](https://claude.ai/code), invoke the skill:
 
@@ -77,14 +104,6 @@ flowchart LR
 4. **Design** — Claude writes unique HTML template(s) from scratch in your language
 5. **Iterate** (single mode) — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
 6. **Open gallery** — `dist/index.html` opens in your browser with download buttons for two PNG sizes
-
-## Requirements
-
-- **Node.js 18+**
-- **Google Chrome, Chromium, or Microsoft Edge** — used to render the PNG. The skill ships with a cross-platform Node script (`render.js`) that locates whichever you have.
-- **macOS, Linux, or Windows**
-
-If you don't have a Chromium-family browser, the skill prints install instructions for your OS.
 
 ## Use with other coding agents
 
