@@ -115,9 +115,6 @@ const COPY = {
     tweakHeadlineSub: 'Headline',
     tweakBodySub: 'Body',
     tweakCustomLabel: 'Custom',
-    tweakFontTextHint: 'Type a font name (or pick)…',
-    tweakFrameRadiusLabel: 'Radius',
-    tweakFrameAspectLabel: 'Aspect',
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
   },
@@ -149,9 +146,6 @@ const COPY = {
     tweakHeadlineSub: '标题字体',
     tweakBodySub: '正文字体',
     tweakCustomLabel: '自定义',
-    tweakFontTextHint: '输入字体名（或从列表选）…',
-    tweakFrameRadiusLabel: '圆角',
-    tweakFrameAspectLabel: '比例',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
   }
@@ -623,14 +617,10 @@ const DETAIL_CSS = `
     text-transform: uppercase;
     color: var(--text-muted);
   }
-  .tweak-color-row,
-  .tweak-font-row,
-  .tweak-frame-row {
+  .tweak-color-row {
     display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
   }
-  .tweak-color-row label,
-  .tweak-font-row label,
-  .tweak-frame-row label {
+  .tweak-color-row label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -641,18 +631,6 @@ const DETAIL_CSS = `
     width: 32px; height: 24px; border: 0; padding: 0;
     background: transparent; cursor: pointer;
   }
-  .tweak-font-row input[type=text],
-  .tweak-frame-row input[type=text] {
-    background: var(--bg-elevated);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 4px 8px;
-    font-size: 11px;
-    font-family: 'Inter', sans-serif;
-    min-width: 120px;
-  }
-  .tweak-frame-row input[type=text] { min-width: 80px; }
   .powered-by {
     text-align: center;
     padding: 24px 16px;
@@ -765,21 +743,9 @@ function detailHtml(design, index, isMulti) {
         </div>`;
       }).join('');
 
-      // Free-form font inputs (one per font CSS var)
-      const fontInputs = Object.keys(tweak.fonts).map(cssVar =>
-        `<label><span class="tweak-font-sub">${esc(cssVar.replace(/^--font-/, ''))}</span><input type="text" list="tweak-font-suggestions" data-tweak-custom-font="${esc(cssVar)}" placeholder="${esc(COPY.tweakFontTextHint)}"></label>`
-      ).join('');
-      const customFontsHtml = fontInputs
-        ? `<div class="tweak-custom">
-            <div class="tweak-custom-label">${esc(COPY.tweakCustomLabel)}</div>
-            <div class="tweak-font-row">${fontInputs}</div>
-          </div>`
-        : '';
-
       sections.push(`<div class="tweak-group" data-section="fonts">
         <div class="tweak-group-label">${esc(COPY.tweakFontLabel)}</div>
         ${fontRows}
-        ${customFontsHtml}
       </div>`);
     }
 
@@ -789,18 +755,9 @@ function detailHtml(design, index, isMulti) {
         `<button type="button" class="tweak-frame-btn" data-tweak-frame="${i}">${esc(f.name || `#${i+1}`)}</button>`
       ).join('');
 
-      const customFramesHtml = `<div class="tweak-custom">
-        <div class="tweak-custom-label">${esc(COPY.tweakCustomLabel)}</div>
-        <div class="tweak-frame-row">
-          <label><span>${esc(COPY.tweakFrameRadiusLabel)}</span><input type="text" data-tweak-custom-frame-radius placeholder="50% / 8px / 50% 50% 4px 4px"></label>
-          <label><span>${esc(COPY.tweakFrameAspectLabel)}</span><input type="text" data-tweak-custom-frame-aspect placeholder="4/5 / 1/1 / 3/4"></label>
-        </div>
-      </div>`;
-
       sections.push(`<div class="tweak-group" data-section="frame">
         <div class="tweak-group-label">${esc(COPY.tweakFrameLabel)}</div>
         <div class="tweak-row">${frameButtons}</div>
-        ${customFramesHtml}
       </div>`);
     }
 
@@ -916,26 +873,6 @@ function detailHtml(design, index, isMulti) {
       ${tweakHtml}
     </div>
   </main>
-  <datalist id="tweak-font-suggestions">
-    <option value="Inter">
-    <option value="Manrope">
-    <option value="DM Sans">
-    <option value="Cormorant Garamond">
-    <option value="Playfair Display">
-    <option value="Bodoni Moda">
-    <option value="EB Garamond">
-    <option value="Songti SC">
-    <option value="Noto Serif SC">
-    <option value="Noto Sans SC">
-    <option value="PingFang SC">
-    <option value="Ma Shan Zheng">
-    <option value="ZCOOL XiaoWei">
-    <option value="Noto Serif JP">
-    <option value="Sawarabi Mincho">
-    <option value="Nanum Myeongjo">
-    <option value="Amiri">
-    <option value="Allura">
-  </datalist>
   <footer class="powered-by">
     ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
   </footer>
@@ -1015,27 +952,12 @@ function detailHtml(design, index, isMulti) {
         panel.querySelectorAll('.tweak-font-btn.active').forEach(function (b) {
           state.vars[b.getAttribute('data-tweak-font-var')] = b.getAttribute('data-tweak-font-value');
         });
-        // Custom font overrides
-        panel.querySelectorAll('[data-tweak-custom-font]').forEach(function (i) {
-          if (i.value) state.vars[i.getAttribute('data-tweak-custom-font')] = i.value;
-        });
         // Active frame preset
         var activeFrame = panel.querySelector('.tweak-frame-btn.active');
         if (activeFrame) {
           var fi = +activeFrame.getAttribute('data-tweak-frame');
           var fr = (TWEAK.frames || [])[fi];
           if (fr) state.frame = { radius: fr.radius, aspect: fr.aspect };
-        }
-        // Custom frame
-        var customR = panel.querySelector('[data-tweak-custom-frame-radius]');
-        var customA = panel.querySelector('[data-tweak-custom-frame-aspect]');
-        if (customR && customR.value) {
-          state.frame = state.frame || {};
-          state.frame.radius = customR.value;
-        }
-        if (customA && customA.value) {
-          state.frame = state.frame || {};
-          state.frame.aspect = customA.value;
         }
         // Components
         panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
@@ -1170,14 +1092,6 @@ function detailHtml(design, index, isMulti) {
           var k = t.getAttribute('data-tweak-custom-color');
           var vars = {}; vars[k] = t.value;
           send({ type: 'set-css-vars', vars: vars });
-        } else if (t.matches && t.matches('[data-tweak-custom-font]')) {
-          var fv = t.getAttribute('data-tweak-custom-font');
-          var vars2 = {}; vars2[fv] = t.value;
-          send({ type: 'set-css-vars', vars: vars2 });
-        } else if (t.matches && t.matches('[data-tweak-custom-frame-radius]')) {
-          send({ type: 'set-frame', radius: t.value });
-        } else if (t.matches && t.matches('[data-tweak-custom-frame-aspect]')) {
-          send({ type: 'set-frame', aspect: t.value });
         }
       });
 
