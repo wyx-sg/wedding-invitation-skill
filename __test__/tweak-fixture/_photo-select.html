@@ -42,8 +42,8 @@
     <div class="wis-brand">婚礼请帖</div>
     <div class="wis-pb">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</div>
   </nav>
-  <h1>挑一张照片</h1>
-  <p class="note">点击下面的照片选中（可多选）。主图 1 张，其余备选给微调时切换照片用。</p>
+  <h1>挑照片</h1>
+  <p class="note">点击下面的照片选中（可多选）。第一张作为主图，其他作为备选 — 成品页和微调台都可以随时切换。</p>
   <p class="back-to-agent">挑完点 <strong>复制</strong>，然后回到<strong>对话窗口</strong>把内容粘贴过去 — 我会接着帮你做请帖。</p>
   <div class="grid" id="grid">
     <div class="card" data-id="p01">
@@ -63,10 +63,20 @@
   </div>
   <script>
     (function () {
+      var STAGE = 'photo';
       var grid = document.getElementById('grid');
       var summary = document.getElementById('summary');
       var copyBtn = document.getElementById('copy-btn');
       var currentMessage = '';
+      var serverBacked = location.protocol === 'http:' || location.protocol === 'https:';
+      function postState(picks) {
+        if (!serverBacked) return;
+        fetch('/api/picker-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: STAGE, picks: picks }),
+        }).catch(function () { /* server gone — Copy button still works */ });
+      }
       function refresh() {
         var picks = Array.from(grid.querySelectorAll('.card.selected')).map(function (c) { return c.getAttribute('data-id'); });
         var picksEl = summary.querySelector('.picks-area');
@@ -79,9 +89,9 @@
           picksEl.innerHTML = '已选 <strong>' + picks.join(' ') + '</strong>';
           currentMessage = '我选了 ' + picks.join('、');
         }
-        // reset copy button state
         copyBtn.classList.remove('copied');
         copyBtn.textContent = '复制';
+        postState(picks);
       }
       grid.addEventListener('click', function (e) {
         var card = e.target.closest('.card');
@@ -89,6 +99,19 @@
         card.classList.toggle('selected');
         refresh();
       });
+      if (serverBacked) {
+        fetch('/api/picker-state')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (state) {
+            if (!state || state.stage !== STAGE || !Array.isArray(state.picks)) return;
+            state.picks.forEach(function (id) {
+              var card = grid.querySelector('[data-id="' + id.replace(/"/g, '\\"') + '"]');
+              if (card) card.classList.add('selected');
+            });
+            refresh();
+          })
+          .catch(function () { /* ignore */ });
+      }
       copyBtn.addEventListener('click', function () {
         if (!currentMessage) return;
         var done = function () {

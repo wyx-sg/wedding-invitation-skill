@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>挑一个风格方向</title>
+<title>挑风格方向</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;700&family=Bodoni+Moda:wght@400&family=Songti+SC&family=Allura&family=Noto+Serif+JP:wght@400&display=swap">
 <style>
   .wis-nav { position: sticky; top: 0; z-index: 50; text-align: center; padding: 18px 16px 12px; background: rgba(10,9,7,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #1f1a14; }
@@ -50,7 +50,7 @@
     <div class="wis-brand">婚礼请帖</div>
     <div class="wis-pb">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</div>
   </nav>
-  <h1>挑一个风格方向</h1>
+  <h1>挑风格方向</h1>
   <p class="note">这些是<strong>方向</strong>，不是成品模板。Agent 会用你的语言、你的照片、你的喜好为你重新设计一张请帖。<br>看哪个最对味就点哪张（<strong>可多选</strong> — 想让 Agent 一次生成几张备选就多选几个）。都不喜欢？回复 <strong>"换一批"</strong> 看新的，或回复 <strong>Custom / 自定义</strong> 直接进设计台。</p>
   <p class="back-to-agent">选完点 <strong>复制</strong>，然后回到<strong>对话窗口</strong>把内容粘贴过去。如果想换一批 candidate 风格，在对话里直接说"换一批"。</p>
 
@@ -157,6 +157,7 @@
   </div>
   <script>
     (function () {
+      var STAGE = 'style';
       var gridCandidates = document.getElementById('grid-candidates');
       var gridSelected = document.getElementById('grid-selected');
       var selectedArea = document.getElementById('selected-area');
@@ -164,6 +165,18 @@
       var summary = document.getElementById('summary');
       var copyBtn = document.getElementById('copy-btn');
       var currentMessage = '';
+      // Live sync to picker-server when the page is served via http:// — agent
+      // reads data/picker-state.json directly. file:// silently falls back to the
+      // Copy button workflow.
+      var serverBacked = location.protocol === 'http:' || location.protocol === 'https:';
+      function postState(picks) {
+        if (!serverBacked) return;
+        fetch('/api/picker-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: STAGE, picks: picks }),
+        }).catch(function () { /* server gone — Copy button still works */ });
+      }
       function refresh() {
         var picks = Array.from(gridSelected.querySelectorAll('.card')).map(function (c) { return c.getAttribute('data-name'); });
         selectedCount.textContent = picks.length;
@@ -181,16 +194,15 @@
         }
         copyBtn.classList.remove('copied');
         copyBtn.textContent = '复制';
+        postState(picks);
       }
       function handleCardClick(e) {
         var card = e.target.closest('.card');
         if (!card) return;
         if (card.parentElement === gridSelected) {
-          // Move back to candidates
           gridCandidates.appendChild(card);
           card.classList.remove('selected');
         } else {
-          // Move to selected
           gridSelected.appendChild(card);
           card.classList.add('selected');
         }
@@ -198,6 +210,21 @@
       }
       gridCandidates.addEventListener('click', handleCardClick);
       gridSelected.addEventListener('click', handleCardClick);
+      // On http://, restore prior selections from the server so a page refresh
+      // doesn't reset the user's picks.
+      if (serverBacked) {
+        fetch('/api/picker-state')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (state) {
+            if (!state || state.stage !== STAGE || !Array.isArray(state.picks)) return;
+            state.picks.forEach(function (name) {
+              var card = gridCandidates.querySelector('[data-name="' + name.replace(/"/g, '\\"') + '"]');
+              if (card) { gridSelected.appendChild(card); card.classList.add('selected'); }
+            });
+            refresh();
+          })
+          .catch(function () { /* ignore */ });
+      }
       copyBtn.addEventListener('click', function () {
         if (!currentMessage) return;
         var done = function () {

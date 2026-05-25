@@ -59,6 +59,25 @@ Examples:
 
 Never start with Tier 3 if the choice is visual. A wedding invitation is a visual artifact; words alone cannot usefully describe "oval vs square vs arched photo frame".
 
+## Picker pages — how the user's clicks reach you
+
+Tier-1 picker pages (`_photo-select.html`, `_style-preview.html`) live as static HTML in the user's project. They are interactive — user clicks toggle selections in the DOM — but a `file://` page cannot write to disk on its own, so a small bridge is needed for you to **see** the selections without asking the user to copy/paste.
+
+The skeleton ships a tiny no-dependency Node server (`npm run pick`). When started, it:
+
+- Serves the project directory over `http://localhost:8765/`.
+- Exposes `POST /api/picker-state` (the picker page auto-syncs every click) and `GET /api/picker-state` (the page restores prior selections on refresh).
+- Writes every update to **`data/picker-state.json`** with shape `{ "stage": "photo" | "style", "picks": [...], "updatedAt": "..." }`.
+
+**Your workflow when entering Stage 1.4 (photo picker) or Stage 3 (style picker):**
+
+1. Start the server in the background once per session: `bash run_in_background → npm run pick`. Keep the same process running across the photo and style stages — it serves both pages.
+2. Tell the user to open `http://localhost:8765/_photo-select.html` (or `_style-preview.html`) in their browser — NOT the `file://` URL.
+3. When the user signals they're done picking (or even before — you can poll), `Read` `data/picker-state.json`. The `picks` field is your source of truth.
+4. **Fallback when the server can't run** (port already taken, user doesn't want a background process, etc.): the picker pages still work over `file://`; the Copy button at the bottom is the user's way to send picks back via chat. Tell the user to open the `file://` URL and use **Copy → paste in chat**.
+
+The picker page detects its own protocol — `http://` triggers live sync; `file://` silently degrades to Copy-only. Either way the page looks identical.
+
 ## Stage 1 — Set up the workspace
 
 1. **Choose working directory.** Default `~/my-wedding/`. Ask:

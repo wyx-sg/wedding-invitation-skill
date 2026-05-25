@@ -9,6 +9,7 @@
     "build": "node scripts/build.js",
     "render": "node scripts/render.js",
     "gallery": "node scripts/build-gallery.js",
+    "pick": "node scripts/picker-server.js",
     "all": "npm run derive && npm run build && npm run render && npm run gallery"
   }
 }
