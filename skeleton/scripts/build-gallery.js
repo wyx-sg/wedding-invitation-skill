@@ -23,11 +23,11 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const DATA_DIR = path.join(ROOT, 'data');
-const DIST_DIR = path.join(ROOT, 'dist');
+export const DIST_DIR = path.join(ROOT, 'dist');
 const DIST_PHOTOS_DIR = path.join(DIST_DIR, 'photos');
 
 const wedding = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'wedding.json'), 'utf8'));
-const designs = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'designs.json'), 'utf8'));
+export const designs = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'designs.json'), 'utf8'));
 
 // Scan dist/photos for available images. The detail page renders a thumb
 // strip so the user can preview the same design with different photos
@@ -106,7 +106,8 @@ const COPY = {
     zoomInLabel: 'Zoom in',
     zoomResetLabel: 'Fit to screen',
     multiTagline: 'Generated alternatives — pick a favorite and download.',
-    singleTagline: 'Click the card to view, download, or tweak.',
+    singleTagline: 'Click the card to view or download.',
+    previewTagline: 'Click a design to preview and tweak. Tell the agent when you are ready for downloads.',
     tweakColorLabel: 'Color',
     tweakFontLabel: 'Typography',
     tweakFrameLabel: 'Photo frame',
@@ -116,7 +117,7 @@ const COPY = {
     tweakBodySub: 'Body',
     tweakExportLabel: 'Copy tweaks',
     tweakExportCopied: 'Copied ✓',
-    tweakExportHint: "Tweaks auto-sync to your assistant when `npm run pick` is running. Otherwise, click Copy and paste into chat so the assistant knows what you picked.",
+    tweakExportHint: "Your tweaks auto-sync to your assistant. If they don't see them, click Copy and paste into chat.",
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
   },
@@ -140,7 +141,8 @@ const COPY = {
     zoomInLabel: '放大',
     zoomResetLabel: '适应屏幕',
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。',
-    singleTagline: '点击卡片查看详情、下载或微调。',
+    singleTagline: '点击卡片查看详情或下载。',
+    previewTagline: '点击卡片预览 + 微调。调好后告诉 Agent 出最终下载页。',
     tweakColorLabel: '配色',
     tweakFontLabel: '字体',
     tweakFrameLabel: '照片框',
@@ -150,7 +152,7 @@ const COPY = {
     tweakBodySub: '正文字体',
     tweakExportLabel: '复制微调结果',
     tweakExportCopied: '已复制 ✓',
-    tweakExportHint: 'npm run pick 跑着时，微调会自动同步给 Agent。如果 Agent 没看到，点 Copy 把当前微调结果粘回对话窗口。',
+    tweakExportHint: '你的微调会自动同步给 Agent。如果 Agent 没看到，点「复制微调结果」把当前选择粘回对话窗口。',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
   }
@@ -295,6 +297,12 @@ const GALLERY_CSS = `
   }
   .thumb { aspect-ratio: 3 / 4; overflow: hidden; background: #000; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Stage-4 nav gallery: live iframe preview instead of PNG.
+     Card is fixed at 280px (the grid template above); iframe is the
+     template's natural 420x560, scaled to fit via CSS transform.
+     pointer-events:none so clicks fall through to the parent <a>. */
+  .thumb-iframe { position: relative; width: 280px; height: 373px; overflow: hidden; background: #14110d; }
+  .thumb-iframe iframe { width: 420px; height: 560px; border: 0; transform: scale(0.6667); transform-origin: top left; pointer-events: none; }
   .meta { padding: 16px 20px 20px; }
   .name {
     font-family: 'Cormorant Garamond', serif;
@@ -336,7 +344,7 @@ const DETAIL_CSS = `
     padding: 24px 40px 32px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     gap: 56px;
     box-sizing: border-box;
   }
@@ -347,7 +355,8 @@ const DETAIL_CSS = `
     align-items: center;
     justify-content: center;
     gap: 16px;
-    position: relative;
+    position: sticky;
+    top: 80px;
   }
   .photo-switcher {
     display: flex;
@@ -790,8 +799,8 @@ const DETAIL_CSS = `
   }
   .tweak-export {
     border-top: 1px dashed var(--border-soft);
-    margin-top: 24px;
-    padding-top: 18px;
+    margin-top: 36px;
+    padding: 22px 0 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1380,7 +1389,7 @@ const ZOOM_IIFE_SCRIPT = `
 
 // --- detail page ---
 
-function detailHtml(design, index) {
+export function detailHtml(design, index) {
   const meta = design.meta || {};
   const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
   const palette = (meta.palette || [])
@@ -1533,7 +1542,7 @@ function detailHtml(design, index) {
 
 // --- studio page ---
 
-function studioHtml(design, index) {
+export function studioHtml(design, index) {
   const meta = design.meta || {};
   const tplH = design.height || 560;
   const tplW = design.width || 420;
@@ -1643,12 +1652,12 @@ function studioHtml(design, index) {
 
       ${tweakHtml}
 
+      ${studioPagerHtml}
+
       <div class="tweak-export" id="tweak-export">
         <p class="tweak-export-hint">${esc(COPY.tweakExportHint)}</p>
         <button type="button" class="tweak-export-btn" id="tweak-export-btn">${esc(COPY.tweakExportLabel)}</button>
       </div>
-
-      ${studioPagerHtml}
     </div>
   </main>
 
@@ -1660,15 +1669,13 @@ function studioHtml(design, index) {
 `;
 }
 
-// --- gallery (multi only) ---
+// --- galleries ---
 
-function galleryHtml() {
+// Stage-5 final gallery: PNG thumbnails, cards link to <id>-page.html for
+// download. Replaces dist/index.html with the deliverable view.
+export function finalGalleryHtml() {
   const cards = designs.map(d => {
-    const name = (d['name_' + lang] != null && d['name_' + lang] !== '')
-      ? d['name_' + lang]
-      : (d.name_en != null && d.name_en !== '') ? d.name_en
-      : d.name != null && d.name !== '' ? d.name
-      : d.id;
+    const name = localizedName(d, 'name', d.id);
     const short = d.meta?.short || '';
     return `<a class="card" href="${esc(d.id)}-page.html">
       <div class="thumb"><img src="png/social/${esc(d.id)}.png" alt="${esc(name)}" loading="lazy"></div>
@@ -1679,12 +1686,45 @@ function galleryHtml() {
     </a>`;
   }).join('\n');
 
+  return galleryShellHtml({
+    title: COPY.pageTitle,
+    tagline: designs.length === 1 ? COPY.singleTagline : COPY.multiTagline,
+    cardsHtml: cards,
+  });
+}
+
+// Stage-4 navigation gallery: live iframe previews, cards link to
+// <id>-studio.html for tweaking. Lazy-loads iframes via loading="lazy".
+export function navGalleryHtml() {
+  const cards = designs.map(d => {
+    const name = localizedName(d, 'name', d.id);
+    const short = d.meta?.short || '';
+    return `<a class="card" href="${esc(d.id)}-studio.html">
+      <div class="thumb thumb-iframe">
+        <iframe src="${esc(d.id)}.html" loading="lazy" scrolling="no" frameborder="0" title="${esc(name)}"></iframe>
+      </div>
+      <div class="meta">
+        <div class="name">${esc(name)}</div>
+        ${short ? `<div class="desc">${esc(short)}</div>` : ''}
+      </div>
+    </a>`;
+  }).join('\n');
+
+  return galleryShellHtml({
+    title: COPY.pageTitle,
+    tagline: COPY.previewTagline,
+    cardsHtml: cards,
+  });
+}
+
+// Shared HTML shell used by both galleries — same header / hero / grid.
+function galleryShellHtml({ title, tagline, cardsHtml }) {
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${esc(COPY.pageTitle)}</title>
+  <title>${esc(title)}</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
   <style>${GALLERY_CSS}</style>
 </head>
@@ -1694,12 +1734,12 @@ function galleryHtml() {
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
   <header class="hero">
-    <h1>${esc(COPY.pageTitle)}</h1>
-    <p class="tagline">${esc(designs.length === 1 ? COPY.singleTagline : COPY.multiTagline)}</p>
+    <h1>${esc(title)}</h1>
+    <p class="tagline">${esc(tagline)}</p>
   </header>
   <main>
     <div class="grid">
-      ${cards}
+      ${cardsHtml}
     </div>
   </main>
 </body>
@@ -1708,17 +1748,20 @@ function galleryHtml() {
 }
 
 // --- main ---
+// Stage 5 deliverable: per-design detail pages + final gallery (PNG thumbnails,
+// linking to detail). Run via `node scripts/build-gallery.js` or `npm run gallery`.
+// Stage 4 surface (studio + nav-gallery) is in build-studio.js, which imports
+// from this file.
 
-// Unified output: always gallery + per-design detail + per-design studio,
-// regardless of how many designs. With 1 design the gallery is just a single-card
-// landing — keeps the navigation model consistent across the skill.
-designs.forEach((d, i) => {
-  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-studio.html`), studioHtml(d, i));
-  console.log(`[gallery] → dist/${d.id}-studio.html (tweak studio)`);
-  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-page.html`), detailHtml(d, i));
-  console.log(`[gallery] → dist/${d.id}-page.html (detail)`);
-});
-fs.writeFileSync(path.join(DIST_DIR, 'index.html'), galleryHtml());
-console.log(`[gallery] → dist/index.html (gallery, ${designs.length} design${designs.length > 1 ? 's' : ''})`);
+import { pathToFileURL } from 'node:url';
+const isMain = import.meta.url === pathToFileURL(process.argv[1]).href;
 
-console.log('[gallery] Done. Open dist/index.html in a browser.');
+if (isMain) {
+  designs.forEach((d, i) => {
+    fs.writeFileSync(path.join(DIST_DIR, `${d.id}-page.html`), detailHtml(d, i));
+    console.log(`[gallery] → dist/${d.id}-page.html (detail)`);
+  });
+  fs.writeFileSync(path.join(DIST_DIR, 'index.html'), finalGalleryHtml());
+  console.log(`[gallery] → dist/index.html (final gallery, ${designs.length} design${designs.length > 1 ? 's' : ''})`);
+  console.log('[gallery] Done. Open dist/index.html in a browser.');
+}

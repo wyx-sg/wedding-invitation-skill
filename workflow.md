@@ -477,28 +477,28 @@ This is the creative stage. You design one template per aesthetic the user selec
 
    **Localization**: every prose field uses `<field>_<lang>` keyed off the primary language in `data/wedding.json` → `languages[0]`. For a Spanish card, write `name_es`, `label_es`. The renderer falls back: `<field>_<lang>` → `<field>_en` → bare `<field>` → a sane default (`#1`, the design id, etc.). Always provide `<field>_en` alongside the localized version as a sanity fallback.
 
-6. **Build everything and let the user explore + tweak.** This is part of Stage 4 — the design is malleable here; the user explores it, you iterate; we're not yet shipping.
+6. **Build the preview surface and let the user tweak.**
 
    ```bash
-   npm run build && npm run render && npm run gallery
+   npm run preview
    ```
 
-   - `build.js` → `dist/<id>.html` (raw invitation HTML used as the iframe source)
-   - `render.js` → PNGs in `dist/png/{social,print}/` (used by the detail page's download buttons)
-   - `build-gallery.js` → `dist/index.html` (gallery landing), `dist/<id>-page.html` (detail), `dist/<id>-studio.html` (tweak studio) — one of each, always, regardless of design count
+   This is the Stage-4 build: runs `build.js` + `build-studio.js`. Outputs:
+   - `dist/<id>.html` — raw invitation HTML (used as iframe source)
+   - `dist/<id>-studio.html` — the tweak studio (live color/font/frame/component swaps)
+   - `dist/index.html` — **navigation gallery** with live iframe thumbnails; click a card → opens that design's studio
 
-   **Photo-crop review (mandatory before showing the user):** Read `dist/png/social/<id>.png` with the Read tool. Check that no head / forehead / chin is clipped by the photo frame, both people in a couple shot are visible, and important elements (hands with rings, bouquet) are inside the frame. If the crop is wrong, fix it before handing back. Common fixes:
-   - `object-position: center 12%` → `8%` / `4%` to keep heads in frame
-   - Switch frame shape: circle → oval → arch → rectangle (each clips less)
-   - Widen `.photo-wrap`: 240px → 280px → 320px
-   - Pick a different primary photo if the current one fights the layout
+   Note: Stage 4 does NOT render PNGs or build the final gallery/detail pages — those are Stage 5 deliverables. The iframe previews on the nav gallery and inside the studio are live HTML, fast to refresh.
 
-   After any fix, rerun the build command. Open `dist/index.html` for the user (`open` / `xdg-open` / `start`).
+   Open `dist/index.html` for the user (`open` / `xdg-open` / `start`).
 
 7. **Iterate.** This is where most of Stage 4's time goes. Two channels, complementary:
 
-   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. Point the user to the URL when they want to explore palette + typography variations themselves. Studio state lives in `localStorage` — it's exploration, NOT a permanent change to the template. If you want to lock in a studio choice as the design's new default, edit the template's CSS variables and rerun the build command so the PNG matches.
-   - **Chat with you** — for everything the studio can't do. "字大点", "swap the photo", "rewrite the layout, the date floats too far from the names", "add a small dog icon by the venue line". You edit the template (or `data/designs.json`), rerun `npm run build && npm run render && npm run gallery`, ask the user to refresh.
+   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. State is **auto-synced** to `data/tweak-state.json` while `npm run pick` is running (so you can read what the user picked). Studio state ALSO lives in `localStorage` as a fallback. The studio's "Copy" button at the bottom produces a human-readable summary the user can paste into chat if the auto-sync isn't reaching you.
+
+     Studio state is exploration, NOT a permanent change to the template. **To lock in a studio choice** (so the PNG matches when you eventually run Stage 5), edit the template's default CSS variables / class hooks, then re-run `npm run preview`.
+
+   - **Chat with you** — for everything the studio can't do. "字大点", "swap the photo", "rewrite the layout, the date floats too far from the names", "add a small dog icon by the venue line". You edit the template (or `data/designs.json`), rerun `npm run preview`, ask the user to refresh.
 
    Feedback → action map:
 
@@ -506,29 +506,43 @@ This is the creative stage. You design one template per aesthetic the user selec
    |---|---|
    | "Different color / font / frame" | Studio panel — no rebuild |
    | "Hide lunar date" / "hide tagline" | Studio panel toggle (or flip `default: false` in `tweak_options.components`) |
-   | "Lock in the cool palette I picked in studio" | Edit template's default `--card-bg` etc. + rebuild + render |
-   | "Font too small" / "color too dark" | Edit template + rebuild |
-   | "Head is cropped" | `object-position` % + rebuild |
-   | "Swap the photo" | `data/designs.json` `primary_photo` + rebuild |
-   | "Add an icon / motif element" | Template SVG / glyph + rebuild |
-   | "Hate the layout" | Rewrite the template from scratch (don't patch); rerun build |
+   | "Lock in the cool palette I picked in studio" | Read `data/tweak-state.json`, edit template's default `--card-bg` etc. to match, rerun `npm run preview` |
+   | "Font too small" / "color too dark" | Edit template + `npm run preview` |
+   | "Head is cropped" | `object-position` % + `npm run preview` |
+   | "Swap the photo" | `data/designs.json` `primary_photo` + `npm run preview` |
+   | "Add an icon / motif element" | Template SVG / glyph + `npm run preview` |
+   | "Hate the layout" | Rewrite the template from scratch (don't patch); rerun `npm run preview` |
 
    Loop until the user is satisfied with one (or more) of the designs.
 
 ## Stage 5 — Deliver
 
-The design is locked in. This stage is thin — barely "a stage" — but it draws a clear line: Stage 4 is exploration; Stage 5 is "you're done."
+The design is locked in. This stage produces the deliverable: PNGs the user can download. Stage 4's `dist/index.html` (navigation gallery) gets replaced with the final gallery; Stage 4's studio pages stay on disk but the gallery no longer links to them.
 
-1. **Final build to make sure the PNG matches the latest template state.** If the user locked in any tweaks via chat during Stage 4, the template already changed and the PNG was rebuilt. But run one more time to be safe:
+1. **Render PNGs and build the final gallery + detail pages.**
    ```bash
-   npm run build && npm run render && npm run gallery
+   npm run deliver
    ```
 
-2. **Open the gallery one more time** (or just remind the user it's already open). Point them at the **download buttons** on the detail page — Social (1080×1440, for messaging / email / social posts) and Print (2160×2880 @ 300 DPI, for physical cards). The browser's native download UI handles where to save.
+   This runs `render.js` + `build-gallery.js`. Outputs:
+   - `dist/png/social/<id>.png` — 1080×1440 (messaging / email / social)
+   - `dist/png/print/<id>.png` — 2160×2880 @ 300 DPI (physical print)
+   - `dist/<id>-page.html` — detail page with download buttons + meta (palette, fonts, motifs)
+   - `dist/index.html` — **final gallery** with PNG thumbnails; click a card → detail page
 
-3. **Stop.** Don't keep offering more tweaks. The user can always come back and reopen the iteration loop with a follow-up message, but until they do, Stage 5 is done.
+2. **Photo-crop review (mandatory before showing the user).** Read `dist/png/social/<id>.png` with the Read tool. Check that no head / forehead / chin is clipped by the photo frame, both people in a couple shot are visible, and important elements (hands with rings, bouquet) are inside the frame. If the crop is wrong:
+   - `object-position: center 12%` → `8%` / `4%` to keep heads in frame
+   - Switch frame shape: circle → oval → arch → rectangle (each clips less)
+   - Widen `.photo-wrap`: 240px → 280px → 320px
+   - Or pick a different primary photo
 
-PNGs go wherever the user saved them — outside the skill's scope.
+   Fix in the template, rerun `npm run deliver`. Re-check the PNG.
+
+3. **Open the gallery.** macOS: `open dist/index.html`; Linux: `xdg-open`; Windows: `start`. Point the user at the **download buttons** on the detail page — Social for messaging, Print for physical cards.
+
+4. **If the user wants more tweaks after seeing the deliverable** — drop back into Stage 4: rerun `npm run preview`. This overwrites `dist/index.html` with the navigation gallery; the user is back in tweak mode. After they're satisfied again, rerun `npm run deliver`.
+
+PNGs go wherever the user saves them — outside the skill's scope.
 
 ## Anti-patterns
 

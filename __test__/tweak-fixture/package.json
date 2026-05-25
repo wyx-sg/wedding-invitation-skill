@@ -7,8 +7,12 @@
   "scripts": {
     "derive": "node scripts/derive.js",
     "build": "node scripts/build.js",
+    "studio": "node scripts/build-studio.js",
     "render": "node scripts/render.js",
     "gallery": "node scripts/build-gallery.js",
-    "all": "npm run derive && npm run build && npm run render && npm run gallery"
+    "pick": "node scripts/picker-server.js",
+    "preview": "npm run build && npm run studio",
+    "deliver": "npm run render && npm run gallery",
+    "all": "npm run derive && npm run preview && npm run deliver"
   }
 }
