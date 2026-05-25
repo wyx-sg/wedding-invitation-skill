@@ -103,13 +103,15 @@ flowchart LR
 
 ## Use with other coding agents
 
+All agents use the same release zip from [Quick start](#quick-start). What differs is how each agent picks the skill up:
+
 | Agent | How to use |
 |---|---|
-| **Claude Code** | First-class — auto-discovers the skill after `git clone` |
-| **Claude Agent SDK** | Supported |
-| Cursor / Aider / Codex CLI / Gemini CLI / others | Clone anywhere; tell the agent: "read `SKILL.md` and help me make a wedding invitation" |
+| **Claude Code** | Unzip into `~/.claude/skills/` — auto-discovers. Type `/wedding-invitation` or say "help me make a wedding invitation". |
+| **Claude Agent SDK** | Unzip anywhere; load `SKILL.md` as a skill in your SDK setup. |
+| Cursor / Aider / Codex CLI / Gemini CLI / others | Unzip anywhere; tell the agent: "read `wedding-invitation-skill/SKILL.md` and help me make a wedding invitation". |
 
-Some interactions use Claude Code's `AskUserQuestion` tool for visual picking; other agents automatically fall back to plain text.
+Some interactions use Claude Code's `AskUserQuestion` tool for visual picking; other agents automatically fall back to plain-text questions.
 
 ## Privacy
 

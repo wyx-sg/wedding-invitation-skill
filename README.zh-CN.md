@@ -103,11 +103,13 @@ flowchart LR
 
 ## 兼容其他编程 agent
 
+所有 agent 用的都是 [快速开始](#快速开始) 里那个 release zip，区别只在于怎么让 agent 找到它：
+
 | Agent | 使用方式 |
 |---|---|
-| **Claude Code** | 原生支持 — `git clone` 之后自动发现 |
-| **Claude Agent SDK** | 支持 |
-| Cursor / Aider / Codex CLI / Gemini CLI / 其他 | 任意路径 clone，告诉 agent："读一下 `SKILL.md`，然后帮我做一张请帖" |
+| **Claude Code** | 解压到 `~/.claude/skills/` — 自动发现。输入 `/wedding-invitation` 或说"帮我做一张婚礼请帖"即可。 |
+| **Claude Agent SDK** | 解压到任意位置；在 SDK 配置里把 `SKILL.md` 作为 skill 加载。 |
+| Cursor / Aider / Codex CLI / Gemini CLI / 其他 | 解压到任意位置，告诉 agent："读一下 `wedding-invitation-skill/SKILL.md`，然后帮我做一张婚礼请帖"。 |
 
 部分交互用了 Claude Code 专属的 `AskUserQuestion` 工具做视觉选择；其他 agent 会自动降级为纯文本提问。
 
