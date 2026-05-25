@@ -118,6 +118,12 @@ const COPY = {
     tweakFontTextHint: 'Type a font name (or pick)…',
     tweakFrameRadiusLabel: 'Radius',
     tweakFrameAspectLabel: 'Aspect',
+    tweakSaveLabel: 'Save as new design',
+    tweakSavePromptLabel: 'Name this design',
+    tweakSaveExportLabel: 'Export JSON',
+    tweakSaveInfoLabel: 'Saved locally · refresh keeps your changes',
+    tweakContributeLabel: 'Love this design? Open a PR to add it to the skill — share with others →',
+    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
   },
   zh: {
     brand: '婚礼请帖',
@@ -150,6 +156,12 @@ const COPY = {
     tweakFontTextHint: '输入字体名（或从列表选）…',
     tweakFrameRadiusLabel: '圆角',
     tweakFrameAspectLabel: '比例',
+    tweakSaveLabel: '保存为新设计',
+    tweakSavePromptLabel: '给这个设计起个名字',
+    tweakSaveExportLabel: '导出 JSON',
+    tweakSaveInfoLabel: '已保存到本地 · 刷新后仍在',
+    tweakContributeLabel: '设计得不错？欢迎给项目提 PR，加进 skill 让更多人用 →',
+    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
   }
 }[lang];
 
@@ -780,6 +792,54 @@ const DETAIL_CSS = `
     min-width: 120px;
   }
   .tweak-frame-row input[type=text] { min-width: 80px; }
+  .tweak-save-row {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  .tweak-save-btn,
+  .tweak-export-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--accent);
+    background: linear-gradient(135deg, rgba(212,184,150,0.10), rgba(184,149,106,0.04));
+    color: var(--accent);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.12s;
+  }
+  .tweak-export-btn {
+    background: transparent;
+    color: var(--text-dim);
+    border-color: var(--border);
+  }
+  .tweak-save-btn:hover {
+    background: linear-gradient(135deg, rgba(212,184,150,0.18), rgba(184,149,106,0.08));
+    transform: translateY(-1px);
+  }
+  .tweak-export-btn:hover { color: var(--accent); border-color: var(--accent-warm); }
+  .tweak-save-info {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+  .tweak-contribute {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    text-align: center;
+    border-top: 1px dashed var(--border-soft);
+    padding-top: 8px;
+    margin-top: 4px;
+    transition: color 0.18s;
+    display: block;
+  }
+  .tweak-contribute:hover { color: var(--accent-warm); }
 `;
 
 // --- detail page ---
@@ -935,13 +995,26 @@ function detailHtml(design, index, isMulti) {
       </div>`);
     }
 
-    // Reset — only rendered when at least one section exists
+    // Save / Export / Reset — only rendered when at least one section exists
     if (sections.length > 0) {
       sections.push(`<div class="tweak-row tweak-reset">
         <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
       </div>`);
-      tweakHtml = `<div class="tweak-panel" id="tweak-panel">${sections.join('')}</div>`;
-      tweakConfigJson = JSON.stringify(tweak)
+      sections.push(`<div class="tweak-save-row">
+        <button type="button" class="tweak-save-btn" id="tweak-save">★ ${esc(COPY.tweakSaveLabel)}</button>
+        <button type="button" class="tweak-export-btn" id="tweak-export">${esc(COPY.tweakSaveExportLabel)}</button>
+      </div>
+      <div class="tweak-save-info">${esc(COPY.tweakSaveInfoLabel)}</div>
+      <a class="tweak-contribute" href="${esc(COPY.tweakContributeHref)}" target="_blank" rel="noopener">${esc(COPY.tweakContributeLabel)}</a>`);
+      tweakHtml = `<div class="tweak-panel" id="tweak-panel" data-design-id="${esc(design.id)}">${sections.join('')}</div>`;
+      const enrichedTweak = Object.assign({}, tweak, {
+        __designId: design.id,
+        __designTemplate: design.template || (design.id + '.html'),
+        __designPrimaryPhoto: design.primary_photo,
+        __designWidth: design.width || 420,
+        __designHeight: design.height || 560
+      });
+      tweakConfigJson = JSON.stringify(enrichedTweak)
         .replace(/</g, '\\u003c')
         .replace(/>/g, '\\u003e')
         .replace(/&/g, '\\u0026');
@@ -1153,6 +1226,82 @@ function detailHtml(design, index, isMulti) {
         try { iframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
       }
 
+      var DESIGN_ID = (cfg && cfg.__designId) || panel.getAttribute('data-design-id') || 'design';
+      var STORAGE_KEY = 'wis-tweak-' + DESIGN_ID;
+
+      function collectState() {
+        var state = { vars: {}, components: {}, frame: null };
+
+        // Active color preset
+        var activeColor = panel.querySelector('.tweak-swatch.active');
+        if (activeColor) {
+          var idx = +activeColor.getAttribute('data-tweak-color');
+          var cs = (cfg.color_schemes || [])[idx];
+          if (cs && cs.vars) Object.assign(state.vars, cs.vars);
+        }
+        // Custom color overrides
+        panel.querySelectorAll('[data-tweak-custom-color]').forEach(function (i) {
+          state.vars[i.getAttribute('data-tweak-custom-color')] = i.value;
+        });
+        // Active font preset
+        panel.querySelectorAll('.tweak-font-btn.active').forEach(function (b) {
+          state.vars[b.getAttribute('data-tweak-font-var')] = b.getAttribute('data-tweak-font-value');
+        });
+        // Custom font overrides
+        panel.querySelectorAll('[data-tweak-custom-font]').forEach(function (i) {
+          if (i.value) state.vars[i.getAttribute('data-tweak-custom-font')] = i.value;
+        });
+        // Active frame preset
+        var activeFrame = panel.querySelector('.tweak-frame-btn.active');
+        if (activeFrame) {
+          var fi = +activeFrame.getAttribute('data-tweak-frame');
+          var fr = (cfg.frames || [])[fi];
+          if (fr) state.frame = { radius: fr.radius, aspect: fr.aspect };
+        }
+        // Custom frame
+        var customR = panel.querySelector('[data-tweak-custom-frame-radius]');
+        var customA = panel.querySelector('[data-tweak-custom-frame-aspect]');
+        if (customR && customR.value) {
+          state.frame = state.frame || {};
+          state.frame.radius = customR.value;
+        }
+        if (customA && customA.value) {
+          state.frame = state.frame || {};
+          state.frame.aspect = customA.value;
+        }
+        // Components
+        panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
+          var id = cb.getAttribute('data-tweak-component');
+          var input = cb.querySelector('input');
+          if (id) state.components[id] = input ? input.checked : true;
+        });
+        return state;
+      }
+
+      function applyState(state) {
+        if (!state) return;
+        if (state.vars && Object.keys(state.vars).length) {
+          send({ type: 'set-css-vars', vars: state.vars });
+        }
+        if (state.frame) {
+          send({ type: 'set-frame', radius: state.frame.radius || '', aspect: state.frame.aspect || '' });
+        }
+        if (state.components) {
+          Object.keys(state.components).forEach(function (id) {
+            send({ type: 'toggle-component', id: id, visible: !!state.components[id] });
+          });
+        }
+      }
+
+      function autoSave() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState())); } catch (_) {}
+      }
+
+      // Auto-save state to localStorage on any control change
+      ['click', 'change', 'input'].forEach(function (ev) {
+        panel.addEventListener(ev, function () { setTimeout(autoSave, 50); });
+      });
+
       function applyDefaults() {
         if (Array.isArray(cfg.components)) {
           cfg.components.forEach(function (c) {
@@ -1163,10 +1312,16 @@ function detailHtml(design, index, isMulti) {
         }
       }
 
-      // Apply defaults once the iframe announces ready.
+      // Apply defaults once the iframe announces ready, then restore saved state.
       window.addEventListener('message', function (e) {
         var d = e && e.data;
-        if (d && d.type === 'photo-iframe-ready') applyDefaults();
+        if (d && d.type === 'photo-iframe-ready') {
+          applyDefaults();
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) applyState(JSON.parse(raw));
+          } catch (_) {}
+        }
       });
 
       panel.addEventListener('click', function (e) {
@@ -1251,6 +1406,64 @@ function detailHtml(design, index, isMulti) {
           send({ type: 'set-frame', aspect: t.value });
         }
       });
+
+      // Save button — names the design, persists state to localStorage under a separate key
+      var saveBtn = document.getElementById('tweak-save');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', function () {
+          var name = prompt(panel.querySelector('.tweak-save-btn').textContent.replace(/^[★\s]+/, ''));
+          if (!name) return;
+          var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          if (!slug) return;
+          autoSave();
+          try {
+            localStorage.setItem('wis-saved-' + slug, JSON.stringify({
+              name: name, fromDesign: DESIGN_ID,
+              state: collectState(), savedAt: new Date().toISOString()
+            }));
+          } catch (_) {}
+          alert('Saved locally: ' + name);
+        });
+      }
+
+      // Export — download a JSON snippet ready to paste into designs.json
+      var exportBtn = document.getElementById('tweak-export');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function () {
+          var name = prompt('Name for the design entry:');
+          if (!name) return;
+          var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          if (!slug) return;
+          var state = collectState();
+          var entry = {
+            id: slug,
+            name_en: name,
+            name_zh: name,
+            template: cfg.__designTemplate || (DESIGN_ID + '.html'),
+            primary_photo: cfg.__designPrimaryPhoto || 'photo-01',
+            width: cfg.__designWidth || 420,
+            height: cfg.__designHeight || 560,
+            meta: { short: 'Saved from ' + DESIGN_ID + ' on ' + new Date().toLocaleDateString() },
+            tweak_options: {
+              color_schemes: (state.vars && Object.keys(state.vars).length)
+                ? [{ name_en: 'Saved', name_zh: '已保存', vars: state.vars }]
+                : [],
+              components: Object.keys(state.components || {}).map(function (id) {
+                return { id: id, label_en: id, label_zh: id, default: !!state.components[id] };
+              })
+            }
+          };
+          if (state.frame) entry.tweak_options.frames = [Object.assign({ name: 'Saved' }, state.frame)];
+          var json = JSON.stringify(entry, null, 2);
+          var blob = new Blob([json], { type: 'application/json' });
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = slug + '.design.json';
+          a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+          alert('Downloaded: ' + slug + '.design.json\nAppend its contents to data/designs.json (as a new array entry), then rerun:\n  npm run build && npm run gallery');
+        });
+      }
     })();
   </script>
   <script>
