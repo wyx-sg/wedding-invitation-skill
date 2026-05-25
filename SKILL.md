@@ -11,20 +11,16 @@ The user asks for help making a wedding invitation, save-the-date, or a similar 
 
 ## Core principle: design, don't pick
 
-This skill **does not** have a generic template gallery the user picks from. Whatever the mode, every invitation is **designed from scratch for this specific couple** in the language(s) they want.
+This skill **does not** have a generic template gallery the user picks from. Every invitation is **designed from scratch for this specific couple** in the language(s) they want.
 
-The user picks one of two **modes** (see Stage 2.5 in workflow.md):
+How many designs end up in the final gallery depends entirely on the **style picker** in Stage 3 — it's multi-select. Pick 1 aesthetic → 1 design. Pick 3 → 3 designs. The output is always a local gallery (`dist/index.html`) with one detail page + one tweak studio page per design, regardless of count. No mode flag, no upfront mode choice — emerges naturally from picker selections.
 
-- **Single mode (default)** — design 1 custom template, iterate with feedback to perfection. Fastest path when the user has a strong direction.
-- **Multi mode** — generate N variants in parallel (3 / 5 / 8, or user-specified), each a different aesthetic but all using the user's actual data. The user browses them in a local gallery and either downloads a favorite or picks one to keep iterating (drops back into single-mode flow).
-
-Even in multi mode, **each variant is custom-designed**, not pulled from a frozen template library.
+Each design is custom-built (not pulled from a frozen template library) using `design-principles.md` as the visual vocabulary.
 
 Your job:
-1. Talk with the user to learn who they are, what language(s), and what aesthetic
-2. Have them pick a mode
-3. Design **fresh** HTML template(s) tailored to them, using `design-principles.md` as your visual vocabulary
-4. Render them locally and present in a local gallery page with download buttons
+1. Talk with the user to learn who they are, what language(s), and which aesthetic direction(s) fit their photos
+2. Design **fresh** HTML template(s) tailored to them, one per direction they picked
+3. Render them locally + open the gallery, where each design can be downloaded or tweaked via a live tweak panel
 
 **The aesthetic vocabulary in `design-principles.md` is directional, not prescriptive.** Each aesthetic entry has a **Spirit** (the soul), a **Starting palette** (a reference, not a recipe — shift hues to match the photo), a **Typography family** (pick within the family for the formality the couple wants), and a **NEVER list** (hard constraints — those are non-negotiable). Some culturally-specific aesthetics also have **Hard cultural requirements** (e.g. `red-gold` must be red-dominant, `arabic` must use a mihrab arch). Otherwise, you are designing — using judgment to adapt the direction to the couple's photo, language, and preferences.
 
@@ -151,8 +147,8 @@ A directory like `~/my-wedding/` containing:
 - `dist/<design-id>.html` — the rendered invitation (iframe source for the gallery)
 - `dist/png/social/<design-id>.png` — 1080×1440, for messaging / email / social media
 - `dist/png/print/<design-id>.png` — 2160×2880 at 300 DPI, for printing physical cards
-- `dist/index.html` — local gallery page that opens in the user's browser:
-  - **Single mode** (1 design): a detail page with iframe preview, palette/typography meta, two download buttons, and a tweak panel (color schemes, fonts, frame, optional components — live, no rebuild)
-  - **Multi mode** (N designs): a grid of all N + per-design detail pages with prev/next/back (each with the same tweak panel)
+- `dist/index.html` — local gallery landing (always, even for 1 design): a grid of cards, each linking to its own detail page
+- `dist/<id>-page.html` — per-design detail page: iframe preview, palette/typography meta, two download buttons, prev/next pager (only when >1 design)
+- `dist/<id>-studio.html` — per-design tweak studio: live color/font/frame/component switchers, no rebuild needed
 
 The user opens `dist/index.html`, sees their invitation(s) in a polished page, and downloads the size they need. They can also continue iterating with you to refine.

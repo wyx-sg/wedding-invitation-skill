@@ -1,5 +1,6 @@
-// Build a local gallery page (and per-design detail pages if multi-design)
-// for the user's wedding invitation project.
+// Build the user's local gallery: index landing + per-design detail + per-design
+// tweak studio. Output is always the same shape regardless of how many designs
+// — with 1 design the gallery is a single-card landing.
 //
 //   node scripts/build-gallery.js
 //
@@ -10,12 +11,10 @@
 //   dist/png/social/*   — social PNGs (created by render.js)
 //   dist/png/print/*    — print PNGs   (created by render.js)
 //
-// Outputs (single-design case, designs.length == 1):
-//   dist/index.html     — the detail page (iframe + meta + download buttons)
-//
-// Outputs (multi-design case, designs.length > 1):
-//   dist/index.html     — gallery grid (cards with thumbnails)
-//   dist/<id>-page.html — detail page per design (with prev/next/back)
+// Outputs (always, for every design):
+//   dist/index.html       — gallery grid (cards with thumbnails)
+//   dist/<id>-page.html   — detail page (iframe + meta + download buttons; prev/next only if >1 design)
+//   dist/<id>-studio.html — tweak studio (color/font/frame/component switchers)
 //
 // Open dist/index.html in a browser to view + download.
 
@@ -107,6 +106,7 @@ const COPY = {
     zoomInLabel: 'Zoom in',
     zoomResetLabel: 'Fit to screen',
     multiTagline: 'Generated alternatives — pick a favorite and download.',
+    singleTagline: 'Click the card to view, download, or tweak.',
     tweakColorLabel: 'Color',
     tweakFontLabel: 'Typography',
     tweakFrameLabel: 'Photo frame',
@@ -137,6 +137,7 @@ const COPY = {
     zoomInLabel: '放大',
     zoomResetLabel: '适应屏幕',
     multiTagline: '生成的几个备选方案 — 挑一个你最喜欢的下载。',
+    singleTagline: '点击卡片查看详情、下载或微调。',
     tweakColorLabel: '配色',
     tweakFontLabel: '字体',
     tweakFrameLabel: '照片框',
@@ -1230,7 +1231,7 @@ const ZOOM_IIFE_SCRIPT = `
 
 // --- detail page ---
 
-function detailHtml(design, index, isMulti) {
+function detailHtml(design, index) {
   const meta = design.meta || {};
   const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
   const palette = (meta.palette || [])
@@ -1240,8 +1241,9 @@ function detailHtml(design, index, isMulti) {
   const tplH = design.height || 560;
   const tplW = design.width || 420;
 
-  const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
-  const next = isMulti ? designs[(index + 1) % designs.length] : null;
+  const hasSiblings = designs.length > 1;
+  const prev = hasSiblings ? designs[(index - 1 + designs.length) % designs.length] : null;
+  const next = hasSiblings ? designs[(index + 1) % designs.length] : null;
 
   const switcherHtml = buildSwitcherHtml(design);
 
@@ -1259,7 +1261,7 @@ function detailHtml(design, index, isMulti) {
 
   const prevName = prev && localizedName(prev, 'name', prev.id);
   const nextName = next && localizedName(next, 'name', next.id);
-  const pagerHtml = isMulti ? `
+  const pagerHtml = hasSiblings ? `
     <nav class="pager">
       <a class="step prev" href="${esc(prev.id)}-page.html">
         <div class="step-info">
@@ -1320,7 +1322,7 @@ function detailHtml(design, index, isMulti) {
 </head>
 <body>
   <nav class="wis-nav">
-    ${isMulti ? `<a class="wis-nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>` : ''}
+    <a class="wis-nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>
     <div class="wis-brand">${esc(COPY.brand)}</div>
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
@@ -1382,13 +1384,14 @@ function detailHtml(design, index, isMulti) {
 
 // --- studio page ---
 
-function studioHtml(design, index, isMulti) {
+function studioHtml(design, index) {
   const meta = design.meta || {};
   const tplH = design.height || 560;
   const tplW = design.width || 420;
 
-  const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
-  const next = isMulti ? designs[(index + 1) % designs.length] : null;
+  const hasSiblings = designs.length > 1;
+  const prev = hasSiblings ? designs[(index - 1 + designs.length) % designs.length] : null;
+  const next = hasSiblings ? designs[(index + 1) % designs.length] : null;
 
   const switcherHtml = buildSwitcherHtml(design);
 
@@ -1398,7 +1401,7 @@ function studioHtml(design, index, isMulti) {
 
   const prevName = prev && localizedName(prev, 'name', prev.id);
   const nextName = next && localizedName(next, 'name', next.id);
-  const studioPagerHtml = isMulti ? `
+  const studioPagerHtml = hasSiblings ? `
     <nav class="pager">
       <a class="step prev" href="${esc(prev.id)}-studio.html">
         <div class="step-info">
@@ -1529,7 +1532,7 @@ function galleryHtml() {
   </nav>
   <header class="hero">
     <h1>${esc(COPY.pageTitle)}</h1>
-    <p class="tagline">${esc(COPY.multiTagline)}</p>
+    <p class="tagline">${esc(designs.length === 1 ? COPY.singleTagline : COPY.multiTagline)}</p>
   </header>
   <main>
     <div class="grid">
@@ -1543,24 +1546,16 @@ function galleryHtml() {
 
 // --- main ---
 
-const isMulti = designs.length > 1;
-
-// Every design gets a studio page, both modes
+// Unified output: always gallery + per-design detail + per-design studio,
+// regardless of how many designs. With 1 design the gallery is just a single-card
+// landing — keeps the navigation model consistent across the skill.
 designs.forEach((d, i) => {
-  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-studio.html`), studioHtml(d, i, isMulti));
+  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-studio.html`), studioHtml(d, i));
   console.log(`[gallery] → dist/${d.id}-studio.html (tweak studio)`);
+  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-page.html`), detailHtml(d, i));
+  console.log(`[gallery] → dist/${d.id}-page.html (detail)`);
 });
-
-if (isMulti) {
-  designs.forEach((d, i) => {
-    fs.writeFileSync(path.join(DIST_DIR, `${d.id}-page.html`), detailHtml(d, i, true));
-    console.log(`[gallery] → dist/${d.id}-page.html (detail)`);
-  });
-  fs.writeFileSync(path.join(DIST_DIR, 'index.html'), galleryHtml());
-  console.log(`[gallery] → dist/index.html (gallery, ${designs.length} designs)`);
-} else {
-  fs.writeFileSync(path.join(DIST_DIR, 'index.html'), detailHtml(designs[0], 0, false));
-  console.log(`[gallery] → dist/index.html (single design — detail)`);
-}
+fs.writeFileSync(path.join(DIST_DIR, 'index.html'), galleryHtml());
+console.log(`[gallery] → dist/index.html (gallery, ${designs.length} design${designs.length > 1 ? 's' : ''})`);
 
 console.log('[gallery] Done. Open dist/index.html in a browser.');

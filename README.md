@@ -100,12 +100,11 @@ flowchart LR
     R --> O[Local gallery opens in browser<br/>📥 Download buttons]
 ```
 
-1. **Talk** — Claude asks your language(s), names, date, venue, style preference
-2. **Mode** — Single design or compare alternatives
-3. **Preview** — Claude shows aesthetic directions visually in your browser
-4. **Design** — Claude writes unique HTML template(s) from scratch in your language
-5. **Iterate** (single mode) — you say "bigger font" / "softer color" / "swap the photo"; Claude tweaks
-6. **Open gallery** — `dist/index.html` opens in your browser with download buttons for two PNG sizes
+1. **Talk** — Claude asks your language(s), names, date, venue
+2. **Pick style direction(s)** — Claude curates 5 aesthetic candidates that fit your photos and shows them in your browser; pick one or several (multi-select)
+3. **Design** — Claude writes a fresh HTML template per direction you picked
+4. **Open gallery** — `dist/index.html` opens with each design as a card; click any to view, download (Social 1080×1440 / Print 2160×2880), or tweak (live color/font/frame switchers)
+5. **Iterate via chat** — for things the tweak panel can't do ("bigger font", "swap the photo", "rewrite layout") tell Claude; rebuilds + refresh
 
 ## Use with other coding agents
 
