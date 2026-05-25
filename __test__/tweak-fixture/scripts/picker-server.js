@@ -31,6 +31,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DATA_DIR = path.join(ROOT, 'data');
 const STATE_FILE = path.join(DATA_DIR, 'picker-state.json');
+const TWEAK_STATE_FILE = path.join(DATA_DIR, 'tweak-state.json');
 
 const argPort = process.argv.find(a => a.startsWith('--port='));
 const PORT = Number(argPort ? argPort.slice('--port='.length) : (process.env.PICKER_PORT || 8765));
@@ -68,6 +69,22 @@ function readState() {
 function writeState(json) {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(STATE_FILE, json);
+}
+
+function readTweakState() {
+  try {
+    return fs.readFileSync(TWEAK_STATE_FILE, 'utf8');
+  } catch {
+    return '{}';
+  }
+}
+
+function writeTweakState(designId, state) {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  let existing = {};
+  try { existing = JSON.parse(readTweakState()); } catch { existing = {}; }
+  existing[designId] = { ...state, updatedAt: new Date().toISOString() };
+  fs.writeFileSync(TWEAK_STATE_FILE, JSON.stringify(existing, null, 2));
 }
 
 // Path normalization: strip leading `/`, resolve, and reject anything that
@@ -112,6 +129,39 @@ const server = http.createServer((req, res) => {
           const parsed = JSON.parse(body);                       // validate it's JSON
           parsed.updatedAt = new Date().toISOString();
           writeState(JSON.stringify(parsed, null, 2));
+          send(res, 200, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ ok: true }));
+        } catch (e) {
+          send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'invalid json' }));
+        }
+      });
+      return;
+    }
+    return send(res, 405, cors, 'method not allowed');
+  }
+
+  if (req.url === '/api/tweak-state' || req.url.startsWith('/api/tweak-state?')) {
+    if (req.method === 'GET') {
+      return send(res, 200, { ...cors, 'Content-Type': MIME['.json'] }, readTweakState());
+    }
+    if (req.method === 'POST') {
+      let body = '';
+      let tooBig = false;
+      req.on('data', chunk => {
+        body += chunk;
+        if (body.length > 64 * 1024) {
+          tooBig = true;
+          req.destroy();
+        }
+      });
+      req.on('end', () => {
+        if (tooBig) return;
+        try {
+          const parsed = JSON.parse(body);
+          const designId = String(parsed.designId || '').trim();
+          if (!designId || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(designId)) {
+            return send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'missing or invalid designId' }));
+          }
+          writeTweakState(designId, parsed.state || {});
           send(res, 200, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ ok: true }));
         } catch (e) {
           send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'invalid json' }));

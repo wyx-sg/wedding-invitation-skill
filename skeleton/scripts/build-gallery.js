@@ -114,6 +114,9 @@ const COPY = {
     tweakResetLabel: 'Reset',
     tweakHeadlineSub: 'Headline',
     tweakBodySub: 'Body',
+    tweakExportLabel: 'Copy tweaks',
+    tweakExportCopied: 'Copied ✓',
+    tweakExportHint: "Tweaks auto-sync to your assistant when `npm run pick` is running. Otherwise, click Copy and paste into chat so the assistant knows what you picked.",
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
   },
@@ -145,6 +148,9 @@ const COPY = {
     tweakResetLabel: '重置',
     tweakHeadlineSub: '标题字体',
     tweakBodySub: '正文字体',
+    tweakExportLabel: '复制微调结果',
+    tweakExportCopied: '已复制 ✓',
+    tweakExportHint: 'npm run pick 跑着时，微调会自动同步给 Agent。如果 Agent 没看到，点 Copy 把当前微调结果粘回对话窗口。',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
   }
@@ -782,6 +788,40 @@ const DETAIL_CSS = `
     color: var(--accent);
     letter-spacing: 3.5px;
   }
+  .tweak-export {
+    border-top: 1px dashed var(--border-soft);
+    margin-top: 24px;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+  .tweak-export-hint {
+    margin: 0;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 460px;
+  }
+  .tweak-export-btn {
+    padding: 6px 18px;
+    background: transparent;
+    border: 1px solid var(--accent-warm);
+    border-radius: 999px;
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+  }
+  .tweak-export-btn:hover { background: rgba(212,184,150,0.12); }
+  .tweak-export-btn.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 `;
 
 // --- shared helpers ---
@@ -901,8 +941,22 @@ function buildTweakParts(design) {
       tweakHtml = `<div class="tweak-panel" id="tweak-panel" data-design-id="${esc(design.id)}">${sections.join('')}</div>`;
       const tweakConfigShape = {
         tweak: tweak,
+        lang: lang,
+        copy: {
+          intro: lang === 'zh' ? '我对设计「{name}」的微调' : 'My tweaks for "{name}"',
+          color: COPY.tweakColorLabel,
+          headline: COPY.tweakHeadlineSub,
+          body: COPY.tweakBodySub,
+          frame: COPY.tweakFrameLabel,
+          show: lang === 'zh' ? '显示' : 'Show',
+          hide: lang === 'zh' ? '隐藏' : 'Hide',
+          sep: lang === 'zh' ? '、' : ', ',
+          exportLabel: COPY.tweakExportLabel,
+          exportCopied: COPY.tweakExportCopied,
+        },
         design: {
           id: design.id,
+          displayName: localizedName(design, 'name', design.id),
           template: design.template || (design.id + '.html'),
           primary_photo: design.primary_photo,
           width: design.width || 420,
@@ -1017,8 +1071,25 @@ const TWEAK_IIFE_SCRIPT = `
         }
       }
 
+      // Live sync to picker-server so the agent can read data/tweak-state.json
+      // without asking the user to copy/paste. file:// pages silently degrade
+      // to localStorage-only + the Copy button below.
+      var serverBacked = location.protocol === 'http:' || location.protocol === 'https:';
+      function postToServer(state) {
+        if (!serverBacked) return;
+        try {
+          fetch('/api/tweak-state', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ designId: DESIGN_ID, state: state }),
+          }).catch(function () { /* server gone — Copy still works */ });
+        } catch (_) {}
+      }
+
       function autoSave() {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState())); } catch (_) {}
+        var state = collectState();
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+        postToServer(state);
       }
 
       // Save synchronously on every tweak so navigation doesn't lose changes.
@@ -1027,6 +1098,84 @@ const TWEAK_IIFE_SCRIPT = `
       });
       // Also save on page hide as a belt-and-suspenders measure.
       window.addEventListener('pagehide', autoSave);
+
+      // Human-readable summary for the Copy button — agent-pastable text.
+      function localizedField(obj, field, fallback) {
+        if (!obj) return fallback;
+        var primaryKey = field + '_' + (cfg.lang || 'en');
+        if (obj[primaryKey] != null && obj[primaryKey] !== '') return obj[primaryKey];
+        if (obj[field + '_en'] != null && obj[field + '_en'] !== '') return obj[field + '_en'];
+        if (obj[field] != null && obj[field] !== '') return obj[field];
+        return fallback;
+      }
+      function buildSummary() {
+        var state = collectState();
+        var labels = cfg.copy || {};
+        var lines = [];
+        var designName = (cfg.design && cfg.design.displayName) || DESIGN_ID;
+        lines.push((labels.intro || 'My tweaks for "{name}"').replace('{name}', designName) + ':');
+        // Color scheme
+        if (typeof state.colorIdx === 'number' && state.colorIdx >= 0) {
+          var cs = (TWEAK.color_schemes || [])[state.colorIdx];
+          if (cs) lines.push('· ' + (labels.color || 'Color') + ': ' + localizedField(cs, 'name', '#' + state.colorIdx));
+        }
+        // Fonts
+        Object.keys(state.fontValues || {}).forEach(function (k) {
+          var lbl = k === '--font-headline' ? (labels.headline || 'Headline')
+                  : k === '--font-body' ? (labels.body || 'Body')
+                  : k;
+          lines.push('· ' + lbl + ': ' + state.fontValues[k]);
+        });
+        // Frame
+        if (typeof state.frameIdx === 'number' && state.frameIdx >= 0) {
+          var fr = (TWEAK.frames || [])[state.frameIdx];
+          if (fr) lines.push('· ' + (labels.frame || 'Frame') + ': ' + localizedField(fr, 'name', '#' + state.frameIdx));
+        }
+        // Components
+        var componentDefs = TWEAK.components || [];
+        var shown = [], hidden = [];
+        componentDefs.forEach(function (c) {
+          if (!c || !c.id) return;
+          var lbl = localizedField(c, 'label', c.id);
+          var visible = state.components.hasOwnProperty(c.id) ? state.components[c.id] : c.default !== false;
+          if (visible) shown.push(lbl); else hidden.push(lbl);
+        });
+        var sep = labels.sep || ', ';
+        if (shown.length) lines.push('· ' + (labels.show || 'Show') + ': ' + shown.join(sep));
+        if (hidden.length) lines.push('· ' + (labels.hide || 'Hide') + ': ' + hidden.join(sep));
+        return lines.join('\\n');
+      }
+
+      // Wire the Copy button (writes the summary to clipboard).
+      var copyBtn = document.getElementById('tweak-export-btn');
+      if (copyBtn) {
+        var exportLabel = (cfg.copy && cfg.copy.exportLabel) || 'Copy tweaks';
+        var exportCopied = (cfg.copy && cfg.copy.exportCopied) || 'Copied ✓';
+        copyBtn.addEventListener('click', function () {
+          var text = buildSummary();
+          var done = function () {
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = exportCopied;
+            setTimeout(function () {
+              copyBtn.classList.remove('copied');
+              copyBtn.textContent = exportLabel;
+            }, 2400);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = text; document.body.appendChild(ta); ta.select();
+              try { document.execCommand('copy'); done(); } catch (_) {}
+              document.body.removeChild(ta);
+            });
+          } else {
+            var ta2 = document.createElement('textarea');
+            ta2.value = text; document.body.appendChild(ta2); ta2.select();
+            try { document.execCommand('copy'); done(); } catch (_) {}
+            document.body.removeChild(ta2);
+          }
+        });
+      }
 
       function applyDefaults() {
         if (Array.isArray(TWEAK.components)) {
@@ -1396,6 +1545,7 @@ function studioHtml(design, index) {
   const switcherHtml = buildSwitcherHtml(design);
 
   const designName = localizedName(design, 'name', design.id);
+  const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
 
   const { tweakHtml, tweakConfigJson } = buildTweakParts(design);
 
@@ -1484,7 +1634,20 @@ function studioHtml(design, index) {
     </div>
 
     <div class="detail-info">
+      <div>
+        <h1 class="style-name">${esc(designName)}</h1>
+        ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
+      </div>
+
+      ${longHtml}
+
       ${tweakHtml}
+
+      <div class="tweak-export" id="tweak-export">
+        <p class="tweak-export-hint">${esc(COPY.tweakExportHint)}</p>
+        <button type="button" class="tweak-export-btn" id="tweak-export-btn">${esc(COPY.tweakExportLabel)}</button>
+      </div>
+
       ${studioPagerHtml}
     </div>
   </main>
