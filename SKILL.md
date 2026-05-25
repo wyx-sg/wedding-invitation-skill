@@ -30,6 +30,8 @@ Your job:
 
 **The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of reference invitations used in the README gallery — each in its own native cultural language. Reading those files is forbidden: they bias you toward copying a specific design, and their language may not match the user's chosen language. Use `design-principles.md` as your sole visual reference. **Do not show `examples/thumbnails/*.png` to the user during the Stage 3 style picker either** — the user fixates on "I want THAT one" and the agent gets pulled toward literal copy. Instead, present aesthetic directions as **mood-board cards** (palette swatches + type sample + spirit description). See `workflow.md` Stage 3 for the picker template.
 
+The `references/` directory IS readable at runtime — it ships agent-copyable starting points (a blank-canvas template + a maximal tweak_options snippet) used when the user picks Custom in Stage 3. Unlike `examples/`, these are not finished designs to copy — they're skeletons to fill in with the user's data.
+
 ## Language
 
 The user's language choice is the FIRST design decision. Ask it before you ask anything else (see `workflow.md` Stage 1).
@@ -106,6 +108,9 @@ examples/                 ← frozen Chinese showcase artifacts; DO NOT READ at 
   *.html                    (20 example invitations — README gallery use only)
   thumbnails/*.png          (rendered thumbnails for README + inspiration display)
   photos/                   (stock placeholder images bundled for thumbnails)
+references/                 ← agent-copyable starting points (NOT runtime-read like examples/)
+  blank-canvas.html           (neutral template used when user picks Custom in Stage 3)
+  blank-canvas-designs.json   (maximal tweak_options snippet for the Custom design entry)
 skeleton/                 ← starting project copied into the user's workspace
   package.json
   scripts/

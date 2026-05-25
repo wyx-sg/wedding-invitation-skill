@@ -1,0 +1,43 @@
+{
+  "id": "custom-canvas",
+  "name_zh": "自定义设计",
+  "name_en": "CUSTOM",
+  "template": "custom-canvas.html",
+  "primary_photo": "photo-01",
+  "width": 420,
+  "height": 560,
+  "custom": true,
+  "meta": {
+    "short": "designed from scratch",
+    "palette": ["#f5f1e8", "#8a9882", "#a59585", "#2c2c2c"],
+    "fonts": ["Cormorant Garamond", "Inter"],
+    "motifs": "fully tweakable"
+  },
+  "tweak_options": {
+    "color_schemes": [
+      { "name_en": "Warm cream", "name_zh": "暖米", "vars": { "--card-bg": "#f5f1e8", "--card-text": "#2c2c2c", "--card-accent-1": "#8a9882", "--card-accent-2": "#a59585" } },
+      { "name_en": "Cool stone", "name_zh": "冷石",   "vars": { "--card-bg": "#dde2dd", "--card-text": "#2a3236", "--card-accent-1": "#7a8a96", "--card-accent-2": "#95a0a5" } },
+      { "name_en": "Black-gold", "name_zh": "黑金",   "vars": { "--card-bg": "#1a1a1a", "--card-text": "#e0d8c8", "--card-accent-1": "#d4af37", "--card-accent-2": "#b8956a" } },
+      { "name_en": "Ink wash",   "name_zh": "水墨",   "vars": { "--card-bg": "#fafafa", "--card-text": "#1a1a1a", "--card-accent-1": "#1a1a1a", "--card-accent-2": "#888888" } }
+    ],
+    "fonts": {
+      "--font-headline": ["Cormorant Garamond", "Playfair Display", "Inter", "Manrope", "DM Sans"],
+      "--font-body":     ["Inter", "Manrope", "DM Sans", "Cormorant Garamond"]
+    },
+    "frames": [
+      { "name": "oval",         "radius": "50%",             "aspect": "4/5" },
+      { "name": "rounded-rect", "radius": "8px",             "aspect": "4/5" },
+      { "name": "arch",         "radius": "50% 50% 4px 4px", "aspect": "4/5" },
+      { "name": "circle",       "radius": "50%",             "aspect": "1/1" },
+      { "name": "rectangle",    "radius": "2px",             "aspect": "4/5" }
+    ],
+    "components": [
+      { "id": "tagline",      "label_en": "Tagline",      "label_zh": "寄语",    "default": false },
+      { "id": "lunar-date",   "label_en": "Lunar date",   "label_zh": "农历",    "default": false },
+      { "id": "address-full", "label_en": "Full address", "label_zh": "完整地址", "default": true  },
+      { "id": "pinyin",       "label_en": "Romanization", "label_zh": "拼音",    "default": true  },
+      { "id": "divider",      "label_en": "Divider",      "label_zh": "分隔线",   "default": true  },
+      { "id": "seal",         "label_en": "Seal",         "label_zh": "印章",    "default": false }
+    ]
+  }
+}
