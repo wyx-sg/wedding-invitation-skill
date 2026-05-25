@@ -947,46 +947,82 @@ const TWEAK_IIFE_SCRIPT = `
       var STORAGE_KEY = 'wis-tweak-' + DESIGN_ID;
 
       function collectState() {
-        var state = { vars: {}, components: {}, frame: null };
+        var state = {
+          colorIdx: null,
+          fontValues: {},
+          frameIdx: null,
+          components: {}
+        };
 
-        // Active color preset
         var activeColor = panel.querySelector('.tweak-swatch.active');
-        if (activeColor) {
-          var idx = +activeColor.getAttribute('data-tweak-color');
-          var cs = (TWEAK.color_schemes || [])[idx];
-          if (cs && cs.vars) Object.assign(state.vars, cs.vars);
-        }
-        // Active font preset
+        if (activeColor) state.colorIdx = +activeColor.getAttribute('data-tweak-color');
+
         panel.querySelectorAll('.tweak-font-btn.active').forEach(function (b) {
-          state.vars[b.getAttribute('data-tweak-font-var')] = b.getAttribute('data-tweak-font-value');
+          state.fontValues[b.getAttribute('data-tweak-font-var')] = b.getAttribute('data-tweak-font-value');
         });
-        // Active frame preset
+
         var activeFrame = panel.querySelector('.tweak-frame-btn.active');
-        if (activeFrame) {
-          var fi = +activeFrame.getAttribute('data-tweak-frame');
-          var fr = (TWEAK.frames || [])[fi];
-          if (fr) state.frame = { radius: fr.radius, aspect: fr.aspect };
-        }
-        // Components
+        if (activeFrame) state.frameIdx = +activeFrame.getAttribute('data-tweak-frame');
+
         panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
           var id = cb.getAttribute('data-tweak-component');
           var input = cb.querySelector('input');
           if (id) state.components[id] = input ? input.checked : true;
         });
+
         return state;
       }
 
       function applyState(state) {
         if (!state) return;
-        if (state.vars && Object.keys(state.vars).length) {
-          send({ type: 'set-css-vars', vars: state.vars });
+
+        // 1. Color scheme
+        if (typeof state.colorIdx === 'number' && state.colorIdx >= 0) {
+          var cs = (TWEAK.color_schemes || [])[state.colorIdx];
+          if (cs && cs.vars) {
+            send({ type: 'set-css-vars', vars: cs.vars });
+            panel.querySelectorAll('.tweak-swatch').forEach(function (b) {
+              b.classList.toggle('active', +b.getAttribute('data-tweak-color') === state.colorIdx);
+            });
+          }
         }
-        if (state.frame) {
-          send({ type: 'set-frame', radius: state.frame.radius || '', aspect: state.frame.aspect || '' });
+
+        // 2. Font values per CSS var
+        if (state.fontValues) {
+          var vars = {};
+          Object.keys(state.fontValues).forEach(function (cssVar) {
+            vars[cssVar] = state.fontValues[cssVar];
+          });
+          if (Object.keys(vars).length) send({ type: 'set-css-vars', vars: vars });
+          panel.querySelectorAll('.tweak-font-btn').forEach(function (b) {
+            var v = b.getAttribute('data-tweak-font-var');
+            var val = b.getAttribute('data-tweak-font-value');
+            b.classList.toggle('active', state.fontValues[v] === val);
+          });
         }
+
+        // 3. Frame
+        if (typeof state.frameIdx === 'number' && state.frameIdx >= 0) {
+          var fr = (TWEAK.frames || [])[state.frameIdx];
+          if (fr) {
+            send({ type: 'set-frame', radius: fr.radius || '', aspect: fr.aspect || '' });
+            panel.querySelectorAll('.tweak-frame-btn').forEach(function (b) {
+              b.classList.toggle('active', +b.getAttribute('data-tweak-frame') === state.frameIdx);
+            });
+          }
+        }
+
+        // 4. Components
         if (state.components) {
           Object.keys(state.components).forEach(function (id) {
-            send({ type: 'toggle-component', id: id, visible: !!state.components[id] });
+            var visible = !!state.components[id];
+            send({ type: 'toggle-component', id: id, visible: visible });
+            var cb = panel.querySelector('.tweak-checkbox[data-tweak-component="' + id + '"]');
+            if (cb) {
+              cb.classList.toggle('checked', visible);
+              var input = cb.querySelector('input');
+              if (input) input.checked = visible;
+            }
           });
         }
       }
@@ -995,10 +1031,12 @@ const TWEAK_IIFE_SCRIPT = `
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState())); } catch (_) {}
       }
 
-      // Auto-save state to localStorage on any control change
+      // Save synchronously on every tweak so navigation doesn't lose changes.
       ['click', 'change', 'input'].forEach(function (ev) {
-        panel.addEventListener(ev, function () { setTimeout(autoSave, 50); });
+        panel.addEventListener(ev, autoSave);
       });
+      // Also save on page hide as a belt-and-suspenders measure.
+      window.addEventListener('pagehide', autoSave);
 
       function applyDefaults() {
         if (Array.isArray(TWEAK.components)) {
