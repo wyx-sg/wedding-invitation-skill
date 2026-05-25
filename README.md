@@ -103,7 +103,7 @@ The skill makes zero network requests of its own. The only thing that hits the n
 <details>
 <summary><b>Can I use this without Claude Code?</b></summary>
 
-Yes. Any coding agent that reads markdown works — you just need to manually point it at `SKILL.md`. Auto-discovery is Claude Code specific.
+Yes. Any coding agent that reads markdown works — point it at `SKILL.md` and it picks up the workflow from there.
 
 </details>
 
@@ -117,7 +117,7 @@ No. It produces a static PNG you can print, share, attach to email, or send via 
 <details>
 <summary><b>What languages does it support?</b></summary>
 
-Anything. The skill asks at the start. Chinese, English, Spanish, Japanese, Korean, French, bilingual combinations — `design-principles.md` has typography guidance for the major scripts.
+Anything. The skill asks at the start. Chinese, English, Spanish, Japanese, Korean, French, Hindi, Arabic, or any combination — `design-principles.md` has typography guidance for the major scripts.
 
 </details>
 
