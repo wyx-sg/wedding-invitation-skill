@@ -11,20 +11,24 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'skeleton', 'scripts');
-const DST = path.join(ROOT, '__test__', 'tweak-fixture', 'scripts');
-
-if (!fs.existsSync(DST)) {
-  console.error(`[sync-fixture] Destination missing: ${DST}`);
-  process.exit(1);
-}
+const DESTS = [
+  path.join(ROOT, '__test__', 'tweak-fixture', 'scripts'),
+  path.join(ROOT, '__test__', 'tweak-fixture-single', 'scripts'),
+];
 
 let copied = 0;
-for (const f of fs.readdirSync(SRC)) {
-  if (!f.endsWith('.js')) continue;
-  const a = path.join(SRC, f);
-  const b = path.join(DST, f);
-  fs.copyFileSync(a, b);
-  copied++;
-  console.log(`[sync-fixture] → ${path.relative(ROOT, b)}`);
+for (const DST of DESTS) {
+  if (!fs.existsSync(DST)) {
+    console.warn(`[sync-fixture] Skipping missing dest: ${DST}`);
+    continue;
+  }
+  for (const f of fs.readdirSync(SRC)) {
+    if (!f.endsWith('.js')) continue;
+    const a = path.join(SRC, f);
+    const b = path.join(DST, f);
+    fs.copyFileSync(a, b);
+    copied++;
+    console.log(`[sync-fixture] → ${path.relative(ROOT, b)}`);
+  }
 }
 console.log(`[sync-fixture] Done. ${copied} script(s) copied.`);
