@@ -36,6 +36,33 @@ const TWEAK_STATE_FILE = path.join(DATA_DIR, 'tweak-state.json');
 const argPort = process.argv.find(a => a.startsWith('--port='));
 const PORT = Number(argPort ? argPort.slice('--port='.length) : (process.env.PICKER_PORT || 8765));
 
+// Bind to loopback only — wedding data must never reach the user's LAN.
+const HOST = '127.0.0.1';
+
+// Allow same-origin requests from the page the server serves (http://127.0.0.1:PORT,
+// http://localhost:PORT) plus file:// pages (which carry Origin: "null"). Anything
+// else gets no CORS header → browser blocks cross-origin reads/writes from random
+// sites the user might also have open.
+const ALLOWED_ORIGINS = new Set([
+  `http://127.0.0.1:${PORT}`,
+  `http://localhost:${PORT}`,
+  'null',
+]);
+function corsFor(req) {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) return { 'Access-Control-Allow-Origin': origin };
+  return {};
+}
+
+// Server-side guard so a malicious site can't side-effect (write disk) before
+// the browser would block the response. Same-origin requests (no Origin header,
+// or matching one) and file:// (Origin: "null") are allowed.
+function isOriginAllowed(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+  return ALLOWED_ORIGINS.has(origin);
+}
+
 // Map common extensions to content types. Everything else served as octet-stream.
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -98,16 +125,20 @@ function safeResolve(reqUrl) {
 }
 
 const server = http.createServer((req, res) => {
-  // Permissive CORS — the picker page on file:// can also POST here.
+  const cors = corsFor(req);
+
+  // Reject mutating requests from disallowed origins before they touch disk.
+  if (req.method === 'POST' && !isOriginAllowed(req)) {
+    return send(res, 403, { 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'origin not allowed' }));
+  }
+
   if (req.method === 'OPTIONS') {
     return send(res, 204, {
-      'Access-Control-Allow-Origin': '*',
+      ...cors,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     }, '');
   }
-
-  const cors = { 'Access-Control-Allow-Origin': '*' };
 
   if (req.url === '/api/picker-state' || req.url.startsWith('/api/picker-state?')) {
     if (req.method === 'GET') {
@@ -126,9 +157,15 @@ const server = http.createServer((req, res) => {
       req.on('end', () => {
         if (tooBig) return;
         try {
-          const parsed = JSON.parse(body);                       // validate it's JSON
-          parsed.updatedAt = new Date().toISOString();
-          writeState(JSON.stringify(parsed, null, 2));
+          const parsed = JSON.parse(body);
+          if (parsed.stage !== 'photo' && parsed.stage !== 'style') {
+            return send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'stage must be "photo" or "style"' }));
+          }
+          if (!Array.isArray(parsed.picks) || !parsed.picks.every(p => typeof p === 'string')) {
+            return send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'picks must be string[]' }));
+          }
+          const safe = { stage: parsed.stage, picks: parsed.picks, updatedAt: new Date().toISOString() };
+          writeState(JSON.stringify(safe, null, 2));
           send(res, 200, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ ok: true }));
         } catch (e) {
           send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'invalid json' }));
@@ -158,7 +195,7 @@ const server = http.createServer((req, res) => {
         try {
           const parsed = JSON.parse(body);
           const designId = String(parsed.designId || '').trim();
-          if (!designId || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(designId)) {
+          if (!designId || !/^[a-zA-Z][a-zA-Z0-9-]*$/.test(designId)) {
             return send(res, 400, { ...cors, 'Content-Type': MIME['.json'] }, JSON.stringify({ error: 'missing or invalid designId' }));
           }
           writeTweakState(designId, parsed.state || {});
@@ -198,8 +235,8 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`[picker-server] http://localhost:${PORT}/`);
+server.listen(PORT, HOST, () => {
+  console.log(`[picker-server] http://localhost:${PORT}/  (loopback only)`);
   console.log(`[picker-server] state file: ${path.relative(ROOT, STATE_FILE)}`);
   console.log(`[picker-server] open _photo-select.html or _style-preview.html in your browser`);
   console.log(`[picker-server] Ctrl-C to stop`);

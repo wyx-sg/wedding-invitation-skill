@@ -8,11 +8,17 @@
   "width": 420,
   "height": 560,
   "custom": true,
+  "_meta_comment": "REQUIRED — fill all of these with values specific to the design you actually produced. workflow.md Stage 4 has the field-by-field guidance. Filler values like 'fully tweakable' / '完全可调' / 'Custom' ship the wrong message; the user picks up immediately that you didn't really design anything.",
   "meta": {
+    "category_zh": "",
+    "category_en": "",
     "short": "",
+    "long": "",
+    "inspiration_zh": "",
+    "inspiration_en": "",
     "palette": ["#f5f1e8", "#8a9882", "#a59585", "#2c2c2c"],
     "fonts": ["Cormorant Garamond", "Inter"],
-    "motifs": "完全可调"
+    "motifs": ""
   },
   "tweak_options": {
     "color_schemes": [

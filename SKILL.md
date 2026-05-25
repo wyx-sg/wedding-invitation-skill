@@ -13,7 +13,7 @@ The user asks for help making a wedding invitation, save-the-date, or a similar 
 
 This skill **does not** have a generic template gallery the user picks from. Every invitation is **designed from scratch for this specific couple** in the language(s) they want.
 
-How many designs end up in the final gallery depends entirely on the **style picker** in Stage 3 — it's multi-select. Pick 1 aesthetic → 1 design. Pick 3 → 3 designs. The output is always a local gallery (`dist/index.html`) with one detail page + one tweak studio page per design, regardless of count. No mode flag, no upfront mode choice — emerges naturally from picker selections.
+How many designs end up in the final gallery depends entirely on the **style picker** in Stage 3 — it's multi-select. Pick 1 aesthetic → 1 design. Pick 3 → 3 designs. Stage 4 produces a navigation gallery (`dist/preview.html`) + a tweak studio per design (`dist/<id>-studio.html`); Stage 5 produces the final gallery (`dist/index.html`) + detail page per design (`dist/<id>-page.html`). No mode flag, no upfront mode choice — count emerges naturally from picker selections.
 
 Each design is custom-built (not pulled from a frozen template library) using `design-principles.md` as the visual vocabulary.
 
@@ -58,15 +58,13 @@ Wedding data (photos, names, dates, venues, family info) is **highly sensitive**
 
 Never suggest external services (image hosting, online editors, cloud rendering, web-based invitation builders) for any step.
 
-The only network egress is at preview time: the browser loads webfonts from a Google Fonts CDN. The skill asks the user at Stage 2 which to use:
-- `fonts.font.im` if the user is in mainland China (CN mirror, reachable from inside the GFW)
-- `fonts.googleapis.com` everywhere else (official, faster, partially blocked in CN)
+The only network egress is at preview time: the browser loads webfonts from a Google Fonts CDN. The skill picks one at Stage 2 silently (no question to the user) — default to `fonts.googleapis.com` (official, faster outside CN), switch to `fonts.font.im` (a CN-reachable mirror) only when there's clear signal the user is in mainland China.
 
 If the user is offline, the templates degrade to system fonts; the PNG export still works.
 
 ## Workflow
 
-Read `workflow.md` before you start interacting with the user. It walks through 6 dialogue stages.
+Read `workflow.md` before you start interacting with the user. It walks through 5 dialogue stages.
 
 ## Interaction principle (3-tier degradation)
 
@@ -104,7 +102,7 @@ This file is your **only** design reference. Do not read `examples/*.html`.
 
 ```
 SKILL.md                  ← you are here
-workflow.md               ← 6-stage dialogue and decision guide
+workflow.md               ← 5-stage dialogue and decision guide
 design-principles.md      ← visual / technical constraints + per-aesthetic vocabulary
 docs/                     ← GitHub Pages site (https://wyx-sg.github.io/wedding-invitation-skill/)
                             GENERATED from examples/ via scripts/build-pages.js — do NOT hand-edit
@@ -131,7 +129,9 @@ skeleton/                 ← starting project copied into the user's workspace
     derive.js               (expands seed → all required fields per declared languages)
     build.js                (renders templates with user data into dist/<id>.html)
     render.js               (cross-platform headless-Chrome → PNGs at 2 sizes)
-    build-gallery.js        (generates dist/index.html + per-design detail pages)
+    build-studio.js         (Stage 4: writes dist/preview.html + dist/<id>-studio.html)
+    build-gallery.js        (Stage 5: writes dist/index.html + dist/<id>-page.html)
+    picker-server.js        (optional loopback HTTP server for picker pages — npm run pick)
     template-engine.js      (tiny {{path.to.value}} replacer)
   templates/                (where new templates you write live)
   data/
@@ -144,11 +144,12 @@ skeleton/                 ← starting project copied into the user's workspace
 ## Output: what success looks like
 
 A directory like `~/my-wedding/` containing:
-- `dist/<design-id>.html` — the rendered invitation (iframe source for the gallery)
+- `dist/<design-id>.html` — the rendered invitation (iframe source for galleries / detail / studio)
+- `dist/preview.html` — Stage-4 nav gallery with live iframe thumbnails; entry to the studio
+- `dist/<id>-studio.html` — per-design tweak studio: live color/font/frame/component switchers, no rebuild
 - `dist/png/social/<design-id>.png` — 1080×1440, for messaging / email / social media
 - `dist/png/print/<design-id>.png` — 2160×2880 at 300 DPI, for printing physical cards
-- `dist/index.html` — local gallery landing (always, even for 1 design): a grid of cards, each linking to its own detail page
+- `dist/index.html` — Stage-5 final gallery (PNG thumbnails), each card links to its detail page
 - `dist/<id>-page.html` — per-design detail page: iframe preview, palette/typography meta, two download buttons, prev/next pager (only when >1 design)
-- `dist/<id>-studio.html` — per-design tweak studio: live color/font/frame/component switchers, no rebuild needed
 
-The user opens `dist/index.html`, sees their invitation(s) in a polished page, and downloads the size they need. They can also continue iterating with you to refine.
+In Stage 4 the user opens `dist/preview.html` and tweaks; in Stage 5 they open `dist/index.html` to download. The two files coexist — flipping back to Stage 4 doesn't overwrite the Stage 5 deliverable.

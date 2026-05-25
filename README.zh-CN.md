@@ -18,20 +18,33 @@
   <img alt="macOS · Linux · Windows" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-lightgrey">
 </p>
 
-## 安装
+## 快速开始
 
-### 方案 1 — 下载 release zip（推荐用户使用）
+把最新 release 直接下到 Claude Code 的 skills 目录：
 
 ```bash
-# 最新版本
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip wedding-invitation-skill.zip
-# 结果：./wedding-invitation-skill/ — 将此目录复制或软链到 Claude Code 读取 skill 的位置。
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-release zip 体积小（100 KB 以内），仅包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。不含 `examples/`、`docs/`、`__test__/` 及维护者脚本。
+然后在 [Claude Code](https://claude.ai/code) 里：
 
-### 方案 2 — 克隆源码（供 skill 作者 / 贡献者使用）
+```
+/wedding-invitation
+```
+
+或者直接说"帮我做一张婚礼请帖" — Claude 会接着引导对话，不用重启。
+
+release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。
+
+### 系统要求
+
+- Node.js 18+
+- Chromium 系浏览器（Google Chrome、Chromium 或 Microsoft Edge）— `render.js` 用来导出 PNG。如果没装，skill 会按你的操作系统打印安装指引。
+- macOS、Linux 或 Windows
+
+### 想贡献代码？直接 clone 源码
 
 ```bash
 git clone https://github.com/wyx-sg/wedding-invitation-skill \
@@ -43,22 +56,6 @@ git clone https://github.com/wyx-sg/wedding-invitation-skill \
 - `docs/` — GitHub Pages 站点，由 `scripts/build-pages.js` 从 `examples/` 生成
 - `__test__/tweak-fixture/` — 端到端测试 fixture
 - `scripts/` — 维护者构建工具
-
-### 系统要求
-
-- Node.js 18+
-- Chromium 系浏览器（Google Chrome、Chromium 或 Microsoft Edge）— `render.js` 用于 PNG 导出。
-- macOS、Linux 或 Windows
-
-如果你没装 Chromium 系浏览器，脚本会按你的操作系统打印安装指引。
-
-然后在 [Claude Code](https://claude.ai/code) 里调用 skill：
-
-```
-/wedding-invitation
-```
-
-或者直接说"帮我做一张婚礼请帖"。两种都行 — Claude 会接着引导对话，不需要重启 Claude Code。
 
 ## 你将得到
 
@@ -97,7 +94,7 @@ flowchart LR
 
 1. **对话** — 语言、姓名、日期、场地
 2. **挑照片** — Claude 把你给的所有照片做成卡片；点击多选（或"全选"）。第一张作为主图，其他作为可切换的备选
-3. **挑风格方向** — Claude 看你的照片挑出 5 个最匹配的方向；可单选可多选。回复"换一批"换 5 个新的（已选的不会被换），或回复"自定义"跳过候选 picker、对话里聊你想要什么
+3. **挑风格方向** — Claude 看你的照片挑出 5 个最匹配的方向；可单选可多选。回复"换一批"换 5 个新的（已选的不会被换），或者直接在对话里说"我想自定义" / "I want something custom"，跳过候选 picker，从对话开始设计你想要的方向
 4. **设计** — Claude 为每个方向都从零写一份 HTML 模板
 5. **预览 + 微调**（Stage 4 — `dist/preview.html`）— 每张设计的实时 iframe 缩略图；点卡片进**微调台**，切配色 / 字体 / 相框 / 显示隐藏。微调结果自动保存到本地文件，Claude 看得到。微调台搞不定的事跟 Claude 说就行
 6. **出成品**（Stage 5 — `dist/index.html`）— 最终 gallery（PNG 缩略图），点卡片进详情页，**社交版** (1080×1440) + **印刷版** (2160×2880) 下载按钮。看完想再调？随时跳回 Stage 4

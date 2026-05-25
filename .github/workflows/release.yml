@@ -25,6 +25,12 @@ jobs:
         id: meta
         run: |
           ZIP=release/wedding-invitation-skill.zip
+          BYTES=$(stat -c%s "$ZIP")
+          MAX=$((150 * 1024))
+          if [ "$BYTES" -gt "$MAX" ]; then
+            echo "::error::release zip is $BYTES bytes (> $MAX). README claims under 100 KB; tighten build-release.js or update the README."
+            exit 1
+          fi
           echo "size=$(du -h $ZIP | cut -f1)" >> $GITHUB_OUTPUT
           echo "sha256=$(sha256sum $ZIP | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 

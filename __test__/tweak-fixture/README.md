@@ -22,9 +22,9 @@ open dist/index.html
 npm run all                # derive + preview + deliver
 ```
 
-## Testing single-design mode
+## Testing the single-design path
 
-The fixture ships with 2 designs (`morandi-tweak` + `custom-canvas`) to exercise the multi path (gallery grid + prev/next pager). The single-design path (`designs.length === 1` — pager hidden on detail/studio) is the same scripts with a one-entry `designs.json` — to test it, edit `data/designs.json` to keep just one design, rerun the build. No separate fixture needed.
+The fixture ships with 2 designs (`morandi-tweak` + `custom-canvas`) to exercise the multi path (gallery grid + prev/next pager). The single-design path (`designs.length === 1` — pager auto-hidden on detail/studio) is the same scripts with a one-entry `designs.json` — to test it, edit `data/designs.json` to keep just one design, rerun the build. No separate fixture needed.
 
 ## What's tracked vs not
 

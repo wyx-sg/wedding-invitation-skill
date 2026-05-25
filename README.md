@@ -18,47 +18,43 @@
   <img alt="macOS · Linux · Windows" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-lightgrey">
 </p>
 
-## Install
+## Quick start
 
-### Option 1 — Download the release zip (recommended for users)
+Download the latest release into Claude Code's skills directory:
 
 ```bash
-# Latest release
+mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip wedding-invitation-skill.zip
-# Result: ./wedding-invitation-skill/ — copy or symlink this into wherever Claude Code looks for skills.
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-The release zip is small (under 100 KB) and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`. It does NOT include `examples/`, `docs/`, `__test__/`, or maintainer scripts.
-
-### Option 2 — Clone the source (for skill authors / contributors)
-
-```bash
-git clone https://github.com/wyx-sg/wedding-invitation-skill \
-  ~/.claude/skills/wedding-invitation
-```
-
-The repo includes additional folders that you don't need to use the skill but that are useful if you want to contribute:
-- `examples/` — 20 showcase invitations (source of truth for the README gallery)
-- `docs/` — the GitHub Pages site, generated from `examples/` via `scripts/build-pages.js`
-- `__test__/tweak-fixture/` — end-to-end test fixture
-- `scripts/` — maintainer build tools
-
-### Requirements
-
-- Node.js 18+
-- A Chromium-family browser (Google Chrome, Chromium, or Microsoft Edge) — used by `render.js` for PNG export.
-- macOS, Linux, or Windows
-
-If you don't have a Chromium-family browser, the skill prints install instructions for your OS.
-
-Then in [Claude Code](https://claude.ai/code), invoke the skill:
+Then in [Claude Code](https://claude.ai/code):
 
 ```
 /wedding-invitation
 ```
 
-Or just tell Claude: "Help me make a wedding invitation." Either way works — Claude takes it from there. No restart needed.
+Or just say "help me make a wedding invitation" — Claude takes it from there, no restart needed.
+
+The release zip is under 100 KB and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`.
+
+### Requirements
+
+- Node.js 18+
+- A Chromium-family browser (Google Chrome, Chromium, or Microsoft Edge) — used by `render.js` for PNG export. If missing, the skill prints install instructions for your OS.
+- macOS, Linux, or Windows
+
+### Contributing? Clone the source instead
+
+```bash
+git clone https://github.com/wyx-sg/wedding-invitation-skill ~/.claude/skills/wedding-invitation
+```
+
+The repo includes extras not needed to *use* the skill but useful for development:
+- `examples/` — 20 showcase invitations (source of truth for the README gallery)
+- `docs/` — the GitHub Pages site, generated from `examples/` via `scripts/build-pages.js`
+- `__test__/tweak-fixture/` — end-to-end test fixture
+- `scripts/` — maintainer build tools
 
 ## What you'll get
 
@@ -97,7 +93,7 @@ flowchart LR
 
 1. **Talk** — language(s), names, date, venue
 2. **Pick photos** — Claude shows every photo you provided as a card; tap to select (multi-select or "Select All"). First selected becomes primary; the rest stay available as alternates the design can switch to
-3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or "Custom" / "自定义" to skip the curated set and design from chat
+3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or just tell Claude in chat "I want something custom" / "我想要自定义" to skip the curated picker and design from a conversation about your specific vision
 4. **Design** — Claude writes a fresh HTML template per direction you picked
 5. **Preview + tweak** (Stage 4 — `dist/preview.html`) — live iframe thumbnails of every design; click any card to open its **studio** with color / font / photo-frame / show-hide controls. Tweaks save to disk so Claude knows what you picked. Tell Claude in chat for anything the studio can't do
 6. **Deliver** (Stage 5 — `dist/index.html`) — final gallery with PNG thumbnails; click a card → detail page with **Social** (1080×1440) and **Print** (2160×2880) download buttons. You can flip back to Stage 4 anytime to tweak more

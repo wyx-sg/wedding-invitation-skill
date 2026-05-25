@@ -65,7 +65,7 @@ Pick fonts that match the language(s) AND the aesthetic.
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:ital,wght@0,400;0,500&display=swap">
 ```
 
-`fonts.font.im` is a Google-Fonts mirror reachable from CN; `fonts.googleapis.com` is the official Google CDN (faster outside CN, partially blocked inside CN). The skill asks the user at Stage 2; if `font_cdn` is missing, default to `googleapis`.
+`fonts.font.im` is a Google-Fonts mirror reachable from CN; `fonts.googleapis.com` is the official Google CDN (faster outside CN, partially blocked inside CN). The skill picks one at Stage 2 silently (no question to the user) — default to `googleapis`, switch to `fontim` only when there's clear signal the user is in mainland China.
 
 ### Chinese (zh)
 Always include the system fallback chain:
@@ -394,7 +394,7 @@ The final output is a PNG, but users will preview the HTML on phones too. The ca
 
 ## Tweakable templates (CSS variable contract)
 
-The detail-page tweak panel can change a template's color scheme, fonts, photo frame, and component visibility in real time without rebuilding. For this to work, your template MUST follow this contract.
+The studio-page tweak panel can change a template's color scheme, fonts, photo frame, and component visibility in real time without rebuilding. For this to work, your template MUST follow this contract.
 
 ### 1. Use CSS variables for tweak-able properties
 

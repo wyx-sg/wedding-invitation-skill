@@ -17,12 +17,14 @@ Code, file paths, template ids, JSON keys, and bash commands stay in their nativ
 
 The user does NOT pre-declare "I want 1 design" or "I want 5 designs". The number of final designs emerges naturally from the **style picker** (Stage 3) — the picker is multi-select; whatever the user picks becomes what gets designed.
 
-- Picks 1 style → Agent designs 1 template → `dist/index.html` is the detail page directly
-- Picks N styles → Agent designs N templates → `dist/index.html` is a gallery grid + per-design detail pages
+- Picks 1 style → Agent designs 1 template → Stage 4 preview is the single design's studio
+- Picks N styles → Agent designs N templates → Stage 4 preview is a nav gallery + per-design studio
 
-`build-gallery.js` auto-branches on `data/designs.json` array length — `length == 1` → single-design output, `length > 1` → multi-design gallery. Agent doesn't need to set any mode flag.
+`build-gallery.js` and `build-studio.js` both auto-branch on `data/designs.json` array length — `length == 1` hides the prev/next pager on the detail / studio pages. Agent doesn't need to set any mode flag.
 
-The end of either path is a local `dist/index.html` page with download buttons for two PNG sizes (social 1080×1440 + print 2160×2880), and a tweak panel for fine-tuning each design.
+The pipeline splits cleanly into two phases:
+- **Stage 4 — preview + tweak** (`npm run preview`): writes `dist/preview.html` (nav gallery of live iframes) + `dist/<id>-studio.html` (per-design tweak studio with live color / font / frame / component swaps).
+- **Stage 5 — deliver** (`npm run deliver`): writes `dist/index.html` (final PNG-thumbnail gallery) + `dist/<id>-page.html` (detail page with download buttons) + `dist/png/{social,print}/<id>.png` (1080×1440 + 2160×2880).
 
 ## How to interact with the user — 3-tier degradation
 
@@ -153,7 +155,7 @@ This is the **first** content decision. Don't assume Chinese (or any language).
    - Bilingual zh+en → `["zh", "en"]` (primary first)
    - Other → use ISO 639-1 codes: `["es"]`, `["ja"]`, `["ko"]`, `["fr"]`, etc.
 
-3. **Pick the font CDN silently** — don't ask. Set `data/wedding.json` `font_cdn` based on what you already know about the user's environment:
+3. **Pick the font CDN silently** — don't ask, don't surface this to the user. Set `data/wedding.json` `font_cdn` based on what you already know about the user's environment:
    - Default to `"googleapis"` (official Google Fonts; fast almost everywhere).
    - Switch to `"fontim"` (a Chinese mirror) only if you have clear signal the user is in mainland China — e.g. they explicitly mentioned location, their venue is in mainland China, or they reported Google Fonts being unreachable. When in doubt, stick with `"googleapis"`; you can always swap and re-run `npm run build` later.
 
@@ -532,7 +534,7 @@ This is the creative stage. You design one template per aesthetic the user selec
 
 7. **Iterate.** This is where most of Stage 4's time goes. Two channels, complementary:
 
-   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. State is **auto-synced** to `data/tweak-state.json` (you `Read` that file to see what they picked). Studio state ALSO lives in `localStorage` as a fallback. The **navigation gallery (`dist/index.html`)** carries a single "Copy tweaks" button at the top that aggregates every design's tweak state into one human-readable paste — that's the user's manual escape if the auto-sync doesn't reach you for any reason.
+   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. State is **auto-synced** to `data/tweak-state.json` (you `Read` that file to see what they picked). Studio state ALSO lives in `localStorage` as a fallback. The **navigation gallery (`dist/preview.html`)** carries a single "Copy tweaks" button at the top that aggregates every design's tweak state into one human-readable paste — that's the user's manual escape if the auto-sync doesn't reach you for any reason.
 
      Studio state is exploration, NOT a permanent change to the template. **To lock in a studio choice** (so the PNG matches when you eventually run Stage 5), edit the template's default CSS variables / class hooks, then re-run `npm run preview`.
 
