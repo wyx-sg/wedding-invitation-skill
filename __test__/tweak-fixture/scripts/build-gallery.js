@@ -114,7 +114,6 @@ const COPY = {
     tweakResetLabel: 'Reset',
     tweakHeadlineSub: 'Headline',
     tweakBodySub: 'Body',
-    tweakCustomLabel: 'Custom',
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
   },
@@ -145,7 +144,6 @@ const COPY = {
     tweakResetLabel: '重置',
     tweakHeadlineSub: '标题字体',
     tweakBodySub: '正文字体',
-    tweakCustomLabel: '自定义',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
   }
@@ -488,6 +486,31 @@ const DETAIL_CSS = `
     gap: 22px;
   }
 
+  .style-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 44px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    line-height: 1;
+    margin: 0 0 8px;
+  }
+  .style-short {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #b9a47f;
+  }
+  .style-long {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    font-style: italic;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin: 0;
+  }
   @media (max-width: 960px) {
     main.detail {
       flex-direction: column;
@@ -498,6 +521,7 @@ const DETAIL_CSS = `
     }
     .preview { width: 100%; }
     .detail-info { flex: 0 0 auto; max-width: 560px; width: 100%; gap: 20px; }
+    .style-name { font-size: 32px; letter-spacing: 1px; }
   }
   .tweak-panel {
     display: flex;
@@ -600,36 +624,6 @@ const DETAIL_CSS = `
     color: var(--accent);
     border-color: var(--border);
   }
-  .tweak-custom {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 12px;
-    background: rgba(20, 17, 13, 0.5);
-    border: 1px dashed var(--border);
-    border-radius: 4px;
-    margin-top: 4px;
-  }
-  .tweak-custom-label {
-    font-size: 9px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .tweak-color-row {
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  }
-  .tweak-color-row label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-  .tweak-color-row input[type=color] {
-    width: 32px; height: 24px; border: 0; padding: 0;
-    background: transparent; cursor: pointer;
-  }
   .powered-by {
     text-align: center;
     padding: 24px 16px;
@@ -680,6 +674,7 @@ function detailHtml(design, index, isMulti) {
   // Tweak panel — render only when design declares tweak_options.
   // Each section is omitted if the design didn't declare it.
   const tweak = design.tweak_options || null;
+  const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
   let tweakHtml = '';
   let tweakConfigJson = 'null';
   if (tweak) {
@@ -698,29 +693,9 @@ function detailHtml(design, index, isMulti) {
         </button>`;
       }).join('');
 
-      // Free-form color inputs: union of all keys across schemes, only hex values shown
-      const colorVarSet = new Set();
-      tweak.color_schemes.forEach(cs => {
-        Object.keys(cs.vars || {}).forEach(k => colorVarSet.add(k));
-      });
-      const initialVars = (tweak.color_schemes[0] || {}).vars || {};
-      const colorInputs = Array.from(colorVarSet).map(k => {
-        const niceLabel = k.replace(/^--card-/, '').replace(/-/g, ' ');
-        const value = initialVars[k];
-        if (!value || !/^#[0-9a-fA-F]{6}$/.test(value)) return '';
-        return `<label><input type="color" data-tweak-custom-color="${esc(k)}" value="${safeColor(value)}"><span>${esc(niceLabel)}</span></label>`;
-      }).join('');
-      const customColorsHtml = colorInputs
-        ? `<div class="tweak-custom">
-            <div class="tweak-custom-label">${esc(COPY.tweakCustomLabel)}</div>
-            <div class="tweak-color-row">${colorInputs}</div>
-          </div>`
-        : '';
-
       sections.push(`<div class="tweak-group" data-section="color">
         <div class="tweak-group-label">${esc(COPY.tweakColorLabel)}</div>
         <div class="tweak-row">${swatches}</div>
-        ${customColorsHtml}
       </div>`);
     }
 
@@ -860,6 +835,11 @@ function detailHtml(design, index, isMulti) {
     </div>
 
     <div class="detail-info">
+      <div>
+        <h1 class="style-name">${esc(designName)}</h1>
+        ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
+      </div>
+      ${longHtml}
       ${tweakHtml}
     </div>
   </main>
@@ -934,10 +914,6 @@ function detailHtml(design, index, isMulti) {
           var cs = (TWEAK.color_schemes || [])[idx];
           if (cs && cs.vars) Object.assign(state.vars, cs.vars);
         }
-        // Custom color overrides
-        panel.querySelectorAll('[data-tweak-custom-color]').forEach(function (i) {
-          state.vars[i.getAttribute('data-tweak-custom-color')] = i.value;
-        });
         // Active font preset
         panel.querySelectorAll('.tweak-font-btn.active').forEach(function (b) {
           state.vars[b.getAttribute('data-tweak-font-var')] = b.getAttribute('data-tweak-font-value');
@@ -1088,15 +1064,6 @@ function detailHtml(design, index, isMulti) {
         if (!id) return;
         label.classList.toggle('checked', input.checked);
         send({ type: 'toggle-component', id: id, visible: input.checked });
-      });
-
-      panel.addEventListener('input', function (e) {
-        var t = e.target;
-        if (t.matches && t.matches('[data-tweak-custom-color]')) {
-          var k = t.getAttribute('data-tweak-custom-color');
-          var vars = {}; vars[k] = t.value;
-          send({ type: 'set-css-vars', vars: vars });
-        }
       });
 
     })();
