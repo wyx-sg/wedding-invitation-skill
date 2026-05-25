@@ -25,7 +25,7 @@
 ```bash
 mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip -o wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
 然后跟你的 agent 说"帮我做一张婚礼请帖" —— skill 会接管对话。

@@ -25,7 +25,7 @@ Drop the latest release into your coding agent's skills directory. For [Claude C
 ```bash
 mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
-unzip -o wedding-invitation-skill.zip
+unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
 Then say "help me make a wedding invitation" — the skill takes it from there.
