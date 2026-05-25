@@ -247,14 +247,26 @@ for (const d of designs) {
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
       min-height:100vh;
-      gap:32px;
-      padding:32px 0;
+      margin:0;
+      padding:0 0 32px;
       box-sizing:border-box;
     }
+    html.preview-mode body>.card,
+    html.preview-mode body .card{
+      margin-top:32px;
+    }
     html.preview-mode .wis-nav{
+      position:sticky;
+      top:0;
+      z-index:50;
+      align-self:stretch;
       text-align:center;
+      padding:18px 16px 12px;
+      background:rgba(34,34,34,0.92);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid #2a2218;
     }
     html.preview-mode .wis-brand{
       font-family:'Cormorant Garamond',serif;

@@ -172,11 +172,18 @@ const SHARED_CSS = `
   }
   a { color: inherit; }
   /* Unified header — matches picker pages (_photo-select.html, _style-preview.html)
-     and the standalone-card header injected by build.js. */
+     and the standalone-card header injected by build.js.
+     Sticky + bottom rule so it stays visible while the page scrolls. */
   .wis-nav {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 50;
     text-align: center;
-    padding: 22px 16px 10px;
+    padding: 18px 16px 12px;
+    background: rgba(10, 9, 7, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-soft);
   }
   .wis-brand {
     font-family: 'Cormorant Garamond', serif;
@@ -206,7 +213,7 @@ const SHARED_CSS = `
   .wis-nav-back {
     position: absolute;
     left: 28px;
-    top: 26px;
+    top: 22px;
     font-size: 11px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
