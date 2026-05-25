@@ -13,7 +13,6 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'skeleton', 'scripts');
 const DESTS = [
   path.join(ROOT, '__test__', 'tweak-fixture', 'scripts'),
-  path.join(ROOT, '__test__', 'tweak-fixture-single', 'scripts'),
 ];
 
 let copied = 0;
