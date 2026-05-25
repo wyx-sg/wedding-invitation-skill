@@ -503,150 +503,6 @@ const DETAIL_CSS = `
     flex-direction: column;
     gap: 22px;
   }
-  .style-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 44px;
-    letter-spacing: 1px;
-    color: var(--accent);
-    line-height: 1;
-    margin: 0 0 8px;
-  }
-  .style-short {
-    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-style: italic;
-    font-size: 16px;
-    color: #b9a47f;
-  }
-  .style-long {
-    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 15px;
-    line-height: 1.75;
-    color: var(--text);
-    font-style: italic;
-    text-wrap: balance;
-    overflow-wrap: anywhere;
-    margin: 0;
-  }
-  .specs {
-    display: grid;
-    grid-template-columns: 88px 1fr;
-    column-gap: 24px;
-    row-gap: 14px;
-    align-items: baseline;
-    padding: 18px 0;
-    border-top: 1px solid var(--border-soft);
-    border-bottom: 1px solid var(--border-soft);
-  }
-  .spec-label {
-    font-size: 9.5px;
-    letter-spacing: 3.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .spec-value {
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-  .palette-row { display: flex; gap: 8px; align-items: center; }
-  .swatch {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 1px solid rgba(212,184,150,0.18);
-  }
-  .fonts-row { font-family: 'Cormorant Garamond', serif; font-style: italic; }
-
-  .download-group { display: flex; flex-direction: column; gap: 8px; }
-  .download-group-label {
-    font-size: 9.5px;
-    letter-spacing: 3.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .download-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .download-cta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    background: linear-gradient(135deg, rgba(212,184,150,0.10), rgba(184,149,106,0.04));
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--accent);
-    text-decoration: none;
-    transition: all 0.2s;
-    min-width: 0;
-  }
-  .download-cta:hover {
-    background: linear-gradient(135deg, rgba(212,184,150,0.20), rgba(184,149,106,0.10));
-    border-color: var(--accent-warm);
-    transform: translateY(-1px);
-  }
-  .download-cta .download-icon {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: rgba(212,184,150,0.15);
-    border: 1px solid rgba(212,184,150,0.3);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
-  }
-  .download-cta .download-text { flex: 1; min-width: 0; overflow: hidden; }
-  .download-cta .download-label {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 15px;
-    letter-spacing: 0.5px;
-  }
-  .download-cta .download-hint {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    margin-top: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .pager {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 4px;
-  }
-  .pager .step {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-decoration: none;
-    color: inherit;
-    padding: 6px 0;
-    transition: opacity 0.2s, transform 0.2s;
-    min-width: 0;
-  }
-  .pager .step:hover { transform: translateX(2px); }
-  .pager .step.next:hover { transform: translateX(-2px); }
-  .pager .step.next { flex-direction: row-reverse; text-align: right; }
-  .pager .step-info { flex: 1; min-width: 0; overflow: hidden; }
-  .pager .step-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 2px;
-  }
-  .pager .step-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 15px;
-    color: var(--accent);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
   @media (max-width: 960px) {
     main.detail {
@@ -658,12 +514,6 @@ const DETAIL_CSS = `
     }
     .preview { width: 100%; }
     .detail-info { flex: 0 0 auto; max-width: 560px; width: 100%; gap: 20px; }
-    .style-name { font-size: 32px; letter-spacing: 1px; }
-  }
-  @media (max-width: 600px) {
-    .download-row { grid-template-columns: 1fr; }
-    .pager { grid-template-columns: 1fr; }
-    .pager .step.next { flex-direction: row; text-align: left; }
   }
   .tweak-panel {
     display: flex;
@@ -888,15 +738,8 @@ function detailHtml(design, index, isMulti) {
   const meta = design.meta || {};
   // Hex color is a controlled value; light-validate to avoid CSS injection.
   const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
-  const palette = (meta.palette || [])
-    .map(c => `<span class="swatch" style="background:${safeColor(c)}" title="${esc(c)}"></span>`)
-    .join('');
-  const fonts = (meta.fonts || []).map(esc).join(' · ');
   const tplH = design.height || 560;
   const tplW = design.width || 420;
-
-  const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
-  const next = isMulti ? designs[(index + 1) % designs.length] : null;
 
   // Photo switcher: render only when there are 2+ photos to switch between.
   // Single-photo projects don't need the strip.
@@ -1064,34 +907,6 @@ function detailHtml(design, index, isMulti) {
     }
   }
 
-  const specsBlocks = [];
-  if (palette) specsBlocks.push(`<div class="spec-label">${esc(COPY.paletteLabel)}</div><div class="spec-value palette-row">${palette}</div>`);
-  if (fonts) specsBlocks.push(`<div class="spec-label">${esc(COPY.fontsLabel)}</div><div class="spec-value fonts-row">${fonts}</div>`);
-  if (meta.motifs) specsBlocks.push(`<div class="spec-label">${esc(COPY.motifsLabel)}</div><div class="spec-value">${esc(meta.motifs)}</div>`);
-  const specsHtml = specsBlocks.length
-    ? `<div class="specs">${specsBlocks.join('')}</div>`
-    : '';
-
-  const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
-
-  const prevName = prev && ((lang === 'zh' ? prev.name_zh : prev.name_en) || prev.id);
-  const nextName = next && ((lang === 'zh' ? next.name_zh : next.name_en) || next.id);
-  const pagerHtml = isMulti ? `
-    <nav class="pager">
-      <a class="step prev" href="${esc(prev.id)}-page.html">
-        <div class="step-info">
-          <div class="step-label">${esc(COPY.prevLabel)}</div>
-          <div class="step-name">${esc(prevName)}</div>
-        </div>
-      </a>
-      <a class="step next" href="${esc(next.id)}-page.html">
-        <div class="step-info">
-          <div class="step-label">${esc(COPY.nextLabel)}</div>
-          <div class="step-name">${esc(nextName)}</div>
-        </div>
-      </a>
-    </nav>` : '';
-
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
 <head>
@@ -1162,38 +977,7 @@ function detailHtml(design, index, isMulti) {
     </div>
 
     <div class="detail-info">
-      <div>
-        <h1 class="style-name">${esc(designName)}</h1>
-        ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
-      </div>
-
-      ${longHtml}
-
-      ${specsHtml}
-
       ${tweakHtml}
-
-      <div class="download-group">
-        <div class="download-group-label">${esc(COPY.downloadGroupLabel)}</div>
-        <div class="download-row">
-          <a class="download-cta" href="png/social/${esc(design.id)}.png" download="${esc(design.id)}-social.png">
-            <span class="download-icon">↓</span>
-            <span class="download-text">
-              <div class="download-label">${esc(COPY.downloadSocialLabel)}</div>
-              <div class="download-hint">${esc(COPY.downloadSocialHint)}</div>
-            </span>
-          </a>
-          <a class="download-cta" href="png/print/${esc(design.id)}.png" download="${esc(design.id)}-print.png">
-            <span class="download-icon">↓</span>
-            <span class="download-text">
-              <div class="download-label">${esc(COPY.downloadPrintLabel)}</div>
-              <div class="download-hint">${esc(COPY.downloadPrintHint)}</div>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      ${pagerHtml}
     </div>
   </main>
   <datalist id="tweak-font-suggestions">
@@ -1409,10 +1193,15 @@ function detailHtml(design, index, isMulti) {
           var value = t.getAttribute('data-tweak-font-value');
           var vars = {}; vars[cssVar] = value;
           send({ type: 'set-css-vars', vars: vars });
-          var safeCssVar = cssVar.replace(/["\\]/g, '\\$&');
-          panel.querySelectorAll('[data-tweak-font-var="' + safeCssVar + '"]').forEach(function (b) {
-            b.classList.toggle('active', b === t);
-          });
+          // Use an in-memory grouping instead of an attribute selector to avoid
+          // any escaping concerns with user-controlled CSS-var names.
+          var allFontBtns = panel.querySelectorAll('.tweak-font-btn');
+          for (var fb = 0; fb < allFontBtns.length; fb++) {
+            var btn = allFontBtns[fb];
+            if (btn.getAttribute('data-tweak-font-var') === cssVar) {
+              btn.classList.toggle('active', btn === t);
+            }
+          }
           return;
         }
 
@@ -1510,7 +1299,7 @@ function detailHtml(design, index, isMulti) {
           a.download = slug + '.design.json';
           a.click();
           setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-          alert('Downloaded: ' + slug + '.design.json\nAppend its contents to data/designs.json (as a new array entry), then rerun:\n  npm run build && npm run gallery');
+          alert('Downloaded: ' + slug + '.design.json\\nAppend its contents to data/designs.json (as a new array entry), then rerun:\\n  npm run build && npm run gallery');
         });
       }
     })();
