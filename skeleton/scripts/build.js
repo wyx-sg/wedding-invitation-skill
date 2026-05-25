@@ -106,10 +106,17 @@ for (const d of designs) {
   //   - PNG screenshot via render.js (hash === '#render'):
   //       .preview-mode skipped → transparent body, card at 0,0, zero bleed.
   //
-  // Also inject a tiny postMessage listener so the gallery's photo-switcher
-  // can swap #main-photo without reloading the iframe. Templates that follow
-  // design-principles.md will have <img id="main-photo">; if a template
-  // doesn't, the listener is a no-op.
+  // Also inject the tweak-protocol postMessage listener. It handles:
+  //   - set-photo       — swap #main-photo src (used by the photo switcher)
+  //   - set-css-vars    — apply :root CSS variable overrides
+  //   - set-font        — convenience alias of set-css-vars for one font var
+  //   - toggle-component — show/hide elements by class (e.g. .lunar-date)
+  //   - set-frame       — set --photo-radius and --photo-aspect
+  //   - reset           — clear all overrides and unhide .hidden elements
+  // Templates that follow design-principles.md use CSS variables for tweakable
+  // properties and class hooks (.lunar-date, .tagline, ...) for optional
+  // components. If a template doesn't declare any of these, the matching
+  // messages are no-ops.
   const frameCss = `<script>
     (function () {
       // Add the dark "preview" frame only when this page is the top-level
@@ -120,11 +127,56 @@ for (const d of designs) {
       if (location.hash !== '#render' && window.self === window.top) {
         document.documentElement.classList.add('preview-mode');
       }
+      var SAFE_ID = /^[a-zA-Z][a-zA-Z0-9-]*$/;
       window.addEventListener('message', function (e) {
         var d = e && e.data;
-        if (!d || d.type !== 'set-photo' || !d.url) return;
-        var img = document.getElementById('main-photo');
-        if (img) img.setAttribute('src', d.url);
+        if (!d || typeof d.type !== 'string') return;
+        var root = document.documentElement;
+        switch (d.type) {
+          case 'set-photo': {
+            if (!d.url) return;
+            var img = document.getElementById('main-photo');
+            if (img) img.setAttribute('src', d.url);
+            return;
+          }
+          case 'set-css-vars': {
+            if (!d.vars || typeof d.vars !== 'object') return;
+            for (var k in d.vars) {
+              if (!Object.prototype.hasOwnProperty.call(d.vars, k)) continue;
+              if (k.indexOf('--') !== 0) continue;
+              root.style.setProperty(k, String(d.vars[k]));
+            }
+            return;
+          }
+          case 'set-font': {
+            if (typeof d.var !== 'string' || d.var.indexOf('--') !== 0) return;
+            root.style.setProperty(d.var, String(d.value ?? ''));
+            return;
+          }
+          case 'toggle-component': {
+            if (!SAFE_ID.test(String(d.id || ''))) return;
+            var els = document.querySelectorAll('.' + d.id);
+            for (var i = 0; i < els.length; i++) {
+              els[i].classList.toggle('hidden', d.visible === false);
+            }
+            return;
+          }
+          case 'set-frame': {
+            if (typeof d.radius === 'string') root.style.setProperty('--photo-radius', d.radius);
+            if (typeof d.aspect === 'string') root.style.setProperty('--photo-aspect', d.aspect);
+            return;
+          }
+          case 'reset': {
+            var s = root.style;
+            for (var j = s.length - 1; j >= 0; j--) {
+              var prop = s[j];
+              if (prop && prop.indexOf('--') === 0) s.removeProperty(prop);
+            }
+            var hidden = document.querySelectorAll('.hidden');
+            for (var h = 0; h < hidden.length; h++) hidden[h].classList.remove('hidden');
+            return;
+          }
+        }
       });
       try { parent.postMessage({ type: 'photo-iframe-ready', id: ${JSON.stringify(d.id)} }, '*'); } catch (_) {}
     })();
