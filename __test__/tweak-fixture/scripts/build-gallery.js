@@ -497,20 +497,22 @@ const DETAIL_CSS = `
     margin: 0 0 8px;
   }
   .style-short {
-    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-style: italic;
-    font-size: 16px;
-    color: #b9a47f;
+    font-family: 'Inter', 'Noto Sans SC', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 16px;
   }
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 15px;
-    line-height: 1.75;
-    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dim);
     font-style: italic;
     text-wrap: balance;
     overflow-wrap: anywhere;
-    margin: 0;
+    margin: 0 0 20px;
   }
   @media (max-width: 960px) {
     main.detail {
@@ -528,7 +530,7 @@ const DETAIL_CSS = `
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding: 18px 0;
+    padding: 4px 0 0;
   }
   .tweak-group { display: flex; flex-direction: column; gap: 8px; }
   .tweak-group-label {
@@ -613,17 +615,28 @@ const DETAIL_CSS = `
     margin-bottom: -2px;
   }
   .tweak-reset {
-    align-self: flex-end;
-    margin-top: -4px;
+    align-self: center;
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border-soft);
+    width: 100%;
+    text-align: center;
   }
   .tweak-reset-btn {
+    background: transparent;
+    border: 0;
     color: var(--text-muted);
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 12px;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.18s, letter-spacing 0.18s;
   }
   .tweak-reset-btn:hover {
     color: var(--accent);
-    border-color: var(--border);
+    letter-spacing: 3.5px;
   }
   .powered-by {
     text-align: center;
@@ -753,7 +766,7 @@ function detailHtml(design, index, isMulti) {
 
     // Save / Export / Reset — only rendered when at least one section exists
     if (sections.length > 0) {
-      sections.push(`<div class="tweak-row tweak-reset">
+      sections.push(`<div class="tweak-reset">
         <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
       </div>`);
       tweakHtml = `<div class="tweak-panel" id="tweak-panel" data-design-id="${esc(design.id)}">${sections.join('')}</div>`;
