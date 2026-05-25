@@ -92,12 +92,14 @@ const COPY = {
     paletteLabel: 'Palette',
     fontsLabel: 'Typography',
     motifsLabel: 'Decorative Motifs',
+    inspirationLabel: 'Design Inspiration',
     downloadGroupLabel: 'Download',
     downloadSocialLabel: 'Social',
     downloadSocialHint: '1080 × 1440 · messaging, email',
     downloadPrintLabel: 'Print',
     downloadPrintHint: '2160 × 2880 · 300 DPI for printing',
     backToGallery: 'All Designs',
+    backToPreview: 'Preview gallery',
     prevLabel: 'Previous',
     nextLabel: 'Next',
     photoSwitcherLabel: 'Photo',
@@ -127,12 +129,14 @@ const COPY = {
     paletteLabel: '配色',
     fontsLabel: '字体',
     motifsLabel: '装饰元素',
+    inspirationLabel: '设计灵感',
     downloadGroupLabel: '下载',
     downloadSocialLabel: '社交版',
     downloadSocialHint: '1080 × 1440 · 微信 / 邮件',
     downloadPrintLabel: '印刷版',
     downloadPrintHint: '2160 × 2880 · 300 DPI 印刷',
     backToGallery: '所有设计',
+    backToPreview: '预览页',
     prevLabel: '上一个',
     nextLabel: '下一个',
     photoSwitcherLabel: '换照片',
@@ -322,7 +326,155 @@ const GALLERY_CSS = `
     .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
     main { padding: 20px 16px 40px; }
   }
+  /* Nav-gallery (Stage-4 index): consolidated Copy block at the bottom */
+  .nav-export {
+    max-width: 720px;
+    margin: 40px auto 56px;
+    padding: 28px 24px;
+    text-align: center;
+    border-top: 1px dashed var(--border-soft);
+  }
+  .nav-export-hint {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+  .nav-export-btn {
+    padding: 8px 22px;
+    background: transparent;
+    border: 1px solid var(--accent-warm);
+    border-radius: 999px;
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+  }
+  .nav-export-btn:hover { background: rgba(212,184,150,0.12); }
+  .nav-export-btn.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 `;
+
+// IIFE running on the nav gallery. Reads tweak state from
+// /api/tweak-state (server-backed) or localStorage (file://), then
+// formats a multi-design human-readable summary on Copy click.
+const NAV_EXPORT_IIFE_SCRIPT = `
+  (function () {
+    var data = window.__NAV_SUMMARY__;
+    if (!data) return;
+    var btn = document.getElementById('nav-export-btn');
+    if (!btn) return;
+
+    function lookup(obj, field, fallback) {
+      if (!obj) return fallback;
+      var primary = field + '_' + (data.lang || 'en');
+      if (obj[primary] != null && obj[primary] !== '') return obj[primary];
+      if (obj[field + '_en'] != null && obj[field + '_en'] !== '') return obj[field + '_en'];
+      if (obj[field] != null && obj[field] !== '') return obj[field];
+      return fallback;
+    }
+
+    function buildPerDesign(d, state) {
+      if (!state) return null;
+      var tweak = d.tweak || {};
+      var copy = data.copy;
+      var lines = [];
+      lines.push('【' + copy.intro.replace('{name}', d.displayName) + '】');
+      if (typeof state.colorIdx === 'number' && state.colorIdx >= 0) {
+        var cs = (tweak.color_schemes || [])[state.colorIdx];
+        if (cs) lines.push('· ' + copy.color + ': ' + lookup(cs, 'name', '#' + state.colorIdx));
+      }
+      Object.keys(state.fontValues || {}).forEach(function (k) {
+        var lbl = k === '--font-headline' ? copy.headline : k === '--font-body' ? copy.body : k;
+        lines.push('· ' + lbl + ': ' + state.fontValues[k]);
+      });
+      if (typeof state.frameIdx === 'number' && state.frameIdx >= 0) {
+        var fr = (tweak.frames || [])[state.frameIdx];
+        if (fr) lines.push('· ' + copy.frame + ': ' + lookup(fr, 'name', '#' + state.frameIdx));
+      }
+      var compDefs = tweak.components || [];
+      var shown = [], hidden = [];
+      compDefs.forEach(function (c) {
+        if (!c || !c.id) return;
+        var lbl = lookup(c, 'label', c.id);
+        var visible = state.components && state.components.hasOwnProperty(c.id) ? state.components[c.id] : c.default !== false;
+        if (visible) shown.push(lbl); else hidden.push(lbl);
+      });
+      if (shown.length) lines.push('· ' + copy.show + ': ' + shown.join(copy.sep));
+      if (hidden.length) lines.push('· ' + copy.hide + ': ' + hidden.join(copy.sep));
+      return lines.join('\\n');
+    }
+
+    async function getStates() {
+      var out = {};
+      if (location.protocol === 'http:' || location.protocol === 'https:') {
+        try {
+          var r = await fetch('/api/tweak-state', { cache: 'no-store' });
+          if (r.ok) {
+            var j = await r.json();
+            // server file shape: { "<designId>": {...state, updatedAt}, ... }
+            Object.keys(j || {}).forEach(function (k) { out[k] = j[k]; });
+          }
+        } catch (_) {}
+      }
+      // localStorage fallback (file://) or supplement.
+      try {
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('wis-tweak-') === 0) {
+            var id = k.slice('wis-tweak-'.length);
+            if (!out[id]) {
+              try { out[id] = JSON.parse(localStorage.getItem(k)); } catch (_) {}
+            }
+          }
+        }
+      } catch (_) {}
+      return out;
+    }
+
+    function buildSummary(states) {
+      var blocks = [];
+      var anyTweaked = false;
+      data.designs.forEach(function (d) {
+        var st = states[d.id];
+        if (!st) return;
+        var b = buildPerDesign(d, st);
+        if (b) { blocks.push(b); anyTweaked = true; }
+      });
+      if (!anyTweaked) return data.copy.noTweaks;
+      return data.copy.sectionTitle + '\\n\\n' + blocks.join('\\n\\n');
+    }
+
+    btn.addEventListener('click', async function () {
+      var states = await getStates();
+      var text = buildSummary(states);
+      var done = function () {
+        btn.classList.add('copied');
+        btn.textContent = data.copy.copied;
+        setTimeout(function () {
+          btn.classList.remove('copied');
+          btn.textContent = data.copy.label;
+        }, 2400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta2 = document.createElement('textarea');
+        ta2.value = text; document.body.appendChild(ta2); ta2.select();
+        try { document.execCommand('copy'); done(); } catch (_) {}
+        document.body.removeChild(ta2);
+      }
+    });
+  })()`;
 
 const DETAIL_CSS = `
   ${SHARED_CSS}
@@ -508,70 +660,103 @@ const DETAIL_CSS = `
     gap: 22px;
   }
 
+  .category {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
   .style-name {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
-    font-size: 44px;
-    letter-spacing: 1px;
-    color: var(--accent);
-    line-height: 1;
+    font-size: 56px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    line-height: 1.05;
     margin: 0 0 8px;
   }
   .style-short {
-    font-family: 'Inter', 'Noto Sans SC', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 16px;
     color: var(--text-dim);
-    margin: 0 0 16px;
+    margin: 0 0 22px;
+    letter-spacing: 0.3px;
   }
   .style-long {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 15px;
+    line-height: 1.65;
     color: var(--text-dim);
     font-style: italic;
     text-wrap: balance;
     overflow-wrap: anywhere;
-    margin: 0 0 20px;
+    margin: 0 0 22px;
   }
-  .specs {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px 0;
-    border-top: 1px solid var(--border-soft);
-    border-bottom: 1px solid var(--border-soft);
+  .design-inspiration {
+    border-left: 1.5px solid var(--border-soft);
+    padding: 2px 0 4px 22px;
+    margin: 0 0 26px;
   }
-  .spec-label {
-    font-size: 9px;
+  .design-inspiration .insp-label {
+    font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin: 0 0 10px;
+  }
+  .design-inspiration .insp-text {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 0;
+  }
+  .specs {
+    display: grid;
+    grid-template-columns: 124px 1fr;
+    row-gap: 18px;
+    column-gap: 24px;
+    padding: 22px 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 24px;
+    align-items: start;
+  }
+  .spec-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0;
+    padding-top: 4px;
+    line-height: 1.4;
   }
   .spec-value {
-    font-size: 12px;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-style: italic;
+    font-size: 14px;
     color: var(--text-dim);
-    letter-spacing: 0.3px;
+    margin: 0;
+    line-height: 1.4;
   }
   .palette-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
+    padding-top: 0;
   }
   .swatch {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.08);
     flex-shrink: 0;
   }
   .fonts-row {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 13px;
-    color: var(--text-dim);
+    /* now uses .spec-value italic style by default */
   }
   .download-group {
     display: flex;
@@ -1108,83 +1293,9 @@ const TWEAK_IIFE_SCRIPT = `
       // Also save on page hide as a belt-and-suspenders measure.
       window.addEventListener('pagehide', autoSave);
 
-      // Human-readable summary for the Copy button — agent-pastable text.
-      function localizedField(obj, field, fallback) {
-        if (!obj) return fallback;
-        var primaryKey = field + '_' + (cfg.lang || 'en');
-        if (obj[primaryKey] != null && obj[primaryKey] !== '') return obj[primaryKey];
-        if (obj[field + '_en'] != null && obj[field + '_en'] !== '') return obj[field + '_en'];
-        if (obj[field] != null && obj[field] !== '') return obj[field];
-        return fallback;
-      }
-      function buildSummary() {
-        var state = collectState();
-        var labels = cfg.copy || {};
-        var lines = [];
-        var designName = (cfg.design && cfg.design.displayName) || DESIGN_ID;
-        lines.push((labels.intro || 'My tweaks for "{name}"').replace('{name}', designName) + ':');
-        // Color scheme
-        if (typeof state.colorIdx === 'number' && state.colorIdx >= 0) {
-          var cs = (TWEAK.color_schemes || [])[state.colorIdx];
-          if (cs) lines.push('· ' + (labels.color || 'Color') + ': ' + localizedField(cs, 'name', '#' + state.colorIdx));
-        }
-        // Fonts
-        Object.keys(state.fontValues || {}).forEach(function (k) {
-          var lbl = k === '--font-headline' ? (labels.headline || 'Headline')
-                  : k === '--font-body' ? (labels.body || 'Body')
-                  : k;
-          lines.push('· ' + lbl + ': ' + state.fontValues[k]);
-        });
-        // Frame
-        if (typeof state.frameIdx === 'number' && state.frameIdx >= 0) {
-          var fr = (TWEAK.frames || [])[state.frameIdx];
-          if (fr) lines.push('· ' + (labels.frame || 'Frame') + ': ' + localizedField(fr, 'name', '#' + state.frameIdx));
-        }
-        // Components
-        var componentDefs = TWEAK.components || [];
-        var shown = [], hidden = [];
-        componentDefs.forEach(function (c) {
-          if (!c || !c.id) return;
-          var lbl = localizedField(c, 'label', c.id);
-          var visible = state.components.hasOwnProperty(c.id) ? state.components[c.id] : c.default !== false;
-          if (visible) shown.push(lbl); else hidden.push(lbl);
-        });
-        var sep = labels.sep || ', ';
-        if (shown.length) lines.push('· ' + (labels.show || 'Show') + ': ' + shown.join(sep));
-        if (hidden.length) lines.push('· ' + (labels.hide || 'Hide') + ': ' + hidden.join(sep));
-        return lines.join('\\n');
-      }
-
-      // Wire the Copy button (writes the summary to clipboard).
-      var copyBtn = document.getElementById('tweak-export-btn');
-      if (copyBtn) {
-        var exportLabel = (cfg.copy && cfg.copy.exportLabel) || 'Copy tweaks';
-        var exportCopied = (cfg.copy && cfg.copy.exportCopied) || 'Copied ✓';
-        copyBtn.addEventListener('click', function () {
-          var text = buildSummary();
-          var done = function () {
-            copyBtn.classList.add('copied');
-            copyBtn.textContent = exportCopied;
-            setTimeout(function () {
-              copyBtn.classList.remove('copied');
-              copyBtn.textContent = exportLabel;
-            }, 2400);
-          };
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(function () {
-              var ta = document.createElement('textarea');
-              ta.value = text; document.body.appendChild(ta); ta.select();
-              try { document.execCommand('copy'); done(); } catch (_) {}
-              document.body.removeChild(ta);
-            });
-          } else {
-            var ta2 = document.createElement('textarea');
-            ta2.value = text; document.body.appendChild(ta2); ta2.select();
-            try { document.execCommand('copy'); done(); } catch (_) {}
-            document.body.removeChild(ta2);
-          }
-        });
-      }
+      // Note: the Copy-tweaks button lives on the preview gallery (index.html),
+      // not here. The studio only owns auto-sync + the live preview. See
+      // navGalleryHtml in build-gallery.js for the consolidated Copy flow.
 
       function applyDefaults() {
         if (Array.isArray(TWEAK.components)) {
@@ -1406,13 +1517,21 @@ export function detailHtml(design, index) {
   const switcherHtml = buildSwitcherHtml(design);
 
   const designName = localizedName(design, 'name', design.id);
+  const category = localizedName(meta, 'category', '');
+  const inspiration = localizedName(meta, 'inspiration', '');
+  const motifs = localizedName(meta, 'motifs', '');
 
   const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
+  const inspirationHtml = inspiration ? `
+      <div class="design-inspiration">
+        <div class="insp-label">${esc(COPY.inspirationLabel)}</div>
+        <p class="insp-text">${esc(inspiration)}</p>
+      </div>` : '';
 
   const specsBlocks = [];
   if (palette) specsBlocks.push(`<div class="spec-label">${esc(COPY.paletteLabel)}</div><div class="spec-value palette-row">${palette}</div>`);
   if (fonts) specsBlocks.push(`<div class="spec-label">${esc(COPY.fontsLabel)}</div><div class="spec-value fonts-row">${fonts}</div>`);
-  if (meta.motifs) specsBlocks.push(`<div class="spec-label">${esc(COPY.motifsLabel)}</div><div class="spec-value">${esc(meta.motifs)}</div>`);
+  if (motifs) specsBlocks.push(`<div class="spec-label">${esc(COPY.motifsLabel)}</div><div class="spec-value">${esc(motifs)}</div>`);
   const specsHtml = specsBlocks.length
     ? `<div class="specs">${specsBlocks.join('')}</div>`
     : '';
@@ -1502,11 +1621,14 @@ export function detailHtml(design, index) {
 
     <div class="detail-info">
       <div>
+        ${category ? `<div class="category">${esc(category)}</div>` : ''}
         <h1 class="style-name">${esc(designName)}</h1>
         ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
       </div>
 
       ${longHtml}
+
+      ${inspirationHtml}
 
       ${specsHtml}
 
@@ -1554,7 +1676,14 @@ export function studioHtml(design, index) {
   const switcherHtml = buildSwitcherHtml(design);
 
   const designName = localizedName(design, 'name', design.id);
+  const category = localizedName(meta, 'category', '');
+  const inspiration = localizedName(meta, 'inspiration', '');
   const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
+  const inspirationHtml = inspiration ? `
+      <div class="design-inspiration">
+        <div class="insp-label">${esc(COPY.inspirationLabel)}</div>
+        <p class="insp-text">${esc(inspiration)}</p>
+      </div>` : '';
 
   const { tweakHtml, tweakConfigJson } = buildTweakParts(design);
 
@@ -1622,6 +1751,7 @@ export function studioHtml(design, index) {
 </head>
 <body>
   <nav class="wis-nav">
+    <a class="wis-nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToPreview)}</span></a>
     <div class="wis-brand">${esc(COPY.brand)}</div>
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
@@ -1644,20 +1774,18 @@ export function studioHtml(design, index) {
 
     <div class="detail-info">
       <div>
+        ${category ? `<div class="category">${esc(category)}</div>` : ''}
         <h1 class="style-name">${esc(designName)}</h1>
         ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
       </div>
 
       ${longHtml}
 
+      ${inspirationHtml}
+
       ${tweakHtml}
 
       ${studioPagerHtml}
-
-      <div class="tweak-export" id="tweak-export">
-        <p class="tweak-export-hint">${esc(COPY.tweakExportHint)}</p>
-        <button type="button" class="tweak-export-btn" id="tweak-export-btn">${esc(COPY.tweakExportLabel)}</button>
-      </div>
     </div>
   </main>
 
@@ -1695,6 +1823,9 @@ export function finalGalleryHtml() {
 
 // Stage-4 navigation gallery: live iframe previews, cards link to
 // <id>-studio.html for tweaking. Lazy-loads iframes via loading="lazy".
+// Also hosts the consolidated "Copy tweaks" block — the user iterates
+// across multiple studios; this is the one place that summarizes every
+// design's tweak state in one paste.
 export function navGalleryHtml() {
   const cards = designs.map(d => {
     const name = localizedName(d, 'name', d.id);
@@ -1710,15 +1841,56 @@ export function navGalleryHtml() {
     </a>`;
   }).join('\n');
 
+  // Inject minimal per-design data the Copy script needs to format a
+  // human-readable summary across all designs.
+  const tweakSummaryData = designs.map(d => ({
+    id: d.id,
+    displayName: localizedName(d, 'name', d.id),
+    tweak: d.tweak_options || null,
+  }));
+
+  const copyHintLabel = COPY.tweakExportHint;
+  const copyButtonLabel = COPY.tweakExportLabel;
+  const copyButtonCopied = COPY.tweakExportCopied;
+  const noTweaksMsg = lang === 'zh' ? '我还没微调过任何设计。' : "I haven't tweaked any designs yet.";
+
+  const exportFooter = `
+  <section class="nav-export">
+    <p class="nav-export-hint">${esc(copyHintLabel)}</p>
+    <button type="button" class="nav-export-btn" id="nav-export-btn">${esc(copyButtonLabel)}</button>
+  </section>
+  <script>
+    window.__NAV_SUMMARY__ = {
+      designs: ${JSON.stringify(tweakSummaryData).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026')},
+      lang: ${JSON.stringify(lang)},
+      copy: ${JSON.stringify({
+        intro: '{name}',
+        color: COPY.tweakColorLabel,
+        headline: COPY.tweakHeadlineSub,
+        body: COPY.tweakBodySub,
+        frame: COPY.tweakFrameLabel,
+        show: lang === 'zh' ? '显示' : 'Show',
+        hide: lang === 'zh' ? '隐藏' : 'Hide',
+        sep: lang === 'zh' ? '、' : ', ',
+        noTweaks: noTweaksMsg,
+        copied: copyButtonCopied,
+        label: copyButtonLabel,
+        sectionTitle: lang === 'zh' ? '我对设计做了以下微调：' : 'My tweaks across the designs:',
+      })}
+    };
+  </script>
+  <script>${NAV_EXPORT_IIFE_SCRIPT};</script>`;
+
   return galleryShellHtml({
     title: COPY.pageTitle,
     tagline: COPY.previewTagline,
     cardsHtml: cards,
+    footerHtml: exportFooter,
   });
 }
 
 // Shared HTML shell used by both galleries — same header / hero / grid.
-function galleryShellHtml({ title, tagline, cardsHtml }) {
+function galleryShellHtml({ title, tagline, cardsHtml, footerHtml = '' }) {
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
 <head>
@@ -1742,6 +1914,7 @@ function galleryShellHtml({ title, tagline, cardsHtml }) {
       ${cardsHtml}
     </div>
   </main>
+  ${footerHtml}
 </body>
 </html>
 `;

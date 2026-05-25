@@ -1,15 +1,19 @@
 [
   {
     "id": "morandi-tweak",
-    "name_zh": "莫兰迪 · 可调",
-    "name_en": "MORANDI · TWEAKABLE",
+    "name_zh": "莫兰迪",
+    "name_en": "morandi",
     "template": "morandi-tweak.html",
     "primary_photo": "photo-01",
     "width": 420,
     "height": 560,
     "meta": {
-      "short": "柔和当代 · 可调",
+      "category_zh": "当代",
+      "category_en": "Contemporary",
+      "short": "柔和当代",
       "long": "莫兰迪柔和色调 — 暖灰、苔绿、沙色。非对称构图，留白驱动。细线分隔加椭圆人像，整张请帖安静下来，把焦点让给照片本身。",
+      "inspiration_zh": "意大利画家 Giorgio Morandi 的静物写生 — 柔和大地色调、克制笔触、漫长的看。让现代极简和老世界的安静相遇。",
+      "inspiration_en": "Inspired by Italian painter Giorgio Morandi's still lifes — muted earth-tones, restrained brushwork, the long look. Modern minimalism meets old-world quiet.",
       "palette": [
         "#e8e4dc",
         "#7a8a6d",
@@ -19,7 +23,7 @@
       "fonts": [
         "Inter"
       ],
-      "motifs": "椭圆人像 · 细线分隔"
+      "motifs": "椭圆人像 · 细线分隔 · 留白驱动 · 无装饰主义"
     },
     "tweak_options": {
       "color_schemes": [
@@ -85,15 +89,19 @@
   {
     "id": "custom-canvas",
     "name_zh": "暖光晨",
-    "name_en": "WARM MORNING",
+    "name_en": "warm morning",
     "template": "custom-canvas.html",
     "primary_photo": "photo-02",
     "width": 420,
     "height": 560,
     "custom": true,
     "meta": {
-      "short": "从零自定义",
-      "long": "从中性的起点开始，颜色、字体、照片框、可选组件都自己挑。Agent 和这个面板配合着把设计落地。",
+      "category_zh": "定制",
+      "category_en": "Custom",
+      "short": "中式礼服 · 暖色定制",
+      "long": "用户描述的方向：晨光打在窗棂上的暖色，圆形人像聚焦面孔，配合中式礼服的色调。版式克制，字体不抢戏，把仪式感留给人物本身。",
+      "inspiration_zh": "新郎中山装、新娘红色秀禾的全景照触发的灵感 — 把摄影中暖橙色的高光抽出来，让整张请帖像在一个晴朗的清晨。圆形相框是肖像摄影里最稳的取景。",
+      "inspiration_en": "Inspired by the warm-orange highlights of the couple's portrait in traditional Chinese dress — extract the morning-sun warmth from the photo and let the whole card sit in that light. Circle frame is the most stable crop for a portrait.",
       "palette": [
         "#f5f1e8",
         "#8a9882",
