@@ -20,21 +20,22 @@
 
 ## 快速开始
 
-把最新 release 直接下到 Claude Code 的 skills 目录：
+下载最新 release —— 任何 AI 编程 agent 都能用：
 
 ```bash
-mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
 unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-然后在 [Claude Code](https://claude.ai/code) 里：
+然后跟你的 agent 这样说：
 
-```
-/wedding-invitation
-```
+> "读一下 `wedding-invitation-skill/SKILL.md`，帮我做一张婚礼请帖。"
 
-或者直接说"帮我做一张婚礼请帖" — Claude 会接着引导对话，不用重启。
+skill 会接管对话，语言、照片、风格、设计、渲染，一路都在对话里完成。
+
+**各家 agent 的快捷用法：**
+- **[Claude Code](https://claude.ai/code)** —— 把解压出来的目录挪到 `~/.claude/skills/`，skill 自动注册。然后直接输入 `/wedding-invitation` 或说"帮我做一张婚礼请帖"，不用重启。
+- **Cursor、Aider、Codex CLI、Gemini CLI、Claude Agent SDK 等** —— 解压到任意位置，按上面的方式让 agent 读 `SKILL.md` 即可。视觉 picker 在不支持 `AskUserQuestion` 的 agent 上会自动降级为纯文本，详见 [兼容其他编程 agent](#兼容其他编程-agent)。
 
 release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。
 
@@ -47,9 +48,10 @@ release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`w
 ### 想贡献代码？直接 clone 源码
 
 ```bash
-git clone https://github.com/wyx-sg/wedding-invitation-skill \
-  ~/.claude/skills/wedding-invitation
+git clone https://github.com/wyx-sg/wedding-invitation-skill
 ```
+
+然后把 agent 指向 `wedding-invitation-skill/SKILL.md`（用 Claude Code 的话，直接 clone 到 `~/.claude/skills/wedding-invitation/` 就能自动发现）。
 
 仓库包含以下额外目录，使用 skill 时不需要，但贡献代码时有用：
 - `examples/` — 20 张展示请帖（README gallery 的原始素材）
@@ -94,7 +96,7 @@ flowchart LR
 
 1. **对话** — 语言、姓名、日期、场地
 2. **挑照片** — Claude 把你给的所有照片做成卡片；点击多选（或"全选"）。第一张作为主图，其他作为可切换的备选
-3. **挑风格方向** — Claude 看你的照片挑出 5 个最匹配的方向；可单选可多选。回复"换一批"换 5 个新的（已选的不会被换），或者直接在对话里说"我想自定义" / "I want something custom"，跳过候选 picker，从对话开始设计你想要的方向
+3. **挑风格方向** — Claude 看你的照片挑出 5 个最匹配的方向；可单选可多选。回复"换一批"换 5 个新的（已选的不会被换），或者直接在对话里说"我想自定义"，跳过候选 picker，从对话开始设计你想要的方向
 4. **设计** — Claude 为每个方向都从零写一份 HTML 模板
 5. **预览 + 微调**（Stage 4 — `dist/preview.html`）— 每张设计的实时 iframe 缩略图；点卡片进**微调台**，切配色 / 字体 / 相框 / 显示隐藏。微调结果自动保存到本地文件，Claude 看得到。微调台搞不定的事跟 Claude 说就行
 6. **出成品**（Stage 5 — `dist/index.html`）— 最终 gallery（PNG 缩略图），点卡片进详情页，**社交版** (1080×1440) + **印刷版** (2160×2880) 下载按钮。看完想再调？随时跳回 Stage 4

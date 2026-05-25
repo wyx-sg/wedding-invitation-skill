@@ -20,21 +20,22 @@
 
 ## Quick start
 
-Download the latest release into Claude Code's skills directory:
+Download the latest release — works with any AI coding agent:
 
 ```bash
-mkdir -p ~/.claude/skills && cd ~/.claude/skills
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
 unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-Then in [Claude Code](https://claude.ai/code):
+Then start a chat with your agent and tell it:
 
-```
-/wedding-invitation
-```
+> "Read `wedding-invitation-skill/SKILL.md` and help me make a wedding invitation."
 
-Or just say "help me make a wedding invitation" — Claude takes it from there, no restart needed.
+The skill takes it from there — language, photos, style, design, render, all in conversation.
+
+**Agent-specific shortcuts:**
+- **[Claude Code](https://claude.ai/code)** — move the folder into `~/.claude/skills/` and the skill auto-registers. Then just type `/wedding-invitation` or say "help me make a wedding invitation". No restart needed.
+- **Cursor, Aider, Codex CLI, Gemini CLI, Claude Agent SDK, others** — keep the folder anywhere; point the agent at `SKILL.md` as shown above. See [Use with other coding agents](#use-with-other-coding-agents) for details on visual-picker fallbacks.
 
 The release zip is under 100 KB and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`.
 
@@ -47,8 +48,10 @@ The release zip is under 100 KB and contains only the runtime files: `SKILL.md`,
 ### Contributing? Clone the source instead
 
 ```bash
-git clone https://github.com/wyx-sg/wedding-invitation-skill ~/.claude/skills/wedding-invitation
+git clone https://github.com/wyx-sg/wedding-invitation-skill
 ```
+
+Then point your agent at `wedding-invitation-skill/SKILL.md` (or, for Claude Code, clone into `~/.claude/skills/wedding-invitation` for auto-discovery).
 
 The repo includes extras not needed to *use* the skill but useful for development:
 - `examples/` — 20 showcase invitations (source of truth for the README gallery)
@@ -93,7 +96,7 @@ flowchart LR
 
 1. **Talk** — language(s), names, date, venue
 2. **Pick photos** — Claude shows every photo you provided as a card; tap to select (multi-select or "Select All"). First selected becomes primary; the rest stay available as alternates the design can switch to
-3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or just tell Claude in chat "I want something custom" / "我想要自定义" to skip the curated picker and design from a conversation about your specific vision
+3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or just tell Claude in chat "I want something custom" to skip the curated picker and design from a conversation about your specific vision
 4. **Design** — Claude writes a fresh HTML template per direction you picked
 5. **Preview + tweak** (Stage 4 — `dist/preview.html`) — live iframe thumbnails of every design; click any card to open its **studio** with color / font / photo-frame / show-hide controls. Tweaks save to disk so Claude knows what you picked. Tell Claude in chat for anything the studio can't do
 6. **Deliver** (Stage 5 — `dist/index.html`) — final gallery with PNG thumbnails; click a card → detail page with **Social** (1080×1440) and **Print** (2160×2880) download buttons. You can flip back to Stage 4 anytime to tweak more
