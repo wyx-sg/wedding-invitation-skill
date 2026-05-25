@@ -64,14 +64,11 @@ Or just tell Claude: "Help me make a wedding invitation." Either way works — C
 
 - A **bespoke HTML design** created for you — not picked from a generic gallery
 - **Two PNG sizes per design** — 1080×1440 for messaging/email, 2160×2880 at 300 DPI for printing
-- A **local gallery page** that opens in your browser with download buttons
+- A **local browser tweak studio** to fine-tune color / font / photo-frame / optional components on each design — live, no rebuild needed
 - Designed in **your language(s)** — English, Chinese, Spanish, Japanese, Korean, French, Hindi, Arabic, or any combination
 - Your photos, names, and address **never leave your machine**
 
-You pick a **mode** at the start:
-
-- **Single design + iterate** (default) — Claude designs one template tailored to you and refines with your feedback. ~30 minutes, 3-5 rounds.
-- **Multiple alternatives** — Claude generates 3 / 5 / 8 different aesthetics in parallel using your actual data. You browse them in a local gallery and either download a favorite or pick one to keep iterating.
+You pick **how many designs** by how many style directions you select. Pick one direction → one design. Pick three → three designs side-by-side in the gallery. You can also tell Claude to skip the curated picker and design from a conversation about your specific vision.
 
 The 20 examples in the image above span world cultures and contemporary aesthetics, showing the visual range available:
 
@@ -85,25 +82,25 @@ The 20 examples in the image above span world cultures and contemporary aestheti
 - **Contemporary** — `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
 - **Themed** — `retro-poster`, `vintage-stars`
 
-Each invitation is custom-designed from scratch — not pulled from a template library. Pick one direction or several (multi-select); whatever you pick becomes its own design in the gallery.
+Each invitation is custom-designed from scratch — not pulled from a template library.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[💬 Talk: language<br/>names · date · venue] --> P[📷 Photo picker<br/>tap to select]
-    P --> S[🎨 Style picker<br/>5 best · multi-select<br/>or Custom in chat]
-    S --> D[Design: Claude writes<br/>one HTML template per pick]
-    D --> T[🛠 Studio: live tweak<br/>colors · fonts · frame<br/>+ chat iteration]
-    T --> O[📥 dist/index.html<br/>download Social / Print PNG]
+    A[💬 Talk: language<br/>names · date · venue] --> P[📷 Pick photos]
+    P --> S[🎨 Pick style direction<br/>multi-select]
+    S --> D[Claude writes one HTML<br/>template per direction]
+    D --> ST[🛠 Stage 4 · Preview + tweak<br/>dist/preview.html<br/>live studio per design]
+    ST --> DL[📥 Stage 5 · Deliver<br/>dist/index.html<br/>download Social / Print PNG]
 ```
 
-1. **Talk** — language(s), names, date, venue, photos
-2. **Photo picker** — Claude shows every photo as a card; you tap to select (or hit "全选" / "Select All"). The first selected becomes the primary; the rest are alternates
-3. **Style picker** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several (multi-select). Reply "show me others" for a fresh batch, or "Custom" / "自定义" to skip the curated set and design from chat
+1. **Talk** — language(s), names, date, venue
+2. **Pick photos** — Claude shows every photo you provided as a card; tap to select (multi-select or "Select All"). First selected becomes primary; the rest stay available as alternates the design can switch to
+3. **Pick style direction(s)** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several. Reply "show me others" for a fresh batch (already-picked ones stay), or "Custom" / "自定义" to skip the curated set and design from chat
 4. **Design** — Claude writes a fresh HTML template per direction you picked
-5. **Studio + iterate** — `dist/index.html` opens with each design as a card; click any to view + download (Social 1080×1440 / Print 2160×2880), or open the studio for live color/font/frame/component swaps. Tell Claude in chat for anything the studio can't do
-6. **Download** — Social or Print PNG straight from the detail page
+5. **Preview + tweak** (Stage 4 — `dist/preview.html`) — live iframe thumbnails of every design; click any card to open its **studio** with color / font / photo-frame / show-hide controls. Tweaks save to disk so Claude knows what you picked. Tell Claude in chat for anything the studio can't do
+6. **Deliver** (Stage 5 — `dist/index.html`) — final gallery with PNG thumbnails; click a card → detail page with **Social** (1080×1440) and **Print** (2160×2880) download buttons. You can flip back to Stage 4 anytime to tweak more
 
 ## Use with other coding agents
 
