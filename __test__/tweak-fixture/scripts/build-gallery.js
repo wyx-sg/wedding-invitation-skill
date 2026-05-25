@@ -467,6 +467,7 @@ const DETAIL_CSS = `
     border-radius: 3px;
     background: #fff;
     box-shadow: 0 40px 90px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(212,184,150,0.08);
+    position: relative;
   }
   .preview .frame iframe {
     width: var(--tpl-w);
@@ -818,6 +819,13 @@ function detailHtml(design, index, isMulti) {
   <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
 </head>
 <body>
+  <nav class="nav-bar">
+    <div class="inner">
+      <span></span>
+      <span class="nav-brand">${esc(COPY.brand)}</span>
+      <span></span>
+    </div>
+  </nav>
   <main class="detail">
     <div class="preview">
       <div class="frame">
