@@ -124,6 +124,7 @@ const COPY = {
     tweakSaveInfoLabel: 'Saved locally · refresh keeps your changes',
     tweakContributeLabel: 'Love this design? Open a PR to add it to the skill — share with others →',
     tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
+    poweredByLabel: 'Made with',
   },
   zh: {
     brand: '婚礼请帖',
@@ -162,6 +163,7 @@ const COPY = {
     tweakSaveInfoLabel: '已保存到本地 · 刷新后仍在',
     tweakContributeLabel: '设计得不错？欢迎给项目提 PR，加进 skill 让更多人用 →',
     tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
+    poweredByLabel: '由',
   }
 }[lang];
 
@@ -298,6 +300,25 @@ const GALLERY_CSS = `
     h1 { font-size: 28px; letter-spacing: 3px; }
     .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
     main { padding: 20px 16px 40px; }
+  }
+  .powered-by {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-family: 'Inter', sans-serif;
+  }
+  .powered-by a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--border-soft);
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .powered-by a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 `;
 
@@ -840,6 +861,25 @@ const DETAIL_CSS = `
     display: block;
   }
   .tweak-contribute:hover { color: var(--accent-warm); }
+  .powered-by {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-family: 'Inter', sans-serif;
+  }
+  .powered-by a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--border-soft);
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .powered-by a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
 `;
 
 // --- detail page ---
@@ -1176,6 +1216,9 @@ function detailHtml(design, index, isMulti) {
     <option value="Amiri">
     <option value="Allura">
   </datalist>
+  <footer class="powered-by">
+    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>
+  </footer>
   <script>
     (function () {
       var thumbs = document.getElementById('photo-switcher-thumbs');
@@ -1568,6 +1611,9 @@ function galleryHtml() {
       ${cards}
     </div>
   </main>
+  <footer class="powered-by">
+    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>
+  </footer>
 </body>
 </html>
 `;

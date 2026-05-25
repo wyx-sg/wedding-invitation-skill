@@ -2,6 +2,8 @@
 
 # Wedding Invitation
 
+[![Download Latest Release](https://img.shields.io/github/v/release/wyx-sg/wedding-invitation-skill?label=Download%20skill%20zip&color=2c2c2c&style=for-the-badge)](https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip)
+
 > An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.
 
 **🎨 [Open the live gallery](https://wyx-sg.github.io/wedding-invitation-skill/)** — click any of the 20 examples to see it rendered full-size.

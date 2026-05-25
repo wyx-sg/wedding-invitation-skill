@@ -2,6 +2,8 @@
 
 # 婚礼请帖
 
+[![下载最新 release](https://img.shields.io/github/v/release/wyx-sg/wedding-invitation-skill?label=%E4%B8%8B%E8%BD%BD%20skill%20zip&color=2c2c2c&style=for-the-badge)](https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip)
+
 > 一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。
 
 **🎨 [打开在线 gallery](https://wyx-sg.github.io/wedding-invitation-skill/index.zh.html)** — 点任意一张样例看完整渲染效果。

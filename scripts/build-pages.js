@@ -32,6 +32,7 @@ const COPY = {
     h1Pre: 'Wedding',
     h1Post: 'Invitation',
     tagline: 'An AI-agent skill that designs your wedding invitation from a conversation — any language, any aesthetic, rendered locally, never uploaded.',
+    btnDownload: 'Download Skill (zip)',
     btnGithub: 'View on GitHub',
     btnQuickStart: 'Quick Start',
     note: 'The 20 examples below were each designed from scratch for a different aesthetic. Your invitation will be designed fresh in your chosen language. Click any to see it in full.',
@@ -61,6 +62,7 @@ const COPY = {
     h1Pre: '婚礼',
     h1Post: '请帖',
     tagline: '一个 AI agent skill，通过对话为你设计专属婚礼请帖 — 任意语言、任意风格、本地渲染、数据不外传。',
+    btnDownload: '下载 Skill（zip）',
     btnGithub: '查看 GitHub',
     btnQuickStart: '快速开始',
     note: '下面 20 张样例每一张都为不同 aesthetic 从零设计的。你的请帖会用你选择的语言重新设计。点任意一张看完整效果。',
@@ -908,8 +910,9 @@ ${cards}
     <h1>${c.h1Pre} <span class="amp">&amp;</span> ${c.h1Post}</h1>
     <p class="tagline">${c.tagline}</p>
     <div class="actions">
-      <a class="btn primary" href="https://github.com/wyx-sg/wedding-invitation-skill">${c.btnGithub}</a>
-      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#quick-start">${c.btnQuickStart}</a>
+      <a class="btn primary" href="https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip">${c.btnDownload}</a>
+      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill">${c.btnGithub}</a>
+      <a class="btn" href="https://github.com/wyx-sg/wedding-invitation-skill#install">${c.btnQuickStart}</a>
     </div>
     <p class="note">${c.note}</p>
   </header>
