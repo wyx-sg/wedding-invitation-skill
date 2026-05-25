@@ -116,8 +116,6 @@ const COPY = {
     tweakBodySub: 'Body',
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
-    adjustLabel: 'Adjust this design',
-    backToDetailLabel: 'Back to detail',
   },
   zh: {
     brand: '婚礼请帖',
@@ -148,8 +146,6 @@ const COPY = {
     tweakBodySub: '正文字体',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
-    adjustLabel: '微调此设计',
-    backToDetailLabel: '返回详情',
   }
 }[lang];
 
@@ -571,29 +567,6 @@ const DETAIL_CSS = `
     font-style: italic;
     font-size: 13px;
     color: var(--text-dim);
-  }
-  .adjust-row {
-    display: flex;
-    justify-content: stretch;
-  }
-  .adjust-btn {
-    flex: 1;
-    text-align: center;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(212,184,150,0.12), rgba(184,149,106,0.04));
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    color: var(--accent);
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 15px;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    transition: background 0.2s, transform 0.12s;
-  }
-  .adjust-btn:hover {
-    background: linear-gradient(135deg, rgba(212,184,150,0.22), rgba(184,149,106,0.10));
-    transform: translateY(-1px);
   }
   .download-group {
     display: flex;
@@ -1358,10 +1331,6 @@ function detailHtml(design, index, isMulti) {
 
       ${specsHtml}
 
-      <div class="adjust-row">
-        <a class="adjust-btn" href="${esc(design.id)}-studio.html">↗ ${esc(COPY.adjustLabel)}</a>
-      </div>
-
       <div class="download-group">
         <div class="download-group-label">${esc(COPY.downloadGroupLabel)}</div>
         <div class="download-row">
@@ -1408,9 +1377,6 @@ function studioHtml(design, index, isMulti) {
 
   const { tweakHtml, tweakConfigJson } = buildTweakParts(design);
 
-  // Back link: in multi mode goes to the detail page; in single mode goes to index.html (which IS the detail)
-  const studioBackHref = isMulti ? `${design.id}-page.html` : `index.html`;
-
   const prevName = prev && localizedName(prev, 'name', prev.id);
   const nextName = next && localizedName(next, 'name', next.id);
   const studioPagerHtml = isMulti ? `
@@ -1434,7 +1400,7 @@ function studioHtml(design, index, isMulti) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${esc(designName)} · ${esc(COPY.adjustLabel)}</title>
+  <title>${esc(designName)} · ${esc(COPY.brand)}</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
   <style>
     :root {
@@ -1476,7 +1442,7 @@ function studioHtml(design, index, isMulti) {
 <body>
   <nav class="nav-bar">
     <div class="inner">
-      <a class="nav-back" href="${esc(studioBackHref)}"><span>←</span><span>${esc(COPY.backToDetailLabel)}</span></a>
+      <span></span>
       <span class="nav-brand">${esc(COPY.brand)}</span>
       <span class="nav-powered-by">
         ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
