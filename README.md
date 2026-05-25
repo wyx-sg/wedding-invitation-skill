@@ -20,22 +20,14 @@
 
 ## Quick start
 
-Download the latest release — works with any AI coding agent:
+Download the latest release and drop it into your coding agent's skills directory (e.g. `~/.claude/skills/` for Claude Code):
 
 ```bash
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
 unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-Then start a chat with your agent and tell it:
-
-> "Read `wedding-invitation-skill/SKILL.md` and help me make a wedding invitation."
-
-The skill takes it from there — language, photos, style, design, render, all in conversation.
-
-**Agent-specific shortcuts:**
-- **[Claude Code](https://claude.ai/code)** — move the folder into `~/.claude/skills/` and the skill auto-registers. Then just type `/wedding-invitation` or say "help me make a wedding invitation". No restart needed.
-- **Cursor, Aider, Codex CLI, Gemini CLI, Claude Agent SDK, others** — keep the folder anywhere; point the agent at `SKILL.md` as shown above. See [Use with other coding agents](#use-with-other-coding-agents) for details on visual-picker fallbacks.
+Then say "help me make a wedding invitation" — the skill takes it from there.
 
 The release zip is under 100 KB and contains only the runtime files: `SKILL.md`, `workflow.md`, `design-principles.md`, `LICENSE`, `references/`, `skeleton/`.
 
@@ -100,18 +92,6 @@ flowchart LR
 4. **Design** — Claude writes a fresh HTML template per direction you picked
 5. **Preview + tweak** (Stage 4 — `dist/preview.html`) — live iframe thumbnails of every design; click any card to open its **studio** with color / font / photo-frame / show-hide controls. Tweaks save to disk so Claude knows what you picked. Tell Claude in chat for anything the studio can't do
 6. **Deliver** (Stage 5 — `dist/index.html`) — final gallery with PNG thumbnails; click a card → detail page with **Social** (1080×1440) and **Print** (2160×2880) download buttons. You can flip back to Stage 4 anytime to tweak more
-
-## Use with other coding agents
-
-All agents use the same release zip from [Quick start](#quick-start). What differs is how each agent picks the skill up:
-
-| Agent | How to use |
-|---|---|
-| **Claude Code** | Unzip into `~/.claude/skills/` — auto-discovers. Type `/wedding-invitation` or say "help me make a wedding invitation". |
-| **Claude Agent SDK** | Unzip anywhere; load `SKILL.md` as a skill in your SDK setup. |
-| Cursor / Aider / Codex CLI / Gemini CLI / others | Unzip anywhere; tell the agent: "read `wedding-invitation-skill/SKILL.md` and help me make a wedding invitation". |
-
-Some interactions use Claude Code's `AskUserQuestion` tool for visual picking; other agents automatically fall back to plain-text questions.
 
 ## Privacy
 

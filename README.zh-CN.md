@@ -20,22 +20,14 @@
 
 ## 快速开始
 
-下载最新 release —— 任何 AI 编程 agent 都能用：
+下载最新 release，解压到你编程 agent 的 skill 目录（比如 Claude Code 是 `~/.claude/skills/`）：
 
 ```bash
 curl -L https://github.com/wyx-sg/wedding-invitation-skill/releases/latest/download/wedding-invitation-skill.zip -o wedding-invitation-skill.zip
 unzip -o wedding-invitation-skill.zip && rm wedding-invitation-skill.zip
 ```
 
-然后跟你的 agent 这样说：
-
-> "读一下 `wedding-invitation-skill/SKILL.md`，帮我做一张婚礼请帖。"
-
-skill 会接管对话，语言、照片、风格、设计、渲染，一路都在对话里完成。
-
-**各家 agent 的快捷用法：**
-- **[Claude Code](https://claude.ai/code)** —— 把解压出来的目录挪到 `~/.claude/skills/`，skill 自动注册。然后直接输入 `/wedding-invitation` 或说"帮我做一张婚礼请帖"，不用重启。
-- **Cursor、Aider、Codex CLI、Gemini CLI、Claude Agent SDK 等** —— 解压到任意位置，按上面的方式让 agent 读 `SKILL.md` 即可。视觉 picker 在不支持 `AskUserQuestion` 的 agent 上会自动降级为纯文本，详见 [兼容其他编程 agent](#兼容其他编程-agent)。
+然后跟你的 agent 说"帮我做一张婚礼请帖" —— skill 会接管对话。
 
 release zip 在 100 KB 以内，只包含运行时所需文件：`SKILL.md`、`workflow.md`、`design-principles.md`、`LICENSE`、`references/`、`skeleton/`。
 
@@ -100,18 +92,6 @@ flowchart LR
 4. **设计** — Claude 为每个方向都从零写一份 HTML 模板
 5. **预览 + 微调**（Stage 4 — `dist/preview.html`）— 每张设计的实时 iframe 缩略图；点卡片进**微调台**，切配色 / 字体 / 相框 / 显示隐藏。微调结果自动保存到本地文件，Claude 看得到。微调台搞不定的事跟 Claude 说就行
 6. **出成品**（Stage 5 — `dist/index.html`）— 最终 gallery（PNG 缩略图），点卡片进详情页，**社交版** (1080×1440) + **印刷版** (2160×2880) 下载按钮。看完想再调？随时跳回 Stage 4
-
-## 兼容其他编程 agent
-
-所有 agent 用的都是 [快速开始](#快速开始) 里那个 release zip，区别只在于怎么让 agent 找到它：
-
-| Agent | 使用方式 |
-|---|---|
-| **Claude Code** | 解压到 `~/.claude/skills/` — 自动发现。输入 `/wedding-invitation` 或说"帮我做一张婚礼请帖"即可。 |
-| **Claude Agent SDK** | 解压到任意位置；在 SDK 配置里把 `SKILL.md` 作为 skill 加载。 |
-| Cursor / Aider / Codex CLI / Gemini CLI / 其他 | 解压到任意位置，告诉 agent："读一下 `wedding-invitation-skill/SKILL.md`，然后帮我做一张婚礼请帖"。 |
-
-部分交互用了 Claude Code 专属的 `AskUserQuestion` 工具做视觉选择；其他 agent 会自动降级为纯文本提问。
 
 ## 隐私
 
