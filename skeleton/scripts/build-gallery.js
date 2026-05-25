@@ -252,26 +252,17 @@ const GALLERY_CSS = `
   header.hero {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 28px 32px 16px;
+    padding: 22px 32px 4px;
     text-align: center;
-  }
-  h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 36px;
-    letter-spacing: 4px;
-    margin: 0 0 8px;
-    color: var(--accent);
-    text-transform: uppercase;
   }
   .tagline {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-style: italic;
     font-size: 14px;
     color: #a89878;
-    margin: 0 auto 8px;
-    max-width: 540px;
-    line-height: 1.5;
+    margin: 0 auto;
+    max-width: 640px;
+    line-height: 1.55;
   }
   main {
     max-width: 1680px;
@@ -322,17 +313,15 @@ const GALLERY_CSS = `
     letter-spacing: 0.5px;
   }
   @media (max-width: 600px) {
-    h1 { font-size: 28px; letter-spacing: 3px; }
     .grid { grid-template-columns: 1fr; max-width: 360px; gap: 18px; }
     main { padding: 20px 16px 40px; }
   }
-  /* Nav-gallery (Stage-4 index): consolidated Copy block at the bottom */
+  /* Nav-gallery (Stage-4 index): consolidated Copy block at top, above the grid */
   .nav-export {
     max-width: 720px;
-    margin: 40px auto 56px;
-    padding: 28px 24px;
+    margin: 8px auto 32px;
+    padding: 0 24px;
     text-align: center;
-    border-top: 1px dashed var(--border-soft);
   }
   .nav-export-hint {
     font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
@@ -340,7 +329,7 @@ const GALLERY_CSS = `
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.6;
-    margin: 0 0 16px;
+    margin: 0 0 14px;
   }
   .nav-export-btn {
     padding: 8px 22px;
@@ -1854,7 +1843,7 @@ export function navGalleryHtml() {
   const copyButtonCopied = COPY.tweakExportCopied;
   const noTweaksMsg = lang === 'zh' ? '我还没微调过任何设计。' : "I haven't tweaked any designs yet.";
 
-  const exportFooter = `
+  const exportHeader = `
   <section class="nav-export">
     <p class="nav-export-hint">${esc(copyHintLabel)}</p>
     <button type="button" class="nav-export-btn" id="nav-export-btn">${esc(copyButtonLabel)}</button>
@@ -1885,12 +1874,14 @@ export function navGalleryHtml() {
     title: COPY.pageTitle,
     tagline: COPY.previewTagline,
     cardsHtml: cards,
-    footerHtml: exportFooter,
+    headerExtraHtml: exportHeader,
   });
 }
 
-// Shared HTML shell used by both galleries — same header / hero / grid.
-function galleryShellHtml({ title, tagline, cardsHtml, footerHtml = '' }) {
+// Shared HTML shell used by both galleries — nav bar + tagline +
+// optional `headerExtraHtml` slot (above the grid) + grid + optional
+// `footerHtml` slot. No big h1 — the nav bar already says "婚礼请帖".
+function galleryShellHtml({ title, tagline, cardsHtml, headerExtraHtml = '', footerHtml = '' }) {
   return `<!DOCTYPE html>
 <html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
 <head>
@@ -1906,9 +1897,9 @@ function galleryShellHtml({ title, tagline, cardsHtml, footerHtml = '' }) {
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
   <header class="hero">
-    <h1>${esc(title)}</h1>
     <p class="tagline">${esc(tagline)}</p>
   </header>
+  ${headerExtraHtml}
   <main>
     <div class="grid">
       ${cardsHtml}

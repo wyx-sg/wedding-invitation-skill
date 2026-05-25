@@ -378,7 +378,12 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
        - Ask the user for a name up front: "想给这个设计起个名字吗？('Lin Shen 暖光'、'我们的第一个家' 之类)", OR
        - Suggest one after they've seen the design: "我觉得叫 'Quiet Morning' 挺合适 — 暖灰加椭圆框那种安静感. 你呢？"
 
-       Either is fine. If you defer naming, use a neutral placeholder (`my-design` / `MY DESIGN`) in `data/designs.json` and update `name_<lang>` later — re-run `npm run gallery` to refresh the gallery card label.
+       Either is fine. If you defer naming, use a neutral placeholder (`my-design` / `MY DESIGN`) in `data/designs.json` and update `name_<lang>` later — re-run `npm run preview` to refresh the gallery card label.
+
+       **Fill every `meta` field for Custom designs the same as curated ones — see Stage 4 step 4's field reference table.** In particular:
+       - `meta.category_<lang>` — pick a phrase that captures the vibe you and the user agreed on (e.g. `暖色定制 / Warm Contemporary`, `极简 / Minimal`, `中式定制 / Custom Chinese`). NOT just "定制 / Custom".
+       - `meta.inspiration_<lang>` — write the specific origin story you and the user landed on during discovery ("Inspired by the warm-orange highlights of the couple's portrait in traditional Chinese dress…"). This is the load-bearing field for Custom — it's the user's own words reflected back.
+       - `meta.motifs` — list the SPECIFIC visual elements you used (`圆形人像 · 暖橙高光 · 极简版式`). NEVER ship `完全可调` / `fully tweakable` — that signals you didn't actually design anything.
 
        The `references/blank-canvas.html` template + `references/blank-canvas-designs.json` are agent-side **structural scaffolds** (slot positions, photo wrap, optional-component class hooks). You can copy them as a starting structural skeleton, then design the aesthetic on top — palette, typography, motifs, layout details. They are NOT user-facing artifacts.
 
@@ -409,27 +414,44 @@ This is the creative stage. You design one template per aesthetic the user selec
    - Bring in user-specific requests ("add a small icon of our dog", "make the date the most prominent element") that no aesthetic prescribes
    - **When designing multiple templates in one session**: each variant must look meaningfully different from the others. Don't write 3 templates that all turn into "minimalist serif + photo + name". Push range — different aesthetic = different layout, palette, typography, motifs.
 
-4. **Update `data/designs.json`** — one entry per design, with an optional `meta` block used by the gallery page:
+4. **Update `data/designs.json`** — one entry per design. The `meta` block is what the detail / studio pages render on the right column; **fill every field with something specific**, not generic filler:
    ```json
    [
      {
        "id": "morandi-v1",
-       "name_zh": "莫兰迪柔和",
-       "name_en": "MORANDI",
+       "name_zh": "莫兰迪",
+       "name_en": "morandi",
        "template": "morandi-v1.html",
        "primary_photo": "photo-01",
        "width": 420,
        "height": 560,
        "meta": {
-         "short": "soft contemporary · muted palette",
-         "long": "Optional longer description shown in the gallery / detail page.",
+         "category_zh": "当代",
+         "category_en": "Contemporary",
+         "short": "柔和当代",
+         "long": "莫兰迪柔和色调 — 暖灰、苔绿、沙色。非对称构图，留白驱动。细线分隔加椭圆人像，整张请帖安静下来，把焦点让给照片本身。",
+         "inspiration_zh": "意大利画家 Giorgio Morandi 的静物写生 — 柔和大地色调、克制笔触、漫长的看。让现代极简和老世界的安静相遇。",
+         "inspiration_en": "Inspired by Italian painter Giorgio Morandi's still lifes — muted earth-tones, restrained brushwork, the long look. Modern minimalism meets old-world quiet.",
          "palette": ["#e8e4dc", "#7a8a6d", "#a59585", "#2c2c2c"],
          "fonts": ["Inter", "Cormorant Garamond"],
-         "motifs": "oval photo · hairline dividers"
+         "motifs": "椭圆人像 · 细线分隔 · 留白驱动 · 无装饰主义"
        }
      }
    ]
    ```
+
+   Field reference (every field is per-design — write them fresh for each aesthetic):
+
+   | Field | Renders as | Rules |
+   |---|---|---|
+   | `name_<lang>` | Big design name at top of detail/studio | Lowercase Latin (`modern-minimal`) or natural CJK (`莫兰迪`) — match the aesthetic id. |
+   | `meta.category_<lang>` | Small uppercase tag above the name (`CONTEMPORARY`) | High-level family — `当代 / Contemporary`, `中式 / Chinese`, `日式 / Japanese`, `定制 / Custom`, etc. Drives the visual hierarchy. |
+   | `meta.short` | Italic subtitle below the name | One short phrase capturing the vibe. NOT filler like "from scratch". |
+   | `meta.long` | Italic description paragraph | One or two sentences describing WHAT the design is — palette + composition + key motifs. |
+   | `meta.inspiration_<lang>` | "DESIGN INSPIRATION" block (left-bordered, italic) | One or two sentences explaining WHERE the design comes from — a movement, an artist, an era, a photo cue. The "why this fits". |
+   | `meta.palette` | Four color swatches | The actual top-level palette of the rendered design. |
+   | `meta.fonts` | Italic "Cormorant Garamond · Inter" list | The actual font families the template loads, in priority order. |
+   | `meta.motifs` | Italic motifs line | **Specific** visual vocabulary used in THIS design: `椭圆人像 · 细线分隔 · 留白驱动 · 无装饰主义` — NOT generic filler like "完全可调" / "Custom" / "fully tweakable". Even custom designs must list their actual motifs based on what you designed. |
 
    The array has 1 entry if the user selected 1 style, N if they selected N. All downstream behavior is automatic from `designs.json.length` — no mode flag needed.
 
@@ -494,7 +516,7 @@ This is the creative stage. You design one template per aesthetic the user selec
 
 7. **Iterate.** This is where most of Stage 4's time goes. Two channels, complementary:
 
-   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. State is **auto-synced** to `data/tweak-state.json` while `npm run pick` is running (so you can read what the user picked). Studio state ALSO lives in `localStorage` as a fallback. The studio's "Copy" button at the bottom produces a human-readable summary the user can paste into chat if the auto-sync isn't reaching you.
+   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. State is **auto-synced** to `data/tweak-state.json` (you `Read` that file to see what they picked). Studio state ALSO lives in `localStorage` as a fallback. The **navigation gallery (`dist/index.html`)** carries a single "Copy tweaks" button at the top that aggregates every design's tweak state into one human-readable paste — that's the user's manual escape if the auto-sync doesn't reach you for any reason.
 
      Studio state is exploration, NOT a permanent change to the template. **To lock in a studio choice** (so the PNG matches when you eventually run Stage 5), edit the template's default CSS variables / class hooks, then re-run `npm run preview`.
 
@@ -558,6 +580,7 @@ PNGs go wherever the user saves them — outside the skill's scope.
 - ❌ Suggesting upload to any cloud / online editor / SaaS
 - ❌ **Generating multiple similar designs in one session** — when the user selects N aesthetics in Stage 3, each variant must look meaningfully different (different layout, palette, motifs); don't ship 3 minor variants of the same template
 - ❌ **Including a Custom card in the picker** — Custom is a chat-only reply ("回复 Custom"); putting it in the picker biases users to skip the curated set
+- ❌ **Filler `meta` fields** — `meta.motifs = "完全可调"` / `"Custom"` / `"fully tweakable"` says you didn't actually design anything. Every field (category, short, long, inspiration, motifs) must be specific to THIS design — see Stage 4 step 4
 - ❌ Hardcoding any user data in a template (always `{{path}}` placeholders)
 - ❌ Continuing past Stage 1 without confirmed photos on disk
 - ❌ Using bash-only commands when the user is on Windows
