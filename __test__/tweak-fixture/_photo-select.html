@@ -29,8 +29,9 @@
   .summary strong { font-family: 'Cormorant Garamond', serif; font-style: italic; color: #d4b896; font-weight: 400; font-size: 16px; margin: 0 6px; letter-spacing: 1px; }
   .summary.empty { color: #5a4a36; }
   .summary .hint { font-size: 11px; color: #5a4a36; margin-left: 12px; }
-  .copy-btn { display: none; margin-left: 8px; padding: 4px 12px; background: transparent; border: 1px solid #b8956a; border-radius: 999px; color: #d4b896; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background .18s, color .18s; }
-  .copy-btn:hover { background: rgba(212,184,150,0.12); }
+  .summary-btn { margin-left: 8px; padding: 4px 12px; background: transparent; border: 1px solid #b8956a; border-radius: 999px; color: #d4b896; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background .18s, color .18s; }
+  .summary-btn:hover { background: rgba(212,184,150,0.12); }
+  .copy-btn { display: none; }
   .copy-btn.copied { background: #d4b896; color: #0a0907; border-color: #d4b896; }
   .summary:not(.empty) .copy-btn { display: inline-block; }
   .back-to-agent { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 12px; color: #5a4a36; max-width: 540px; margin: 0 auto 28px; line-height: 1.6; }
@@ -59,7 +60,8 @@
   </div>
   <div class="summary empty" id="summary">
     <span class="picks-area">未选 · 点击照片选中</span>
-    <button type="button" class="copy-btn" id="copy-btn">复制</button>
+    <button type="button" class="summary-btn select-all-btn" id="select-all-btn">全选</button>
+    <button type="button" class="summary-btn copy-btn" id="copy-btn">复制</button>
   </div>
   <script>
     (function () {
@@ -67,6 +69,7 @@
       var grid = document.getElementById('grid');
       var summary = document.getElementById('summary');
       var copyBtn = document.getElementById('copy-btn');
+      var selectAllBtn = document.getElementById('select-all-btn');
       var currentMessage = '';
       var serverBacked = location.protocol === 'http:' || location.protocol === 'https:';
       function postState(picks) {
@@ -78,6 +81,7 @@
         }).catch(function () { /* server gone — Copy button still works */ });
       }
       function refresh() {
+        var allCards = grid.querySelectorAll('.card');
         var picks = Array.from(grid.querySelectorAll('.card.selected')).map(function (c) { return c.getAttribute('data-id'); });
         var picksEl = summary.querySelector('.picks-area');
         if (picks.length === 0) {
@@ -91,12 +95,22 @@
         }
         copyBtn.classList.remove('copied');
         copyBtn.textContent = '复制';
+        selectAllBtn.textContent = (picks.length === allCards.length && allCards.length > 0) ? '取消全选' : '全选';
         postState(picks);
       }
       grid.addEventListener('click', function (e) {
         var card = e.target.closest('.card');
         if (!card) return;
         card.classList.toggle('selected');
+        refresh();
+      });
+      selectAllBtn.addEventListener('click', function () {
+        var allCards = grid.querySelectorAll('.card');
+        var anyUnselected = Array.from(allCards).some(function (c) { return !c.classList.contains('selected'); });
+        allCards.forEach(function (c) {
+          if (anyUnselected) c.classList.add('selected');
+          else c.classList.remove('selected');
+        });
         refresh();
       });
       if (serverBacked) {

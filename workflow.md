@@ -109,19 +109,18 @@ The picker page detects its own protocol — `http://` triggers live sync; `file
 
    Confirm photo count back to the user. Don't proceed until `photos/` has at least one image.
 
-4. **If 5+ photos** — discuss selection **before** moving on. The invitation features one primary photo (sometimes one extra). If the user dropped a whole album in, you must NOT silently pick one. Instead:
+4. **Photo selection — always**, regardless of how many photos the user dropped in. Even with 2 photos, the user should confirm which one is primary; even with 30, they should be the one to pick. Never silently choose for them.
 
    - Read all the photos with the Read tool (they're images — Claude can see them).
-   - Surface what you see: "I see N photos. Some are portrait pose, some are outdoor candid, some are full-length. Which 1-3 would you like to use on the invitation?"
-   - Build a Tier-1 visual preview (`_photo-select.html`) with all photos as numbered cards. The user clicks to select (multi-select supported), then clicks a **Copy** button in the bottom summary bar — that writes a chat-ready sentence like `我选了 p01、p03` (or `I picked p01, p03` for en) to the clipboard. The user pastes it back into chat. The page MUST include:
-     - A centered **two-line header at the top**: brand (婚礼请帖 / Wedding Invitation) on top, "Made with wedding-invitation-skill" / "由 wedding-invitation-skill 设计制作" small below (localized). Linked to https://github.com/wyx-sg/wedding-invitation-skill.
-     - A short reminder note: pick → click Copy → paste back into chat (localized). Use a generic phrase like "back to chat" / "回到对话窗口" rather than naming a specific agent host (Claude Code, Cursor, etc.) — the skill is host-agnostic.
-     - A sticky bottom summary bar with: current selection (left), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence to clipboard via `navigator.clipboard.writeText` (with `document.execCommand('copy')` fallback).
+   - Surface what you see: "I see N photos. Some are portrait pose, some are outdoor candid, some are full-length. Tap the ones you'd like to use."
+   - Build a Tier-1 visual preview (`_photo-select.html`) with every photo as a numbered card. The user clicks to toggle (multi-select). The page MUST include:
+     - The unified centered two-line header (brand + "Made with wedding-invitation-skill" — localized; see "Picker pages" section above).
+     - A short reminder note about the chat-back flow (localized; generic phrase like "back to chat" / "回到对话窗口" — not a specific agent host).
+     - A sticky bottom summary bar with: current selection, a **全选 / Select All** toggle button (clicks the whole grid into the selected state; clicks again to deselect all), and a **复制 / Copy** button that writes a chat-ready sentence to clipboard.
+   - Loaded via `http://localhost:8765/_photo-select.html` (after `npm run pick`), the page auto-syncs selections to `data/picker-state.json` — Read that file to see the user's picks. If the user is on `file://`, the **Copy** button + chat-paste is the fallback.
+   - The **first selected card** becomes `primary_photo` in `designs.json`; the rest are kept as alternates (the detail / studio pages' photo-switcher lets the user swap to any of them later).
 
-   When telling the user in chat: "Open `file://…/_photo-select.html`, click the photos you like, hit **Copy** in the bottom bar, then paste back here. I'll take it from there." (Localized.) Don't proceed until the user pastes their picks.
-   - Wait for an explicit selection. Note their primary choice — that goes into `designs.json` as `primary_photo`. Keep the rest copied in `photos/` so the gallery's photo-switcher can offer them.
-
-   Skip this step if the user gave you ≤4 photos — assume they've already curated.
+   Don't move on until the user has made an explicit selection. "Select all" is fine if they want every photo available as a switchable alternate — but they still have to click it.
 
 ## Stage 2 — Language and couple details
 
@@ -140,12 +139,9 @@ This is the **first** content decision. Don't assume Chinese (or any language).
    - Bilingual zh+en → `["zh", "en"]` (primary first)
    - Other → use ISO 639-1 codes: `["es"]`, `["ja"]`, `["ko"]`, `["fr"]`, etc.
 
-3. **Pick font CDN** (Tier 2 or 3). This is a one-line question that determines which Google Fonts mirror the rendered HTML loads from:
-   > "Where will you preview this invitation from?"
-   > - mainland China (use `fonts.font.im` — the CN mirror)
-   > - elsewhere (use `fonts.googleapis.com` — official, faster)
-
-   Write the answer into `data/wedding.json` as `font_cdn`: `"fontim"` for CN, `"googleapis"` for everywhere else. Default to `"googleapis"` if the user isn't sure.
+3. **Pick the font CDN silently** — don't ask. Set `data/wedding.json` `font_cdn` based on what you already know about the user's environment:
+   - Default to `"googleapis"` (official Google Fonts; fast almost everywhere).
+   - Switch to `"fontim"` (a Chinese mirror) only if you have clear signal the user is in mainland China — e.g. they explicitly mentioned location, their venue is in mainland China, or they reported Google Fonts being unreachable. When in doubt, stick with `"googleapis"`; you can always swap and re-run `npm run build` later.
 
 4. **Gather the seed fields** — ask one at a time, in the language(s) chosen:
 
@@ -360,15 +356,33 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
      - Tell the user to refresh their browser.
      - Repeat as needed. Once all 14 aesthetics are exhausted, tell the user there are no more directions to show.
 
-   - **User replied "Custom" / "自定义" / "I want to design from scratch" / similar** (in chat, not via picker):
-     - DO NOT design a fresh aesthetic in Stage 4. Instead:
-       a. **Naming**. Don't hardcode "自定义设计" / "Custom design" as the name — it makes the gallery feel templated. Two options, your call based on the conversation:
-          - **Ask the user**: "想给这个设计起个名字吗？比如 'Lin Shen 暖光'、'我们的第一个家' 之类的，留空我就先用 my-design。"
-          - **Suggest one after they tweak**: leave the initial `name_*` as something neutral like `my-design`, and after the user spends time in the studio settling on a palette / font / vibe, propose a name that captures that vibe ("我觉得叫 'Quiet Morning' 挺合适？暖灰加椭圆框那种安静感"). The user can accept or pick their own.
-       b. Copy `references/blank-canvas.html` into `templates/<chosen-id>.html` (replace placeholder field names — e.g. `groom_zh` → `groom_es` — to match the active languages). Pick `<chosen-id>` as a slug derived from the name (`lin-shen-warm-light`, `my-design`, etc.). The id only needs to be filesystem-safe; the user-facing label is `name_<lang>`.
-       c. Configure `data/designs.json` with the contents of `references/blank-canvas-designs.json` (adjusted: set `id`, `primary_photo`, `name_<lang>` for each active language, ensure the `template` filename matches what you wrote).
-     - The tweak page (`dist/<id>-studio.html`, opened from the gallery) IS the user's design surface — they pick colors, fonts, frame, components there. Move to Stage 5 to render and open the gallery.
-     - If you chose option (b), come back to rename `name_*` in `data/designs.json` once the user has tweaked the design, then re-run `npm run gallery` to refresh the gallery card label. No need to rebuild the template HTML.
+   - **User replied "Custom" / "自定义" / equivalent in their language** (in chat, not via picker):
+
+     This means: "None of the curated aesthetics fit. Let me **tell you** what I want instead." Do NOT immediately write any template — first understand. The Custom flow has three sub-phases:
+
+     **(a) Discovery dialogue.** Ask 3-5 short questions in the user's primary language, one or two at a time. Aim to surface:
+       - **Vibe / feeling** — intimate, festive, calm, formal, modern, retro, dramatic, etc.
+       - **Palette direction** — warm/cool, muted/saturated, specific colors they love OR explicitly don't want
+       - **Cultural or personal touches** — heritage, hometown, season, hobby, anything from their relationship that should show up
+       - **Photo treatment** — frame shape, crop tightness, whether photo is hero or supporting
+       - **References** — sites / brands / cards they've seen and loved
+       - **Anti-references** — what they specifically don't want (e.g. "no gold", "no script fonts", "definitely not red")
+
+       After each round, **reflect back** what you heard so the user can correct: "OK so — 暖灰背景 + 椭圆照片 + 大量留白 + 一点点莫兰迪绿点缀, 不要传统中式元素 — 对吗？"
+
+       Loop until the user confirms you've captured their vision. Don't rush. The user picked Custom precisely because the curated set didn't fit; surfacing understanding is the whole point.
+
+     **(b) Generate candidates.** Once aligned, design **N candidates** in Stage 4 — but unlike the curated flow (one template per different aesthetic), here all N candidates are **variations on the SAME stated vision**. Same palette family, same vibe, same overall direction; different layouts, motif executions, typographic emphasis. Aim for 3.
+
+       Naming: don't hardcode "自定义设计" / "Custom design" — it makes the gallery feel templated. Either:
+       - Ask the user for a name up front: "想给这个设计起个名字吗？('Lin Shen 暖光'、'我们的第一个家' 之类)", OR
+       - Suggest one after they've seen the design: "我觉得叫 'Quiet Morning' 挺合适 — 暖灰加椭圆框那种安静感. 你呢？"
+
+       Either is fine. If you defer naming, use a neutral placeholder (`my-design` / `MY DESIGN`) in `data/designs.json` and update `name_<lang>` later — re-run `npm run gallery` to refresh the gallery card label.
+
+       The `references/blank-canvas.html` template + `references/blank-canvas-designs.json` are agent-side **structural scaffolds** (slot positions, photo wrap, optional-component class hooks). You can copy them as a starting structural skeleton, then design the aesthetic on top — palette, typography, motifs, layout details. They are NOT user-facing artifacts.
+
+     **(c) Pick → optional tweak.** The user lands on the gallery and picks their favorite (or favorites) — same as the curated flow. **Tweaking is optional**: if the user is happy with what you delivered, they download and done. If they want to fine-tune, point them to the studio (`<id>-studio.html`) — color schemes, fonts, frame, component toggles. No special "Custom drops user into studio first" path; same downstream as any other design.
 
 **You are designing, not picking.** The user picked a direction (`morandi`, `art-deco`, etc.). In Stage 4 you will design a fresh template in their language, with their actual data, adapting the palette/typography to their photo and preferences — using `design-principles.md` as your vocabulary, not as a fixed recipe.
 
@@ -463,68 +477,58 @@ This is the creative stage. You design one template per aesthetic the user selec
 
    **Localization**: every prose field uses `<field>_<lang>` keyed off the primary language in `data/wedding.json` → `languages[0]`. For a Spanish card, write `name_es`, `label_es`. The renderer falls back: `<field>_<lang>` → `<field>_en` → bare `<field>` → a sane default (`#1`, the design id, etc.). Always provide `<field>_en` alongside the localized version as a sanity fallback.
 
-## Stage 5 — Build, render, open gallery
+6. **Build everything and let the user explore + tweak.** This is part of Stage 4 — the design is malleable here; the user explores it, you iterate; we're not yet shipping.
 
-One bundled stage. Build the HTML, render the PNGs, build the gallery, do a photo-crop review, open it for the user.
-
-1. **Build everything**:
    ```bash
    npm run build && npm run render && npm run gallery
    ```
 
-   - `build.js` renders every design in `data/designs.json` → `dist/<id>.html` (raw invitation HTML, used as iframe source by the gallery)
-   - `render.js` shells out to Chrome / Chromium / Edge and outputs **two PNG sizes per design**:
-     - `dist/png/social/<id>.png` — 1080×1440 (for messaging, email, social)
-     - `dist/png/print/<id>.png`  — 2160×2880 at 300 DPI (for physical printing)
-   - `build-gallery.js` reads `designs.json` and writes:
-     - **1 design** (`designs.length === 1`): `dist/index.html` IS the detail page (iframe preview + meta + two download buttons + tweak panel if `tweak_options` declared)
-     - **N designs** (`designs.length > 1`): `dist/index.html` is a gallery grid; each design also gets `dist/<id>-page.html` (detail) and `dist/<id>-studio.html` (tweak)
+   - `build.js` → `dist/<id>.html` (raw invitation HTML used as the iframe source)
+   - `render.js` → PNGs in `dist/png/{social,print}/` (used by the detail page's download buttons)
+   - `build-gallery.js` → `dist/index.html` (gallery landing), `dist/<id>-page.html` (detail), `dist/<id>-studio.html` (tweak studio) — one of each, always, regardless of design count
 
-   If Chrome isn't found, `render.js` prints install instructions for the user's OS.
+   **Photo-crop review (mandatory before showing the user):** Read `dist/png/social/<id>.png` with the Read tool. Check that no head / forehead / chin is clipped by the photo frame, both people in a couple shot are visible, and important elements (hands with rings, bouquet) are inside the frame. If the crop is wrong, fix it before handing back. Common fixes:
+   - `object-position: center 12%` → `8%` / `4%` to keep heads in frame
+   - Switch frame shape: circle → oval → arch → rectangle (each clips less)
+   - Widen `.photo-wrap`: 240px → 280px → 320px
+   - Pick a different primary photo if the current one fights the layout
 
-2. **Mandatory photo-crop review.** BEFORE opening the gallery for the user, **read the rendered social PNG yourself** (`dist/png/social/<id>.png` — Read tool, it's an image) and check:
+   After any fix, rerun the build command. Open `dist/index.html` for the user (`open` / `xdg-open` / `start`).
 
-   - No head, forehead, chin, or face is cropped by `.photo-wrap` border-radius / shape.
-   - Both people in a couple shot are visible — no one is half-cut by the frame edge.
-   - Important elements (hands holding rings, bouquet, etc.) are inside the frame.
+7. **Iterate.** This is where most of Stage 4's time goes. Two channels, complementary:
 
-   If the crop is wrong, fix it BEFORE handing back to the user. Don't ship a card with a cropped forehead and let the user discover it. Common fixes:
+   - **Studio panel (`<id>-studio.html`)** — for the user. Live swaps of color scheme / fonts / photo frame / optional components, no rebuild. Point the user to the URL when they want to explore palette + typography variations themselves. Studio state lives in `localStorage` — it's exploration, NOT a permanent change to the template. If you want to lock in a studio choice as the design's new default, edit the template's CSS variables and rerun the build command so the PNG matches.
+   - **Chat with you** — for everything the studio can't do. "字大点", "swap the photo", "rewrite the layout, the date floats too far from the names", "add a small dog icon by the venue line". You edit the template (or `data/designs.json`), rerun `npm run build && npm run render && npm run gallery`, ask the user to refresh.
 
-   - Adjust `object-position: center 12%` — lower the percentage (4%, 8%) to keep heads in frame, or raise (20%, 30%) for a face-centered crop.
-   - Switch the frame shape: circle → oval (taller) → arch (rounded top, square bottom) → rectangle. Each one clips less of the subject's head.
-   - Widen the photo-wrap: 240px → 280px → 320px so the photo isn't squeezed.
-   - If the photo is full-length and the frame is small + tight, switch to a layout that gives the photo more vertical room, or pick a different photo.
+   Feedback → action map:
 
-   Repeat `npm run build && npm run render && npm run gallery` after any fix.
-
-3. **Open the gallery**:
-   - macOS: `open dist/index.html`
-   - Linux: `xdg-open dist/index.html`
-   - Windows: `start dist/index.html`
-
-4. **The user takes it from there.**
-   - **Tweak panel** — every design (single or multi) ships with `<id>-studio.html` where the user can swap color scheme, fonts, photo frame, and toggle optional components. No rebuild needed; changes apply live and persist via `localStorage`.
-   - **Download** — Social and Print PNG buttons on the detail page write to wherever the browser saves downloads.
-   - **Iterate via chat for things the tweak panel can't do** — e.g. "make the date numerals bigger", "swap the photo", "rewrite the layout, the date is too far from the names". Update the template, re-run `npm run build && npm run render && npm run gallery`, tell the user to refresh.
-
-   Feedback patterns and what they map to:
-
-   | User says | You change |
+   | User says | You do |
    |---|---|
-   | "I want to try a different color" | Point them to the **tweak panel** (`<id>-studio.html`) — no rebuild |
-   | "Hide the lunar date" | **Tweak panel** → uncheck "Lunar date" (or set `default: false` in `designs.json` if it should be off forever) |
-   | "Font too small" | bump `font-size` 2-4 px on the relevant rule in the template + rebuild |
-   | "Color too dark" | lighten the hex / drop opacity in the template + rebuild |
-   | "Head is cropped" | `object-position: center 12%` → `8%` or `4%` + rebuild |
-   | "Make the frame square instead of oval" | Either point to tweak panel's frame switcher (if declared) or edit `.photo-wrap { border-radius: 50% → 4px }` + rebuild |
-   | "Swap the photo" | edit `data/designs.json` `primary_photo` + rebuild |
-   | "I don't like this layout" | re-read `design-principles.md`; rewrite the template (don't try to patch a bad layout); rebuild |
+   | "Different color / font / frame" | Studio panel — no rebuild |
+   | "Hide lunar date" / "hide tagline" | Studio panel toggle (or flip `default: false` in `tweak_options.components`) |
+   | "Lock in the cool palette I picked in studio" | Edit template's default `--card-bg` etc. + rebuild + render |
+   | "Font too small" / "color too dark" | Edit template + rebuild |
+   | "Head is cropped" | `object-position` % + rebuild |
+   | "Swap the photo" | `data/designs.json` `primary_photo` + rebuild |
+   | "Add an icon / motif element" | Template SVG / glyph + rebuild |
+   | "Hate the layout" | Rewrite the template from scratch (don't patch); rerun build |
 
-   For visual choices ("square / round / oval photo frame?"), prefer surfacing the tweak panel's frame switcher — it's faster than rebuilding.
+   Loop until the user is satisfied with one (or more) of the designs.
 
-   **If the user picked multiple designs and now wants to refine just one** — edit that one design's template (or its `tweak_options`), rebuild, tell the user to refresh. The other designs are unaffected.
+## Stage 5 — Deliver
 
-That's the deliverable. PNGs are saved via browser download into the user's chosen location, then sent (messaging app, email, AirDrop, print) — outside the skill's scope.
+The design is locked in. This stage is thin — barely "a stage" — but it draws a clear line: Stage 4 is exploration; Stage 5 is "you're done."
+
+1. **Final build to make sure the PNG matches the latest template state.** If the user locked in any tweaks via chat during Stage 4, the template already changed and the PNG was rebuilt. But run one more time to be safe:
+   ```bash
+   npm run build && npm run render && npm run gallery
+   ```
+
+2. **Open the gallery one more time** (or just remind the user it's already open). Point them at the **download buttons** on the detail page — Social (1080×1440, for messaging / email / social posts) and Print (2160×2880 @ 300 DPI, for physical cards). The browser's native download UI handles where to save.
+
+3. **Stop.** Don't keep offering more tweaks. The user can always come back and reopen the iteration loop with a follow-up message, but until they do, Stage 5 is done.
+
+PNGs go wherever the user saved them — outside the skill's scope.
 
 ## Anti-patterns
 

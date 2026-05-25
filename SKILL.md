@@ -26,7 +26,7 @@ Your job:
 
 **The `examples/` directory is OFF LIMITS for reading.** It is a frozen showcase of reference invitations used in the README gallery — each in its own native cultural language. Reading those files is forbidden: they bias you toward copying a specific design, and their language may not match the user's chosen language. Use `design-principles.md` as your sole visual reference. **Do not show `examples/thumbnails/*.png` to the user during the Stage 3 style picker either** — the user fixates on "I want THAT one" and the agent gets pulled toward literal copy. Instead, present aesthetic directions as **mood-board cards** (palette swatches + type sample + spirit description). See `workflow.md` Stage 3 for the picker template.
 
-The `references/` directory IS readable at runtime — it ships agent-copyable starting points (a blank-canvas template + a maximal tweak_options snippet) used when the user picks Custom in Stage 3. Unlike `examples/`, these are not finished designs to copy — they're skeletons to fill in with the user's data.
+The `references/` directory IS readable at runtime — it ships agent-side **structural scaffolds** (a blank-canvas template + a maximal tweak_options snippet). When the user picks Custom in Stage 3 (a chat-only escape hatch — see workflow.md), the agent runs a discovery dialogue to understand their vision, then designs candidate templates from scratch; the blank-canvas scaffold is an OPTIONAL structural starting point the agent can copy and design on top of. Unlike `examples/`, these are not finished designs to copy — they're skeletons.
 
 ### Repository layout note (for skill maintainers)
 
@@ -118,8 +118,8 @@ examples/                 ← skill-author source of truth; DO NOT READ at runti
   thumbnails/*.png          (rendered thumbnails for README + inspiration display)
   photos/*.jpg              (per-template AI-generated couple photos)
 references/                 ← agent-copyable starting points (runtime-readable, unlike examples/)
-  blank-canvas.html           (neutral template used when user picks Custom in Stage 3)
-  blank-canvas-designs.json   (maximal tweak_options snippet for the Custom design entry)
+  blank-canvas.html           (neutral structural scaffold — optional starting skeleton for Custom flow)
+  blank-canvas-designs.json   (maximal tweak_options snippet to crib for any design entry)
 scripts/                  ← skill-author build tools (NOT used at user runtime)
   build-pages.js            (regenerates docs/ from examples/ — run before deploying GH Pages)
   build-thumbnails.js       (renders examples/*.html → examples/thumbnails/*.png at 2x)

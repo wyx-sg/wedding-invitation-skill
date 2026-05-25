@@ -85,26 +85,25 @@ The 20 examples in the image above span world cultures and contemporary aestheti
 - **Contemporary** — `morandi`, `modern-minimal`, `mediterranean`, `black-gold`
 - **Themed** — `retro-poster`, `vintage-stars`
 
-Whatever mode you pick, each invitation is custom-designed from scratch — not pulled from a template library.
+Each invitation is custom-designed from scratch — not pulled from a template library. Pick one direction or several (multi-select); whatever you pick becomes its own design in the gallery.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[💬 You talk] --> B[language · names<br/>date · venue · photos]
-    B --> M{mode?}
-    M -->|Single| S[Claude designs 1 template<br/>· iterate with feedback]
-    M -->|Multi N| G[Claude generates N variants<br/>· each a different aesthetic]
-    S --> R[Render PNG · 2 sizes<br/>Social 1080 · Print 2160]
-    G --> R
-    R --> O[Local gallery opens in browser<br/>📥 Download buttons]
+    A[💬 Talk: language<br/>names · date · venue] --> P[📷 Photo picker<br/>tap to select]
+    P --> S[🎨 Style picker<br/>5 best · multi-select<br/>or Custom in chat]
+    S --> D[Design: Claude writes<br/>one HTML template per pick]
+    D --> T[🛠 Studio: live tweak<br/>colors · fonts · frame<br/>+ chat iteration]
+    T --> O[📥 dist/index.html<br/>download Social / Print PNG]
 ```
 
-1. **Talk** — Claude asks your language(s), names, date, venue
-2. **Pick style direction(s)** — Claude curates 5 aesthetic candidates that fit your photos and shows them in your browser; pick one or several (multi-select)
-3. **Design** — Claude writes a fresh HTML template per direction you picked
-4. **Open gallery** — `dist/index.html` opens with each design as a card; click any to view, download (Social 1080×1440 / Print 2160×2880), or tweak (live color/font/frame switchers)
-5. **Iterate via chat** — for things the tweak panel can't do ("bigger font", "swap the photo", "rewrite layout") tell Claude; rebuilds + refresh
+1. **Talk** — language(s), names, date, venue, photos
+2. **Photo picker** — Claude shows every photo as a card; you tap to select (or hit "全选" / "Select All"). The first selected becomes the primary; the rest are alternates
+3. **Style picker** — Claude looks at your photos and curates 5 best-matching aesthetic directions; you pick one or several (multi-select). Reply "show me others" for a fresh batch, or "Custom" / "自定义" to skip the curated set and design from chat
+4. **Design** — Claude writes a fresh HTML template per direction you picked
+5. **Studio + iterate** — `dist/index.html` opens with each design as a card; click any to view + download (Social 1080×1440 / Print 2160×2880), or open the studio for live color/font/frame/component swaps. Tell Claude in chat for anything the studio can't do
+6. **Download** — Social or Print PNG straight from the detail page
 
 ## Use with other coding agents
 
