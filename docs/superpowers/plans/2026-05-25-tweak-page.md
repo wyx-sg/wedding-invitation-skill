@@ -1644,7 +1644,40 @@ In `zh`:
     tweakSavePromptLabel: '给这个设计起个名字',
     tweakSaveExportLabel: '导出 JSON',
     tweakSaveInfoLabel: '已保存到本地 · 刷新后仍在',
+    tweakContributeLabel: '设计得不错？欢迎给项目提 PR，加进 skill 让更多人用 →',
+    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
 ```
+
+And the equivalent English:
+```js
+    tweakContributeLabel: 'Love this design? Open a PR to add it to the skill — share with others →',
+    tweakContributeHref: 'https://github.com/wyx-sg/skill-wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
+```
+
+After a successful Save (Task 15 Step 3 / 4), append a small "contribute back" CTA line under `.tweak-save-info`:
+
+```html
+<a class="tweak-contribute" href="${esc(COPY.tweakContributeHref)}" target="_blank" rel="noopener">
+  ${esc(COPY.tweakContributeLabel)}
+</a>
+```
+
+CSS (added in Task 14's CSS pass):
+```css
+  .tweak-contribute {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    text-align: center;
+    border-top: 1px dashed var(--border-soft);
+    padding-top: 8px;
+    margin-top: 4px;
+    transition: color 0.18s;
+  }
+  .tweak-contribute:hover { color: var(--accent-warm); }
+```
+
+Also update README.md and README.zh-CN.md with a "Contributing your design" section pointing at the Custom flow + the PR-back path. Include the GitHub URL.
 
 - [ ] **Step 4: Wire free-form controls to postMessage in the IIFE**
 
