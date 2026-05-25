@@ -1,6 +1,6 @@
 ---
 name: wedding-invitation
-description: Use this skill when the user wants to design and generate a wedding invitation card in any language. The skill drives a conversational workflow — you gather the couple's info and style preferences, design a bespoke HTML template from scratch (no template selection), render it locally with headless Chrome, and produce a print-ready PNG. All data stays on the user's machine; no cloud, no signups, no data leaves.
+description: Use this skill when the user wants to design and generate a wedding invitation card in any language. The skill drives a conversational workflow — you gather the couple's info and style preferences, design a bespoke HTML template from scratch (no template selection), render it locally with headless Chrome, produce a print-ready PNG, and include a live tweak panel so the user can adjust colors, fonts, frames, and optional components without rebuilding. All data stays on the user's machine; no cloud, no signups, no data leaves.
 ---
 
 # Wedding Invitation Skill
@@ -129,7 +129,7 @@ A directory like `~/my-wedding/` containing:
 - `dist/png/social/<design-id>.png` — 1080×1440, for messaging / email / social media
 - `dist/png/print/<design-id>.png` — 2160×2880 at 300 DPI, for printing physical cards
 - `dist/index.html` — local gallery page that opens in the user's browser:
-  - **Single mode** (1 design): a detail page with iframe preview, palette/typography meta, and two download buttons
-  - **Multi mode** (N designs): a grid of all N + per-design detail pages with prev/next/back
+  - **Single mode** (1 design): a detail page with iframe preview, palette/typography meta, two download buttons, and a tweak panel (color schemes, fonts, frame, optional components — live, no rebuild)
+  - **Multi mode** (N designs): a grid of all N + per-design detail pages with prev/next/back (each with the same tweak panel)
 
 The user opens `dist/index.html`, sees their invitation(s) in a polished page, and downloads the size they need. They can also continue iterating with you to refine.
