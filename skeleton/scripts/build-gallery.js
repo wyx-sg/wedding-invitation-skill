@@ -116,6 +116,8 @@ const COPY = {
     tweakBodySub: 'Body',
     poweredByLabel: 'Made with',
     poweredBySuffix: '',
+    adjustLabel: 'Adjust this design',
+    backToDetailLabel: 'Back to detail',
   },
   zh: {
     brand: '婚礼请帖',
@@ -146,6 +148,8 @@ const COPY = {
     tweakBodySub: '正文字体',
     poweredByLabel: '由',
     poweredBySuffix: ' 设计制作',
+    adjustLabel: '微调此设计',
+    backToDetailLabel: '返回详情',
   }
 }[lang];
 
@@ -530,6 +534,165 @@ const DETAIL_CSS = `
     overflow-wrap: anywhere;
     margin: 0 0 20px;
   }
+  .specs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .spec-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .spec-value {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+  .palette-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .fonts-row {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .adjust-row {
+    display: flex;
+    justify-content: stretch;
+  }
+  .adjust-btn {
+    flex: 1;
+    text-align: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(212,184,150,0.12), rgba(184,149,106,0.04));
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.12s;
+  }
+  .adjust-btn:hover {
+    background: linear-gradient(135deg, rgba(212,184,150,0.22), rgba(184,149,106,0.10));
+    transform: translateY(-1px);
+  }
+  .download-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .download-group-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .download-row {
+    display: flex;
+    gap: 12px;
+  }
+  .download-cta {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .download-cta:hover {
+    border-color: var(--accent-warm);
+    background: #1f1a14;
+    transform: translateY(-2px);
+  }
+  .download-icon {
+    font-size: 20px;
+    color: var(--accent);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .download-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .download-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .download-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+  .pager {
+    display: flex;
+    gap: 12px;
+    padding-top: 4px;
+  }
+  .pager .step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .pager .step:hover {
+    border-color: var(--accent-warm);
+    color: var(--text);
+    background: #1f1a14;
+  }
+  .pager .step.next {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .pager .step-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+  }
+  .pager .step-name {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: inherit;
+  }
   @media (max-width: 960px) {
     main.detail {
       flex-direction: column;
@@ -541,6 +704,8 @@ const DETAIL_CSS = `
     .preview { width: 100%; }
     .detail-info { flex: 0 0 auto; max-width: 560px; width: 100%; gap: 20px; }
     .style-name { font-size: 32px; letter-spacing: 1px; }
+    .download-row { flex-direction: column; }
+    .pager { flex-direction: row; }
   }
   .tweak-panel {
     display: flex;
@@ -656,29 +821,22 @@ const DETAIL_CSS = `
   }
 `;
 
-// --- detail page ---
+// --- shared helpers ---
 
-function detailHtml(design, index, isMulti) {
-  const meta = design.meta || {};
-  // Hex color is a controlled value; light-validate to avoid CSS injection.
-  const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
+// Localized field lookup: tries <field>_<lang>, then <field>_en, then bare <field>,
+// then the provided fallback. Supports any language code in wedding.json languages[0].
+function localizedName(obj, fields, fallback) {
+  if (!obj) return fallback;
+  const primaryKey = fields + '_' + lang;
+  const enKey = fields + '_en';
+  if (obj[primaryKey] != null && obj[primaryKey] !== '') return obj[primaryKey];
+  if (obj[enKey] != null && obj[enKey] !== '') return obj[enKey];
+  if (obj[fields] != null && obj[fields] !== '') return obj[fields];
+  return fallback;
+}
 
-  // Localized field lookup: tries <field>_<lang>, then <field>_en, then bare <field>,
-  // then the provided fallback. Supports any language code in wedding.json languages[0].
-  function localizedName(obj, fields, fallback) {
-    if (!obj) return fallback;
-    const primaryKey = fields + '_' + lang;
-    const enKey = fields + '_en';
-    if (obj[primaryKey] != null && obj[primaryKey] !== '') return obj[primaryKey];
-    if (obj[enKey] != null && obj[enKey] !== '') return obj[enKey];
-    if (obj[fields] != null && obj[fields] !== '') return obj[fields];
-    return fallback;
-  }
-  const tplH = design.height || 560;
-  const tplW = design.width || 420;
-
-  // Photo switcher: render only when there are 2+ photos to switch between.
-  // Single-photo projects don't need the strip.
+// Shared photo switcher + iframe scale compute IIFE builders
+function buildSwitcherHtml(design) {
   const primaryPhotoName = design.primary_photo;
   const photoThumbs = availablePhotos.map(file => {
     const photoId = file.replace(PHOTO_RE, '');
@@ -686,18 +844,16 @@ function detailHtml(design, index, isMulti) {
     const cls = isActive ? ' class="active"' : '';
     return `<button type="button"${cls} data-photo-url="photos/${esc(file)}" data-photo-id="${esc(photoId)}" aria-label="${esc(COPY.photoSwitcherAria(photoId))}"><img src="photos/${esc(file)}" alt="" loading="lazy"></button>`;
   }).join('');
-  const switcherHtml = availablePhotos.length >= 2 ? `
+  return availablePhotos.length >= 2 ? `
     <div class="photo-switcher">
       <span class="photo-switcher-label">${esc(COPY.photoSwitcherLabel)}</span>
       <div class="photo-switcher-thumbs" id="photo-switcher-thumbs">${photoThumbs}</div>
     </div>` : '';
+}
 
-  const designName = localizedName(design, 'name', design.id);
-
-  // Tweak panel — render only when design declares tweak_options.
-  // Each section is omitted if the design didn't declare it.
+function buildTweakParts(design) {
+  const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
   const tweak = design.tweak_options || null;
-  const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
   let tweakHtml = '';
   let tweakConfigJson = 'null';
   if (tweak) {
@@ -774,7 +930,7 @@ function detailHtml(design, index, isMulti) {
       </div>`);
     }
 
-    // Save / Export / Reset — only rendered when at least one section exists
+    // Reset — only rendered when at least one section exists
     if (sections.length > 0) {
       sections.push(`<div class="tweak-reset">
         <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
@@ -796,127 +952,11 @@ function detailHtml(design, index, isMulti) {
         .replace(/&/g, '\\u0026');
     }
   }
+  return { tweakHtml, tweakConfigJson };
+}
 
-  return `<!DOCTYPE html>
-<html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${esc(designName)}</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
-  <style>
-    :root {
-      --tpl-w: ${tplW}px;
-      --tpl-h: ${tplH}px;
-      --iframe-scale-auto: 1;
-      --iframe-scale-default: 1;
-      --iframe-scale: var(--iframe-scale-override, var(--iframe-scale-default));
-    }
-  </style>
-  <script>
-    (function () {
-      const TPL_H = ${tplH};
-      const TPL_W = ${tplW};
-      function compute() {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        let auto, def;
-        if (matchMedia('(max-width: 960px)').matches) {
-          auto = Math.min(1, (vw - 48) / TPL_W);
-          def = auto;
-        } else {
-          const byW = (vw - 616) / TPL_W;
-          const byH = (vh - 108) / TPL_H;
-          auto = Math.max(0.9, Math.min(byW, byH, 2.5));
-          def = auto * 0.87;
-        }
-        const r = document.documentElement;
-        r.style.setProperty('--iframe-scale-auto', String(auto));
-        r.style.setProperty('--iframe-scale-default', String(def));
-      }
-      compute();
-      window.addEventListener('resize', compute);
-    })();
-  </script>
-  <style>${DETAIL_CSS}</style>
-  <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
-</head>
-<body>
-  <nav class="nav-bar">
-    <div class="inner">
-      <span class="nav-brand">${esc(COPY.brand)}</span>
-      <span class="nav-powered-by">
-        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-      </span>
-    </div>
-  </nav>
-  <main class="detail">
-    <div class="preview">
-      <div class="frame">
-        <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
-        <div class="zoom-zone">
-          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
-            <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
-            <span class="zoom-level" id="zoom-level">100%</span>
-            <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
-            <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
-          </div>
-        </div>
-      </div>
-      ${switcherHtml}
-    </div>
-
-    <div class="detail-info">
-      <div>
-        <h1 class="style-name">${esc(designName)}</h1>
-        ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
-      </div>
-      ${longHtml}
-      ${tweakHtml}
-    </div>
-  </main>
-  <script>
-    (function () {
-      var thumbs = document.getElementById('photo-switcher-thumbs');
-      var iframe = document.getElementById('design-iframe');
-      if (!thumbs || !iframe) return;
-
-      var current = null;
-      var defaultUrl = null;
-      var initial = thumbs.querySelector('button.active');
-      if (initial) {
-        current = initial.getAttribute('data-photo-url');
-        defaultUrl = current;
-      }
-
-      function send(url) {
-        if (!iframe.contentWindow) return;
-        try { iframe.contentWindow.postMessage({ type: 'set-photo', url: url }, '*'); } catch (_) {}
-      }
-
-      // If the iframe is already loaded by the time this script runs and a
-      // non-default photo was picked, we need to push it. Otherwise wait for
-      // the iframe's ready message (sent by build.js's injected listener).
-      window.addEventListener('message', function (e) {
-        var d = e && e.data;
-        if (!d || d.type !== 'photo-iframe-ready') return;
-        if (current && current !== defaultUrl) send(current);
-      });
-
-      thumbs.addEventListener('click', function (e) {
-        var btn = e.target.closest('button[data-photo-url]');
-        if (!btn) return;
-        var url = btn.getAttribute('data-photo-url');
-        if (!url || url === current) return;
-        current = url;
-        thumbs.querySelectorAll('button').forEach(function (b) {
-          b.classList.toggle('active', b === btn);
-        });
-        send(url);
-      });
-    })();
-  </script>
-  <script>
+// Shared zoom controls IIFE script (same in both detail and studio)
+const TWEAK_IIFE_SCRIPT = `
     (function () {
       var cfg = window.__TWEAK_CONFIG__;
       var panel = document.getElementById('tweak-panel');
@@ -1095,9 +1135,50 @@ function detailHtml(design, index, isMulti) {
         send({ type: 'toggle-component', id: id, visible: input.checked });
       });
 
-    })();
-  </script>
-  <script>
+    })()`;
+
+const PHOTO_SWITCHER_IIFE_SCRIPT = `
+    (function () {
+      var thumbs = document.getElementById('photo-switcher-thumbs');
+      var iframe = document.getElementById('design-iframe');
+      if (!thumbs || !iframe) return;
+
+      var current = null;
+      var defaultUrl = null;
+      var initial = thumbs.querySelector('button.active');
+      if (initial) {
+        current = initial.getAttribute('data-photo-url');
+        defaultUrl = current;
+      }
+
+      function send(url) {
+        if (!iframe.contentWindow) return;
+        try { iframe.contentWindow.postMessage({ type: 'set-photo', url: url }, '*'); } catch (_) {}
+      }
+
+      // If the iframe is already loaded by the time this script runs and a
+      // non-default photo was picked, we need to push it. Otherwise wait for
+      // the iframe's ready message (sent by build.js's injected listener).
+      window.addEventListener('message', function (e) {
+        var d = e && e.data;
+        if (!d || d.type !== 'photo-iframe-ready') return;
+        if (current && current !== defaultUrl) send(current);
+      });
+
+      thumbs.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-photo-url]');
+        if (!btn) return;
+        var url = btn.getAttribute('data-photo-url');
+        if (!url || url === current) return;
+        current = url;
+        thumbs.querySelectorAll('button').forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        send(url);
+      });
+    })()`;
+
+const ZOOM_IIFE_SCRIPT = `
     // Zoom controls — operate on the same --iframe-scale custom property used
     // by the preview frame's calc() sizing. Persist per-tab via sessionStorage.
     (function () {
@@ -1145,8 +1226,289 @@ function detailHtml(design, index, isMulti) {
       window.addEventListener('resize', function () {
         levelEl.textContent = fmtPct(currentScale());
       });
+    })()`;
+
+// --- detail page ---
+
+function detailHtml(design, index, isMulti) {
+  const meta = design.meta || {};
+  const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
+  const palette = (meta.palette || [])
+    .map(c => `<span class="swatch" style="background:${safeColor(c)}" title="${esc(c)}"></span>`)
+    .join('');
+  const fonts = (meta.fonts || []).map(esc).join(' · ');
+  const tplH = design.height || 560;
+  const tplW = design.width || 420;
+
+  const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
+  const next = isMulti ? designs[(index + 1) % designs.length] : null;
+
+  const switcherHtml = buildSwitcherHtml(design);
+
+  const navBack = isMulti
+    ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>`
+    : '<span></span>';
+
+  const designName = localizedName(design, 'name', design.id);
+
+  const longHtml = meta.long ? `<p class="style-long">${esc(meta.long)}</p>` : '';
+
+  const specsBlocks = [];
+  if (palette) specsBlocks.push(`<div class="spec-label">${esc(COPY.paletteLabel)}</div><div class="spec-value palette-row">${palette}</div>`);
+  if (fonts) specsBlocks.push(`<div class="spec-label">${esc(COPY.fontsLabel)}</div><div class="spec-value fonts-row">${fonts}</div>`);
+  if (meta.motifs) specsBlocks.push(`<div class="spec-label">${esc(COPY.motifsLabel)}</div><div class="spec-value">${esc(meta.motifs)}</div>`);
+  const specsHtml = specsBlocks.length
+    ? `<div class="specs">${specsBlocks.join('')}</div>`
+    : '';
+
+  const prevName = prev && localizedName(prev, 'name', prev.id);
+  const nextName = next && localizedName(next, 'name', next.id);
+  const pagerHtml = isMulti ? `
+    <nav class="pager">
+      <a class="step prev" href="${esc(prev.id)}-page.html">
+        <div class="step-info">
+          <div class="step-label">${esc(COPY.prevLabel)}</div>
+          <div class="step-name">${esc(prevName)}</div>
+        </div>
+      </a>
+      <a class="step next" href="${esc(next.id)}-page.html">
+        <div class="step-info">
+          <div class="step-label">${esc(COPY.nextLabel)}</div>
+          <div class="step-name">${esc(nextName)}</div>
+        </div>
+      </a>
+    </nav>` : '';
+
+  return `<!DOCTYPE html>
+<html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(designName)}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
+  <style>
+    :root {
+      --tpl-w: ${tplW}px;
+      --tpl-h: ${tplH}px;
+      --iframe-scale-auto: 1;
+      --iframe-scale-default: 1;
+      --iframe-scale: var(--iframe-scale-override, var(--iframe-scale-default));
+    }
+  </style>
+  <script>
+    (function () {
+      const TPL_H = ${tplH};
+      const TPL_W = ${tplW};
+      function compute() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let auto, def;
+        if (matchMedia('(max-width: 960px)').matches) {
+          auto = Math.min(1, (vw - 48) / TPL_W);
+          def = auto;
+        } else {
+          const byW = (vw - 616) / TPL_W;
+          const byH = (vh - 108) / TPL_H;
+          auto = Math.max(0.9, Math.min(byW, byH, 2.5));
+          def = auto * 0.87;
+        }
+        const r = document.documentElement;
+        r.style.setProperty('--iframe-scale-auto', String(auto));
+        r.style.setProperty('--iframe-scale-default', String(def));
+      }
+      compute();
+      window.addEventListener('resize', compute);
     })();
   </script>
+  <style>${DETAIL_CSS}</style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="inner">
+      ${navBack}
+      <span class="nav-brand">${esc(COPY.brand)}</span>
+      <span class="nav-powered-by">
+        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+      </span>
+    </div>
+  </nav>
+  <main class="detail">
+    <div class="preview">
+      <div class="frame">
+        <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
+        <div class="zoom-zone">
+          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+            <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
+            <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
+          </div>
+        </div>
+      </div>
+      ${switcherHtml}
+    </div>
+
+    <div class="detail-info">
+      <div>
+        <h1 class="style-name">${esc(designName)}</h1>
+        ${meta.short ? `<div class="style-short">${esc(meta.short)}</div>` : ''}
+      </div>
+
+      ${longHtml}
+
+      ${specsHtml}
+
+      <div class="adjust-row">
+        <a class="adjust-btn" href="${esc(design.id)}-studio.html">↗ ${esc(COPY.adjustLabel)}</a>
+      </div>
+
+      <div class="download-group">
+        <div class="download-group-label">${esc(COPY.downloadGroupLabel)}</div>
+        <div class="download-row">
+          <a class="download-cta" href="png/social/${esc(design.id)}.png" download="${esc(design.id)}-social.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label">${esc(COPY.downloadSocialLabel)}</div>
+              <div class="download-hint">${esc(COPY.downloadSocialHint)}</div>
+            </span>
+          </a>
+          <a class="download-cta" href="png/print/${esc(design.id)}.png" download="${esc(design.id)}-print.png">
+            <span class="download-icon">↓</span>
+            <span class="download-text">
+              <div class="download-label">${esc(COPY.downloadPrintLabel)}</div>
+              <div class="download-hint">${esc(COPY.downloadPrintHint)}</div>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      ${pagerHtml}
+    </div>
+  </main>
+  <script>${PHOTO_SWITCHER_IIFE_SCRIPT};</script>
+  <script>${ZOOM_IIFE_SCRIPT};</script>
+</body>
+</html>
+`;
+}
+
+// --- studio page ---
+
+function studioHtml(design, index, isMulti) {
+  const meta = design.meta || {};
+  const tplH = design.height || 560;
+  const tplW = design.width || 420;
+
+  const prev = isMulti ? designs[(index - 1 + designs.length) % designs.length] : null;
+  const next = isMulti ? designs[(index + 1) % designs.length] : null;
+
+  const switcherHtml = buildSwitcherHtml(design);
+
+  const designName = localizedName(design, 'name', design.id);
+
+  const { tweakHtml, tweakConfigJson } = buildTweakParts(design);
+
+  // Back link: in multi mode goes to the detail page; in single mode goes to index.html (which IS the detail)
+  const studioBackHref = isMulti ? `${design.id}-page.html` : `index.html`;
+
+  const prevName = prev && localizedName(prev, 'name', prev.id);
+  const nextName = next && localizedName(next, 'name', next.id);
+  const studioPagerHtml = isMulti ? `
+    <nav class="pager">
+      <a class="step prev" href="${esc(prev.id)}-studio.html">
+        <div class="step-info">
+          <div class="step-label">${esc(COPY.prevLabel)}</div>
+          <div class="step-name">${esc(prevName)}</div>
+        </div>
+      </a>
+      <a class="step next" href="${esc(next.id)}-studio.html">
+        <div class="step-info">
+          <div class="step-label">${esc(COPY.nextLabel)}</div>
+          <div class="step-name">${esc(nextName)}</div>
+        </div>
+      </a>
+    </nav>` : '';
+
+  return `<!DOCTYPE html>
+<html lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(designName)} · ${esc(COPY.adjustLabel)}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap">
+  <style>
+    :root {
+      --tpl-w: ${tplW}px;
+      --tpl-h: ${tplH}px;
+      --iframe-scale-auto: 1;
+      --iframe-scale-default: 1;
+      --iframe-scale: var(--iframe-scale-override, var(--iframe-scale-default));
+    }
+  </style>
+  <script>
+    (function () {
+      const TPL_H = ${tplH};
+      const TPL_W = ${tplW};
+      function compute() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let auto, def;
+        if (matchMedia('(max-width: 960px)').matches) {
+          auto = Math.min(1, (vw - 48) / TPL_W);
+          def = auto;
+        } else {
+          const byW = (vw - 616) / TPL_W;
+          const byH = (vh - 108) / TPL_H;
+          auto = Math.max(0.9, Math.min(byW, byH, 2.5));
+          def = auto * 0.87;
+        }
+        const r = document.documentElement;
+        r.style.setProperty('--iframe-scale-auto', String(auto));
+        r.style.setProperty('--iframe-scale-default', String(def));
+      }
+      compute();
+      window.addEventListener('resize', compute);
+    })();
+  </script>
+  <style>${DETAIL_CSS}</style>
+  <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="inner">
+      <a class="nav-back" href="${esc(studioBackHref)}"><span>←</span><span>${esc(COPY.backToDetailLabel)}</span></a>
+      <span class="nav-brand">${esc(COPY.brand)}</span>
+      <span class="nav-powered-by">
+        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+      </span>
+    </div>
+  </nav>
+
+  <main class="detail">
+    <div class="preview">
+      <div class="frame">
+        <iframe id="design-iframe" src="${esc(design.id)}.html" frameborder="0" scrolling="no" title="${esc(designName)}"></iframe>
+        <div class="zoom-zone">
+          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+            <button class="zoom-btn" data-zoom="out" aria-label="${esc(COPY.zoomOutLabel)}" title="${esc(COPY.zoomOutLabel)}">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" data-zoom="in" aria-label="${esc(COPY.zoomInLabel)}" title="${esc(COPY.zoomInLabel)}">+</button>
+            <button class="zoom-btn reset" data-zoom="reset" aria-label="${esc(COPY.zoomResetLabel)}" title="${esc(COPY.zoomResetLabel)}">⤢</button>
+          </div>
+        </div>
+      </div>
+      ${switcherHtml}
+    </div>
+
+    <div class="detail-info">
+      ${tweakHtml}
+      ${studioPagerHtml}
+    </div>
+  </main>
+
+  <script>${PHOTO_SWITCHER_IIFE_SCRIPT};</script>
+  <script>${TWEAK_IIFE_SCRIPT};</script>
+  <script>${ZOOM_IIFE_SCRIPT};</script>
 </body>
 </html>
 `;
@@ -1209,18 +1571,22 @@ function galleryHtml() {
 
 const isMulti = designs.length > 1;
 
+// Every design gets a studio page, both modes
+designs.forEach((d, i) => {
+  fs.writeFileSync(path.join(DIST_DIR, `${d.id}-studio.html`), studioHtml(d, i, isMulti));
+  console.log(`[gallery] → dist/${d.id}-studio.html (tweak studio)`);
+});
+
 if (isMulti) {
-  // Multi mode: gallery + per-design detail pages
   designs.forEach((d, i) => {
     fs.writeFileSync(path.join(DIST_DIR, `${d.id}-page.html`), detailHtml(d, i, true));
-    console.log(`[gallery] → dist/${d.id}-page.html`);
+    console.log(`[gallery] → dist/${d.id}-page.html (detail)`);
   });
   fs.writeFileSync(path.join(DIST_DIR, 'index.html'), galleryHtml());
   console.log(`[gallery] → dist/index.html (gallery, ${designs.length} designs)`);
 } else {
-  // Single mode: index.html IS the detail page (no gallery wrapper)
   fs.writeFileSync(path.join(DIST_DIR, 'index.html'), detailHtml(designs[0], 0, false));
-  console.log(`[gallery] → dist/index.html (single design)`);
+  console.log(`[gallery] → dist/index.html (single design — detail)`);
 }
 
 console.log('[gallery] Done. Open dist/index.html in a browser.');
