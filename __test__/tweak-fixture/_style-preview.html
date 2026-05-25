@@ -16,9 +16,20 @@
   .note strong { color: #d4b896; font-style: normal; font-weight: 400; }
   .section-title { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; color: #b9a47f; text-transform: uppercase; margin: 0 auto 14px; }
   .section-title .count { color: #d4b896; margin-left: 8px; font-style: italic; font-weight: 400; }
-  .selected-area { max-width: 1280px; margin: 0 auto 40px; padding: 22px 22px 18px; border: 1px dashed #3a2f24; border-radius: 6px; background: rgba(20, 17, 13, 0.4); }
+  .selected-area { max-width: 1280px; margin: 0 auto 40px; padding: 18px 22px 14px; border: 1px dashed #3a2f24; border-radius: 6px; background: rgba(20, 17, 13, 0.4); }
   .selected-area.empty { display: none; }
-  .selected-area .hint { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 11px; color: #5a4a36; margin: 14px 0 0; }
+  .selected-area .hint { text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; font-size: 11px; color: #5a4a36; margin: 12px 0 0; }
+  /* Selected cards are smaller — at-a-glance reminders, not browse targets */
+  .selected-area .grid { grid-template-columns: repeat(auto-fill, 180px); gap: 14px; }
+  .selected-area .card { padding: 12px 14px 14px; gap: 8px; }
+  .selected-area .card .sketch { width: 70%; }
+  .selected-area .card .name { font-size: 18px; }
+  .selected-area .card .spirit { font-size: 11px; }
+  .selected-area .card .swatches span { width: 18px; height: 18px; }
+  .selected-area .card .swatches { gap: 4px; }
+  .selected-area .card .type-sample { font-size: 14px; padding-top: 8px; }
+  .selected-area .card .motifs { font-size: 9px; letter-spacing: 1.5px; }
+  .selected-area .card .check { width: 20px; height: 20px; font-size: 11px; top: 10px; right: 10px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, 260px); justify-content: center; gap: 20px; max-width: 1280px; margin: 0 auto; }
   .card { background: #14110d; border: 2px solid transparent; padding: 19px 21px 21px; border-radius: 6px; display: flex; flex-direction: column; gap: 14px; transition: border-color .2s, transform .2s, background .18s; cursor: pointer; user-select: none; position: relative; }
   .card:hover { border-color: #2a2218; transform: translateY(-2px); }

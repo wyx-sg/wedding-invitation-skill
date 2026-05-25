@@ -1778,7 +1778,7 @@ export function studioHtml(design, index) {
 </head>
 <body>
   <nav class="wis-nav">
-    <a class="wis-nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToPreview)}</span></a>
+    <a class="wis-nav-back" href="preview.html"><span>←</span><span>${esc(COPY.backToPreview)}</span></a>
     <div class="wis-brand">${esc(COPY.brand)}</div>
     <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>

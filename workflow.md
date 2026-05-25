@@ -63,6 +63,19 @@ Never start with Tier 3 if the choice is visual. A wedding invitation is a visua
 
 Tier-1 picker pages (`_photo-select.html`, `_style-preview.html`) live as static HTML in the user's project. They are interactive — user clicks toggle selections in the DOM — but a `file://` page cannot write to disk on its own, so a small bridge is needed for you to **see** the selections without asking the user to copy/paste.
 
+**Localization (non-negotiable).** When you generate a picker page, the page title (h1), the note paragraph, the back-to-chat reminder, the "未选 / 已选" bottom-bar text, the **全选 / 复制** buttons — **every visible string** — must be in the user's primary language from `wedding.json.languages[0]`. The fixture pages under `__test__/` are zh examples; do NOT copy their hardcoded Chinese to a non-zh user's project. Strings to localize per language:
+
+| Slot | zh | en | ja (example) |
+|---|---|---|---|
+| h1 | 挑照片 / 挑风格方向 | Pick photos / Pick style directions | 写真を選ぶ / スタイルを選ぶ |
+| Multi-select hint | 点击下面的照片选中（可多选 / 全选） | Click photos to select (multi-select or select all) | クリックして選択 |
+| Back-to-chat note | 你挑的照片会自动同步给 Agent... | Your photo selection auto-syncs to your assistant... | 自動でアシスタントに同期されます |
+| Select-all button | 全选 / 取消全选 | Select All / Deselect All | すべて選択 / 解除 |
+| Copy button | 复制 / 已复制 ✓ | Copy / Copied ✓ | コピー / コピー済み ✓ |
+| Empty state | 未选 · 点击照片选中（可多选） | Not selected · click to pick | 未選択 · クリックで選択 |
+
+The skill ships with COPY tables in `skeleton/scripts/build-gallery.js` that already cover zh + en for the generated pages (detail / studio / gallery / studio's name + inspiration block). Non-zh non-en languages fall back to English for chrome text; user-content fields (`name_<lang>`, `meta.category_<lang>`, etc.) are looked up by the actual primary language and you are responsible for filling them.
+
 The skeleton ships a tiny no-dependency Node server (`npm run pick`). When started, it:
 
 - Serves the project directory over `http://localhost:8765/`.
@@ -109,14 +122,15 @@ The picker page detects its own protocol — `http://` triggers live sync; `file
 
    Confirm photo count back to the user. Don't proceed until `photos/` has at least one image.
 
-4. **Photo selection — always**, regardless of how many photos the user dropped in. Even with 2 photos, the user should confirm which one is primary; even with 30, they should be the one to pick. Never silently choose for them.
+4. **Photo selection — always**, regardless of how many photos the user dropped in. Even with 2 photos, the user should confirm which one(s) they want; never silently choose for them.
 
    - Read all the photos with the Read tool (they're images — Claude can see them).
-   - Surface what you see: "I see N photos. Some are portrait pose, some are outdoor candid, some are full-length. Tap the ones you'd like to use."
+   - **Show EVERY photo the user provided.** Do not pre-filter, do not curate, do not silently drop blurry / similar / "not great" shots — the user gets to make that call. The picker page is just a presentation of what they uploaded.
    - Build a Tier-1 visual preview (`_photo-select.html`) with every photo as a numbered card. The user clicks to toggle (multi-select). The page MUST include:
      - The unified centered two-line header (brand + "Made with wedding-invitation-skill" — localized; see "Picker pages" section above).
-     - A short reminder note about the chat-back flow (localized; generic phrase like "back to chat" / "回到对话窗口" — not a specific agent host).
-     - A sticky bottom summary bar with: current selection, a **全选 / Select All** toggle button (clicks the whole grid into the selected state; clicks again to deselect all), and a **复制 / Copy** button that writes a chat-ready sentence to clipboard.
+     - A short note: "点击下面的照片选中（可多选 / 全选）" / "Click photos to select (multi-select or select all)". **Localize this to the user's primary language.** Don't ship hardcoded Chinese to non-zh users.
+     - A short reminder note about the chat-back flow (localized; generic phrase like "back to chat" — not a specific agent host).
+     - A sticky bottom summary bar with: current selection, a **全选 / Select All** toggle button, and a **复制 / Copy** button that writes a chat-ready sentence to clipboard.
    - Loaded via `http://localhost:8765/_photo-select.html` (after `npm run pick`), the page auto-syncs selections to `data/picker-state.json` — Read that file to see the user's picks. If the user is on `file://`, the **Copy** button + chat-paste is the fallback.
    - The **first selected card** becomes `primary_photo` in `designs.json`; the rest are kept as alternates (the detail / studio pages' photo-switcher lets the user swap to any of them later).
 
@@ -508,11 +522,13 @@ This is the creative stage. You design one template per aesthetic the user selec
    This is the Stage-4 build: runs `build.js` + `build-studio.js`. Outputs:
    - `dist/<id>.html` — raw invitation HTML (used as iframe source)
    - `dist/<id>-studio.html` — the tweak studio (live color/font/frame/component swaps)
-   - `dist/index.html` — **navigation gallery** with live iframe thumbnails; click a card → opens that design's studio
+   - `dist/preview.html` — **navigation gallery** with live iframe thumbnails; click a card → opens that design's studio
 
    Note: Stage 4 does NOT render PNGs or build the final gallery/detail pages — those are Stage 5 deliverables. The iframe previews on the nav gallery and inside the studio are live HTML, fast to refresh.
 
-   Open `dist/index.html` for the user (`open` / `xdg-open` / `start`).
+   **Stage 4 writes `dist/preview.html`; Stage 5 writes `dist/index.html`.** They are intentionally separate files so the two phases don't overwrite each other. Stage 4 = `preview.html` ("here are your designs to tweak"); Stage 5 = `index.html` ("here are your finished designs to download").
+
+   Open `dist/preview.html` for the user (`open` / `xdg-open` / `start`).
 
 7. **Iterate.** This is where most of Stage 4's time goes. Two channels, complementary:
 
@@ -539,7 +555,7 @@ This is the creative stage. You design one template per aesthetic the user selec
 
 ## Stage 5 — Deliver
 
-The design is locked in. This stage produces the deliverable: PNGs the user can download. Stage 4's `dist/index.html` (navigation gallery) gets replaced with the final gallery; Stage 4's studio pages stay on disk but the gallery no longer links to them.
+The design is locked in. This stage produces the deliverable: PNGs the user can download. Stage 4's `dist/preview.html` stays on disk; Stage 5 writes a separate `dist/index.html` with the final gallery + linked detail pages — the two co-exist so the user can switch back to tweaking without losing their place.
 
 1. **Render PNGs and build the final gallery + detail pages.**
    ```bash
@@ -562,7 +578,7 @@ The design is locked in. This stage produces the deliverable: PNGs the user can 
 
 3. **Open the gallery.** macOS: `open dist/index.html`; Linux: `xdg-open`; Windows: `start`. Point the user at the **download buttons** on the detail page — Social for messaging, Print for physical cards.
 
-4. **If the user wants more tweaks after seeing the deliverable** — drop back into Stage 4: rerun `npm run preview`. This overwrites `dist/index.html` with the navigation gallery; the user is back in tweak mode. After they're satisfied again, rerun `npm run deliver`.
+4. **If the user wants more tweaks after seeing the deliverable** — drop back into Stage 4. Rerun `npm run preview` if the templates or `data/designs.json` changed; otherwise just tell the user "open `dist/preview.html`" again — the nav gallery is still there from Stage 4. After they're satisfied again, rerun `npm run deliver`.
 
 PNGs go wherever the user saves them — outside the skill's scope.
 
