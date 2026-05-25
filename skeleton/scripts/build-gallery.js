@@ -118,13 +118,8 @@ const COPY = {
     tweakFontTextHint: 'Type a font name (or pick)…',
     tweakFrameRadiusLabel: 'Radius',
     tweakFrameAspectLabel: 'Aspect',
-    tweakSaveLabel: 'Save as new design',
-    tweakSavePromptLabel: 'Name this design',
-    tweakSaveExportLabel: 'Export JSON',
-    tweakSaveInfoLabel: 'Saved locally · refresh keeps your changes',
-    tweakContributeLabel: 'Love this design? Open a PR to add it to the skill — share with others →',
-    tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
     poweredByLabel: 'Made with',
+    poweredBySuffix: '',
   },
   zh: {
     brand: '婚礼请帖',
@@ -157,13 +152,8 @@ const COPY = {
     tweakFontTextHint: '输入字体名（或从列表选）…',
     tweakFrameRadiusLabel: '圆角',
     tweakFrameAspectLabel: '比例',
-    tweakSaveLabel: '保存为新设计',
-    tweakSavePromptLabel: '给这个设计起个名字',
-    tweakSaveExportLabel: '导出 JSON',
-    tweakSaveInfoLabel: '已保存到本地 · 刷新后仍在',
-    tweakContributeLabel: '设计得不错？欢迎给项目提 PR，加进 skill 让更多人用 →',
-    tweakContributeHref: 'https://github.com/wyx-sg/wedding-invitation-skill/issues/new?labels=design-contribution&title=New+design+contribution',
     poweredByLabel: '由',
+    poweredBySuffix: ' 设计制作',
   }
 }[lang];
 
@@ -663,54 +653,6 @@ const DETAIL_CSS = `
     min-width: 120px;
   }
   .tweak-frame-row input[type=text] { min-width: 80px; }
-  .tweak-save-row {
-    margin-top: 8px;
-    display: flex;
-    gap: 8px;
-  }
-  .tweak-save-btn,
-  .tweak-export-btn {
-    flex: 1;
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--accent);
-    background: linear-gradient(135deg, rgba(212,184,150,0.10), rgba(184,149,106,0.04));
-    color: var(--accent);
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.12s;
-  }
-  .tweak-export-btn {
-    background: transparent;
-    color: var(--text-dim);
-    border-color: var(--border);
-  }
-  .tweak-save-btn:hover {
-    background: linear-gradient(135deg, rgba(212,184,150,0.18), rgba(184,149,106,0.08));
-    transform: translateY(-1px);
-  }
-  .tweak-export-btn:hover { color: var(--accent); border-color: var(--accent-warm); }
-  .tweak-save-info {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-align: center;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-  }
-  .tweak-contribute {
-    font-size: 10.5px;
-    color: var(--text-muted);
-    text-decoration: none;
-    text-align: center;
-    border-top: 1px dashed var(--border-soft);
-    padding-top: 8px;
-    margin-top: 4px;
-    transition: color 0.18s;
-    display: block;
-  }
-  .tweak-contribute:hover { color: var(--accent-warm); }
   .powered-by {
     text-align: center;
     padding: 24px 16px;
@@ -883,12 +825,6 @@ function detailHtml(design, index, isMulti) {
       sections.push(`<div class="tweak-row tweak-reset">
         <button type="button" class="tweak-reset-btn" id="tweak-reset">↻ ${esc(COPY.tweakResetLabel)}</button>
       </div>`);
-      sections.push(`<div class="tweak-save-row">
-  <button type="button" class="tweak-save-btn" id="tweak-save" data-prompt="${esc(COPY.tweakSavePromptLabel)}">★ ${esc(COPY.tweakSaveLabel)}</button>
-  <button type="button" class="tweak-export-btn" id="tweak-export" data-prompt="${esc(COPY.tweakSavePromptLabel)}">${esc(COPY.tweakSaveExportLabel)}</button>
-</div>
-<div class="tweak-save-info">${esc(COPY.tweakSaveInfoLabel)}</div>
-<a class="tweak-contribute" href="${esc(COPY.tweakContributeHref)}" target="_blank" rel="noopener">${esc(COPY.tweakContributeLabel)}</a>`);
       tweakHtml = `<div class="tweak-panel" id="tweak-panel" data-design-id="${esc(design.id)}">${sections.join('')}</div>`;
       const tweakConfigShape = {
         tweak: tweak,
@@ -1001,7 +937,7 @@ function detailHtml(design, index, isMulti) {
     <option value="Allura">
   </datalist>
   <footer class="powered-by">
-    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>
+    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
   </footer>
   <script>
     (function () {
@@ -1245,63 +1181,6 @@ function detailHtml(design, index, isMulti) {
         }
       });
 
-      // Save button — names the design, persists state to localStorage under a separate key
-      var saveBtn = document.getElementById('tweak-save');
-      if (saveBtn) {
-        saveBtn.addEventListener('click', function () {
-          var name = prompt(saveBtn.getAttribute('data-prompt') || 'Name this design');
-          if (!name) return;
-          var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-          if (!slug) return;
-          autoSave();
-          try {
-            localStorage.setItem('wis-saved-' + slug, JSON.stringify({
-              name: name, fromDesign: DESIGN_ID,
-              state: collectState(), savedAt: new Date().toISOString()
-            }));
-          } catch (_) {}
-          alert('Saved locally: ' + name);
-        });
-      }
-
-      // Export — download a JSON snippet ready to paste into designs.json
-      var exportBtn = document.getElementById('tweak-export');
-      if (exportBtn) {
-        exportBtn.addEventListener('click', function () {
-          var name = prompt(exportBtn.getAttribute('data-prompt') || 'Name for the design entry:');
-          if (!name) return;
-          var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-          if (!slug) return;
-          var state = collectState();
-          var entry = {
-            id: slug,
-            name_en: name,
-            name_zh: name,
-            template: DESIGN.template || (DESIGN_ID + '.html'),
-            primary_photo: DESIGN.primary_photo || 'photo-01',
-            width: DESIGN.width || 420,
-            height: DESIGN.height || 560,
-            meta: { short: 'Saved from ' + DESIGN_ID + ' on ' + new Date().toLocaleDateString() },
-            tweak_options: {
-              color_schemes: (state.vars && Object.keys(state.vars).length)
-                ? [{ name_en: 'Saved', name_zh: '已保存', vars: state.vars }]
-                : [],
-              components: Object.keys(state.components || {}).map(function (id) {
-                return { id: id, label_en: id, label_zh: id, default: !!state.components[id] };
-              })
-            }
-          };
-          if (state.frame) entry.tweak_options.frames = [Object.assign({ name: 'Saved' }, state.frame)];
-          var json = JSON.stringify(entry, null, 2);
-          var blob = new Blob([json], { type: 'application/json' });
-          var a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = slug + '.design.json';
-          a.click();
-          setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-          alert('Downloaded: ' + slug + '.design.json\\nAppend its contents to data/designs.json (as a new array entry), then rerun:\\n  npm run build && npm run gallery');
-        });
-      }
     })();
   </script>
   <script>
@@ -1401,7 +1280,7 @@ function galleryHtml() {
     </div>
   </main>
   <footer class="powered-by">
-    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>
+    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
   </footer>
 </body>
 </html>
