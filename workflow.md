@@ -219,27 +219,56 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - Ornate / ceremonial → `indian`, `arabic`, `red-gold`, `gugong`
    - Festive / colorful → `latin`, `red-gold`
 
-3. **Build a visual gallery** using `examples/thumbnails/<aesthetic>.png` for each candidate. These thumbnails are pre-rendered reference invitations — they show the *aesthetic*, not what the final invitation will look like. The thumbnails are in **various languages** (most are Chinese, but the culturally-specific ones — `indian`, `arabic`, `latin`, `french-provence`, `korean-hanbok`, etc. — are in their native cultural language). The user's actual invitation will be designed fresh in their chosen language(s). Tell the user this, in their primary language, and don't claim "these are all Chinese examples" — it's not true.
+3. **Build a mood-board preview** — one card per candidate, showing the aesthetic's **design vocabulary** (palette swatches + a typography sample + a brief spirit / motif description). **Do NOT show pre-rendered example invitations** in this picker. Reasons:
+   - The examples have other couples' names, dates, and venues — users see those, fixate on "I want THAT one", and the agent gets pulled toward literal copy.
+   - Examples are in their native cultural language; if the user picked a different language, the examples don't match what they'll get.
+   - Aesthetics here are **directions**, not finished templates. The picker should communicate direction, not destination.
 
-   Use the gallery template, also localizing the headline + note to the user's primary language (the snippet below has English placeholders; translate before writing the file):
+   Build `_style-preview.html` in the user's working directory. Each card shows: aesthetic name, palette swatches (the suggested starting-point colors from `design-principles.md`), a small typography sample (a few characters in the aesthetic's font family), and one line of spirit / motif description.
+
+   Localize the headline + note + spirit lines to the user's primary language before writing the file.
+
+   Reference template (English copy; translate the prose to the user's primary language):
 
    ```html
-   <!DOCTYPE html><html><head><meta charset="utf-8"><style>
-     body{margin:0;background:#1a1a1a;color:#e0d8c8;font-family:system-ui;padding:24px}
-     .note{text-align:center;font-weight:300;opacity:.7;max-width:680px;margin:0 auto 24px;font-size:13px;line-height:1.6}
-     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1400px;margin:0 auto}
-     .card{background:#0f0f0f;padding:12px;border-radius:6px;text-align:center}
-     .card img{width:100%;height:auto;border-radius:4px;display:block}
-     .card .name{margin-top:10px;font-size:13px;letter-spacing:1px;color:#d4af37}
+   <!DOCTYPE html><html><head><meta charset="utf-8">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Inter:wght@300;500&family=Noto+Serif+SC:wght@400&family=Playfair+Display:wght@400&family=Bodoni+Moda:wght@400&display=swap">
+   <style>
+     body{margin:0;background:#0a0907;color:#d4c4a8;font-family:system-ui;padding:32px 24px}
+     h1{text-align:center;font-weight:300;font-family:'Cormorant Garamond',serif;font-size:32px;letter-spacing:4px;color:#d4b896;margin:0 0 12px}
+     .note{text-align:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:14px;color:#a89878;max-width:680px;margin:0 auto 32px;line-height:1.55;text-wrap:balance}
+     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1280px;margin:0 auto}
+     .card{background:#14110d;border:1px solid #2a2218;padding:24px 22px;border-radius:6px;display:flex;flex-direction:column;gap:14px}
+     .name{font-family:'Cormorant Garamond',serif;font-size:24px;color:#d4b896;letter-spacing:1.5px;text-transform:lowercase}
+     .spirit{font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:13px;color:#b9a47f;line-height:1.5}
+     .swatches{display:flex;gap:6px}
+     .swatches span{width:24px;height:24px;border-radius:50%;border:1px solid rgba(212,184,150,0.18)}
+     .type-sample{font-size:18px;letter-spacing:2px;color:#d4c4a8;border-top:1px solid #1f1a14;padding-top:12px;line-height:1.3}
+     .motifs{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:#5a4a36}
    </style></head><body>
-     <h1 style="text-align:center;font-weight:300">Pick an aesthetic direction</h1>
-     <p class="note">Reference examples — each in its native cultural language (Chinese / English / French / Hindi / Korean / etc.).
-       Your invitation will be designed fresh in <strong>{{your-languages}}</strong> —
-       only the visual feel (color, typography, decoration) carries over.</p>
+     <h1>Pick an aesthetic direction</h1>
+     <p class="note">These are <strong>directions</strong>, not finished templates. The agent will design your invitation fresh in <strong>{{your-languages}}</strong>, adapting the palette and decoration to your photo and preferences.</p>
      <div class="grid">
-       <!-- one .card per candidate; use absolute file:// path to skill's examples/thumbnails/ -->
-       <div class="card"><img src="file:///path/to/skill/examples/thumbnails/style03-morandi.png"><div class="name">morandi</div></div>
-       <!-- ... -->
+
+       <!-- One card per candidate. Example for morandi: -->
+       <div class="card">
+         <div class="name">morandi</div>
+         <div class="spirit">soft contemporary · restrained · asymmetric · negative-space-driven</div>
+         <div class="swatches"><span style="background:#e8e4dc"></span><span style="background:#7a8a6d"></span><span style="background:#a59585"></span><span style="background:#2c2c2c"></span></div>
+         <div class="type-sample" style="font-family:'Inter',sans-serif">Aa · 字 · 1 2 3</div>
+         <div class="motifs">hairline dividers · oval frame · no ornament</div>
+       </div>
+
+       <!-- art-deco example: -->
+       <div class="card">
+         <div class="name">art-deco</div>
+         <div class="spirit">Gatsby glamour · heavy symmetry · geometric ornament · gold-on-dark</div>
+         <div class="swatches"><span style="background:#1a1a1a"></span><span style="background:#d4af37"></span><span style="background:#b8956a"></span><span style="background:#f4ede0"></span></div>
+         <div class="type-sample" style="font-family:'Bodoni Moda',serif;font-weight:400">Aa · 字 · M&amp;V</div>
+         <div class="motifs">sunburst rays · stepped frame · monogram circle</div>
+       </div>
+
+       <!-- ...one card per candidate, palette and font sample sourced from design-principles.md... -->
      </div>
    </body></html>
    ```
@@ -251,17 +280,21 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - **Single mode**: user picks 1 aesthetic name → move to Stage 4 to design that one
    - **Multi mode**: user can either confirm all `multi_count` candidates or trim/swap a few. Move to Stage 4 to design all of them.
 
-**You are NOT going to copy any reference HTML.** The thumbnail shows what `morandi` looks like as an aesthetic; you will design a fresh template in the user's language using `design-principles.md`'s spec for that aesthetic.
+**You are designing, not picking.** The user picked a direction (`morandi`, `art-deco`, etc.). In Stage 4 you will design a fresh template in their language, with their actual data, adapting the palette/typography to their photo and preferences — using `design-principles.md` as your vocabulary, not as a fixed recipe.
 
 ## Stage 4 — Design from scratch
 
 This is the creative stage. In single mode you design 1 template; in multi mode you design N (one per chosen aesthetic).
 
 1. **Open `design-principles.md`**. For each chosen aesthetic, internalize:
-   - Color palette (exact hex values)
-   - Typography for the user's language(s)
-   - Decorative motifs (seal stamps, line art, geometric frames, etc.)
-   - Layout pattern
+   - **Spirit** — the soul of the aesthetic. This is the load-bearing constraint.
+   - **Starting palette** — a reference, NOT a prescription. Shift hues to harmonize with the user's photo tones (cooler photo → shift accents cooler; warmer photo → shift toward warm tones).
+   - **Typography family** — match the language(s); pick the specific font within the family based on the formality the couple wants.
+   - **Decoration vocabulary** — pick a few motifs from the suggested list (not all), or invent ones in the same spirit.
+   - **NEVER list** — these are hard. Don't violate them.
+   - **Hard cultural requirements** (where listed) — non-negotiable. Skip them and you've lost the aesthetic.
+
+   You're not stamping out a fixed template. You're designing in a direction — your job is to make judgment calls within the spirit + NEVERs of the chosen aesthetic.
 
 2. **Do NOT read `examples/*.html`.** They are frozen Chinese showcase artifacts. Reading them biases you toward copying and toward Chinese typography. Design fresh from prose.
 

@@ -103,9 +103,13 @@ font-family: "PingFang SC", "Source Han Serif SC", "Songti SC",
 
 **Letter spacing**: 2-6 px on Chinese / Japanese names and headers feels formal. 0 px feels casual. For Latin scripts, 1-3 px on small caps; 0 on body.
 
-## Color palettes
+## Color palettes — starting points, not prescriptions
 
-Pick **one** palette per design. Don't mix.
+The table below lists named palette references you can use as a **starting point**. They're not prescriptions: shift hues to match the user's photo tones, the couple's preferences, the venue lighting, the season. Pick **one** palette per design (don't mix), but stay free within that palette's family.
+
+A few hard rules that stay strict:
+- Cultural-authentic palettes (`Red-gold`, `Indian regal`, `Arabic geometric`, `Korean royal`) should keep their dominant hue and gold accents — those *are* the aesthetic. Other choices can drift.
+- Don't combine more than 3 distinct hues in one design (background + primary + 1-2 accents). Crowded palettes look amateurish.
 
 | Palette name | Background | Primary | Accent | Text | Mood |
 |---|---|---|---|---|---|
@@ -127,67 +131,211 @@ Pick **one** palette per design. Don't mix.
 
 ## Visual vocabulary by aesthetic
 
-These describe what to **produce**. Design from these principles, not by reading example HTMLs.
+Each entry below describes an aesthetic **direction**, not a fixed template. The job of the agent is to *design* an invitation in that direction — adapting the palette, typography, and decoration to **this** couple's photo, language, and preferences. The starting points are reference; the **Spirit** and **NEVER** lists are the load-bearing constraints.
+
+How to read each entry:
+
+- **Spirit** — what the aesthetic IS at its core. The single most important line.
+- **Starting palette** — a reference, not a prescription. Shift hues to harmonize with the couple's photo tones.
+- **Typography** — the *family* / *register* matters more than the exact font name.
+- **Decoration** — motifs that fit the aesthetic. Pick a few; don't pile them all on.
+- **Photo frame** — shapes that work with this aesthetic's mood.
+- **NEVER** — things that break the aesthetic. These are hard. Stick to them.
+- **Hard cultural requirements** (some aesthetics only) — non-negotiable elements that ARE the aesthetic. Skipping them loses authenticity.
 
 ### new-chinese (新中式)
-Refined traditional, not red-explosion. Palette: *Chinese classic*. Typography: `Songti SC` for ZH headlines, `Cormorant Garamond` for EN/pinyin. Decorative: 囍 character as centerpiece (use a real Unicode character with serif font, NOT an emoji), a single seal-shaped block with the groom's surname character (`{{names.groom_zh.0}}`), thin gold hairlines as borders, optional lotus / plum line-art (SVG paths). Layout: photo top, names center, date+venue bottom.
+
+**Spirit**: refined traditional Chinese — Suzhou-garden restraint, not red-explosion banquet. Cream paper + a single vermilion accent + antique gold hairlines.
+**Starting palette**: warm paper cream (`#fdf8f0`-ish), vermilion accent (`#b8362b`-ish), antique gold (`#d4af37`-ish), deep ink text. Adapt the cream warmth to the couple's photo; keep vermilion as a single deliberate accent (one seal, one small block — not everywhere).
+**Typography**: ZH = serif/traditional family (`Songti SC`, `Source Han Serif SC`, `Noto Serif SC`, or `ZCOOL XiaoWei`). EN/pinyin = quiet elegant serif (`Cormorant Garamond` or `EB Garamond`). Letter-spacing 2-6 px on ZH names for formality.
+**Decoration**: a 囍 character used carefully as centerpiece (real Unicode glyph in a serif font, NOT an emoji); thin gold hairlines as dividers / borders; optional single seal-shaped block holding `{{names.groom_zh.0}}`; subtle lotus / plum / ink-line motifs OK in small doses (SVG).
+**Photo frame**: oval, soft arch, or rounded rectangle — refined, not assertive.
+**NEVER**: solid red background, garish gold gradients, emoji decorations, more than one bold accent color.
 
 ### red-gold (传统红金)
-Full traditional banquet feel. Palette: *Red-gold*. Background is solid red; text and ornaments are gold. Typography: `Noto Serif SC` weight 700+ for names, gold-colored. Decorative: a large 囍 centerpiece (SVG with gold strokes), traditional cloud / paisley motifs at corners (as SVG paths or filled shapes), a "X 府之喜" or "X 宅囍事" line where X is the family surname character. Very symmetric, banquet-hall energy.
+
+**Spirit**: full traditional Chinese banquet — celebratory, symmetric, ornate, red dominates, gold ornaments. The aesthetic that ties to wedding-banquet halls and tea-ceremony scrolls.
+**Starting palette**: red background (`#b8362b` to `#a02520`), gold primary (`#d4af37`-ish), cream highlights for legibility. The red should be deep banquet red, not bright modern red.
+**Typography**: ZH = bold traditional serif (`Noto Serif SC` 700+, `Source Han Serif SC` 700+, or `Songti SC` heavy). Color the heavy weight gold. EN = decorative serif (`Cormorant Garamond` italic or `Playfair Display`) used sparingly.
+**Decoration**: large 囍 centerpiece in gold SVG strokes (this is mandatory for the aesthetic); traditional cloud / paisley motifs at corners (gold-on-red); a "X 府之喜" line where X is `{{names.groom_zh.0}}`. Layout symmetric, banquet-hall energy.
+**Photo frame**: framed in a gold border (single ring is fine; double ring also classic). Square or rectangle suits the formality.
+**NEVER**: muted Morandi tones, sans-serif body fonts, asymmetric layouts, white/cream-dominant backgrounds.
+**Hard cultural requirements**: red must be the dominant hue; gold must be the accent; the 囍 (or equivalent traditional symbol) appears somewhere prominent.
 
 ### palace / gugong (故宫工笔)
-Museum-grade. Palette: *Palace / black-gold*. Typography: `Songti SC` or `Ma Shan Zheng` for ZH; serif EN small. Decorative: a fan-shaped photo crop (a `clip-path: ellipse(...)` or SVG mask), painted bird-flower motif in line art (gold strokes on dark), traditional seal stamps with year + couple character at corner. Layout: photo as central fan, names flowing around it.
+
+**Spirit**: museum-grade Chinese imperial — Forbidden City gongbi paintings, lacquer artifact richness. Deep black background, gold detail, scroll-painting refinement.
+**Starting palette**: deep black or near-black (`#1a1a1a`-ish), royal gold (`#d4af37`-ish), small vermilion accents OK, cream/ivory for legible text on dark. Photo can carry warm imperial-red tones from the dress.
+**Typography**: ZH = `Songti SC`, `Source Han Serif SC`, or `Ma Shan Zheng` (brush) for headlines. EN = quiet serif (`Cormorant Garamond`) — small role.
+**Decoration**: fan-shaped or arched photo crop is iconic; painted bird-flower line art (gold strokes on dark); traditional square seal stamps (year + couple character) tucked in a corner.
+**Photo frame**: fan shape (`clip-path: ellipse(...)`), arched top, or scroll-shape rectangle.
+**NEVER**: light backgrounds, modern sans-serif, geometric grids, casual photography poses.
+**Hard cultural requirements**: dark luxury background (not cream); gold as the primary ornament color.
 
 ### wabi-sabi
-Japanese restraint. Palette: *Wabi-sabi*. Typography: `Noto Serif JP` or `Sawarabi Mincho` for ZH/JP; light-weight serif for EN. Decorative: an enso (Zen circle) drawn as SVG with brush-like stroke, single ink-wash stroke (SVG path with calligraphic weight), generous negative space. Asymmetric. NO symmetry.
+
+**Spirit**: Japanese aesthetic of restraint and asymmetric quiet. Negative space, ink-painting feel, the unfinished. The opposite of decoration.
+**Starting palette**: rice-paper white (`#fafafa`-ish), ink black (`#1a1a1a`-ish), one sumi-grey (`#888`-ish). Optional: a single soft accent (faded pink, moss green) only if the photo invites it.
+**Typography**: JP = `Noto Serif JP` or `Sawarabi Mincho`. ZH = `Songti SC` or `Source Han Serif SC`. EN = light-weight serif (`Cormorant Garamond` light, `EB Garamond` light). Generous size hierarchy. Letter-spacing wide.
+**Decoration**: very minimal. One enso (Zen circle) SVG with brush-like stroke. One ink-wash stroke. That's it. **Negative space IS the decoration**.
+**Photo frame**: irregular oval, soft arch, or no frame at all (image bleeds into white). Asymmetric placement.
+**NEVER**: symmetry, multiple decorative motifs, saturated color, ornate borders.
 
 ### morandi
-Soft contemporary. Palette: *Morandi*. Typography: sans-serif everywhere (`Inter` / `Manrope` for EN; `PingFang SC` for ZH); NEVER serif. Decorative: thin hairlines as dividers, asymmetric framing, oval or rounded-rectangle photo crop, no ornaments beyond geometric lines. Photographer-friendly.
+
+**Spirit**: photographer-friendly, restrained contemporary. Asymmetric. Named for Italian painter Giorgio Morandi's muted still-life palette — grays that hold warmth.
+**Starting palette**: muted neutrals. One warm neutral (warm grey `#e8e4dc`, cream, dusty beige) + one soft accent (sage `#7a8a6d`, dusty blue, lichen, smoky lavender) + optionally one secondary (sand, muted clay, smoke) + deep text. Adapt to the photo tones — if photo is cool, push accent cooler; if warm, push toward sand.
+**Typography**: clean sans-serif. Latin = `Inter` / `Manrope` / `DM Sans`. ZH = `PingFang SC` / `Noto Sans SC`. Light serif (`Cormorant Garamond` italic) acceptable in tiny doses for a date or monogram.
+**Decoration**: minimal — hairline dividers, asymmetric framing, small geometric shapes. Restraint is the look.
+**Photo frame**: oval, rounded rectangle, soft arch, or full-bleed asymmetric.
+**NEVER**: saturated jewel tones, gold ornaments, vermilion / red accents, brush scripts, display serifs, scrollwork.
 
 ### art-deco
-Gatsby-era glamour. Palette: *Art-deco*. Typography: high-contrast display serif (`Bodoni Moda`, `Cormorant Garamond` italic). Decorative: symmetric geometric frames (rectangles within rectangles), sunburst rays from corners, chevron / zigzag borders, monogram circle in center with `{{names.groom_en.0}}&{{names.bride_en.0}}`. Heavy symmetry.
+
+**Spirit**: Gatsby-era glamour. High-contrast, heavily symmetric, geometric ornament. Glittering nightlife mood.
+**Starting palette**: black background (`#1a1a1a`-ish), gold primary (`#d4af37`-ish), brass / champagne secondary, ivory text. Substitute black with deep navy or oxblood if the photo invites — but keep high contrast.
+**Typography**: high-contrast display serif. `Bodoni Moda`, `Playfair Display`, `Cormorant Garamond` italic. Headlines can be large. Small caps for body.
+**Decoration**: symmetric geometric frames (rectangles within rectangles); sunburst rays from corners; chevron / zigzag borders; a centered monogram circle with `{{names.groom_en.0}}&{{names.bride_en.0}}`.
+**Photo frame**: rectangle with stepped art-deco border, or a centered oval inside a geometric frame.
+**NEVER**: asymmetric layouts, soft Morandi pastels, brush scripts, naturalistic florals.
+**Hard requirements**: symmetry; geometric (not organic) ornament; gold-on-dark contrast.
 
 ### vogue (editorial / fashion)
-Magazine-cover energy. Palette: *Modern minimal*. Typography: oversized display serif for headline (`Playfair Display` 80+px even on 420 canvas), small caps body. Decorative: asymmetric photo placement (full-bleed on one side), vertical type elements (rotated `writing-mode: vertical-rl`), thin one-pixel rules, FIG. 1 / VOL. style annotations.
+
+**Spirit**: magazine-cover energy. Editorial, oversized type, asymmetric photo placement. Treats the invitation like a fashion-magazine spread.
+**Starting palette**: monochrome or near-monochrome. Off-white background + near-black + one muted accent (muted gold, dusty pink, smoke). High-contrast minimalism.
+**Typography**: oversized display serif for headline (`Playfair Display`, `Bodoni Moda`, `Cormorant Garamond` — 60-90 px on the 420-canvas). Small caps body. Strong size hierarchy.
+**Decoration**: vertical text elements (`writing-mode: vertical-rl`) — magazine columns; thin one-pixel rules; FIG. 1 / VOL. annotations.
+**Photo frame**: full-bleed on one side (asymmetric); large; the photo IS the design.
+**NEVER**: ornate decoration, symmetric layouts, multiple competing accent colors.
 
 ### newspaper
-Old-print broadsheet. Palette: *Newspaper / sepia*. Typography: `Playfair Display` for headlines, `EB Garamond` for body, ZH = `Songti SC`. Decorative: faux masthead with "The X Times" (use `{{site.newspaper_title}}`), column rules, fake byline `By staff reporter`, FIG. 1 photo caption, drop cap on first paragraph. Treat it as a single front-page article about the wedding.
+
+**Spirit**: front-page newspaper article ABOUT the wedding. Old broadsheet feel, sepia / newsprint aging, columns of type.
+**Starting palette**: newsprint cream (`#f4ede0`-ish), ink black, optional sepia accent. Looks like aged paper.
+**Typography**: `Playfair Display` for headlines, `EB Garamond` for body, `Songti SC` for ZH. Drop caps on first paragraph. Italic byline.
+**Decoration**: faux masthead with "The X Times" (`{{site.newspaper_title}}`); column rules; FIG. 1 photo caption; fake byline ("By staff reporter").
+**Photo frame**: square or rectangle with thin caption below. Black-and-white or sepia photo treatment.
+**NEVER**: bright modern colors, sans-serif body, glossy effects, drop shadows.
 
 ### letter (手写信笺)
-Personal letter feel. Palette: warm cream `#f8f1e4` or `#fdf8f0`. Typography: a hand-style serif (`EB Garamond` italic) or actual handwriting font (`Caveat`, `Dancing Script` — use sparingly). Decorative: lined paper effect (very subtle horizontal lines), a "Dear ___," opening, signature at bottom in handwriting style. Asymmetric, intimate.
+
+**Spirit**: personal handwritten letter from the couple to the guest. Intimate, asymmetric, warm.
+**Starting palette**: warm cream paper (`#f8f1e4` / `#fdf8f0`), dark ink (deep brown or black). Maybe one understated accent (a single seal-red, a navy ink).
+**Typography**: hand-style serif (`EB Garamond` italic) or actual handwriting font (`Caveat`, `Dancing Script` — use sparingly, only for the signature). For ZH letters, `Ma Shan Zheng` or a hand-feel font.
+**Decoration**: lined paper effect (very subtle horizontal rules); a "Dear ___," opening line; a signature at bottom in handwriting style.
+**Photo frame**: small, tucked, often square or polaroid-like. Sometimes no photo at all (let the letter speak).
+**NEVER**: ornate borders, symmetric formal layouts, multiple competing colors, glossy effects.
 
 ### modern-minimal
-Scandi-Japanese minimalism. Palette: *Modern minimal*. Typography: sans-serif throughout (`Inter`), generous size hierarchy. Decorative: **nothing.** Empty space IS the decoration. A single thin horizontal rule, maybe. One small accent line for date.
+
+**Spirit**: Scandi-Japanese restraint. Type does all the heavy lifting. Empty space is the decoration.
+**Starting palette**: off-white background (`#fafaf7`-ish), near-black text, optional one muted accent (`#b8956a` muted gold, soft sage, or skip the accent entirely).
+**Typography**: sans-serif throughout (`Inter`, `Manrope`, `DM Sans`). Generous size hierarchy — the date is huge, names are large, supporting info is small. Light weight preferred.
+**Decoration**: **nothing.** Maybe one thin horizontal rule. One small accent line below the date. That's it.
+**Photo frame**: oval (small, off-center), tall rectangle, or no photo (text-only save-the-date).
+**NEVER**: any decoration beyond a single rule, multiple colors, brush scripts, ornate borders.
 
 ### mediterranean
-Outdoor / destination. Palette: *Mediterranean*. Typography: relaxed serif (`EB Garamond`), informal small caps. Decorative: olive branch line-art (SVG), sun rays at corner, optional wave motif. Mood: sunny, casual, beach.
+
+**Spirit**: outdoor destination — sunny, casual, beach / vineyard / olive grove. Warmth + leaves + a hint of terracotta.
+**Starting palette**: mint-cream background (`#e8f0e8`-ish) or ivory; olive green (`#5a7a5e`) primary; terracotta / clay accent (`#c4825a`); deep text. Adapt to the venue — beach pulls toward blue-greens, vineyard pulls toward warm clay.
+**Typography**: relaxed serif (`EB Garamond`, `Cormorant Garamond`). Casual feel, not formal small caps.
+**Decoration**: olive branch line-art (SVG); optional sun rays from corner; optional wave motif. Sparse — let the warmth of the palette carry it.
+**Photo frame**: rounded rectangle, soft arch, or oval. Casual outdoor feel.
+**NEVER**: heavy gold, dark formal backgrounds, brush calligraphy, jewel-tone saturation.
 
 ### vintage-stars (复古星空)
-Celestial / night wedding. Palette: *Vintage stars*. Typography: serif (`Cormorant Garamond` italic) + tiny brass-color caps. Decorative: small star icons scattered (SVG `★` or 4-point asterisks), constellation lines, optional small moon phase glyph, gold border. Mood: night-sky romantic.
+
+**Spirit**: celestial / night wedding — moon, stars, deep sky, brass accents. Romantic + dreamy.
+**Starting palette**: midnight blue (`#0e1428`-ish) or deep indigo background; brass (`#c8a154`-ish) for accents; star-white highlights; cream text.
+**Typography**: serif (`Cormorant Garamond` italic, `Playfair Display` italic) + tiny brass-color caps for labels.
+**Decoration**: small star icons scattered (real SVG, not emoji); constellation lines connecting a few; optional moon phase glyph; thin gold border.
+**Photo frame**: oval, arched, or in a starry frame. Photo can have a slight cool tone.
+**NEVER**: bright modern colors, beachy palettes, casual sans-serif, daytime energy.
 
 ### retro-poster
-Old travel-poster aesthetic. Palette: mustard `#d4a02a` / teal `#3a7060` / cream `#f4e8c4`. Typography: condensed bold sans (`Bebas Neue`), all caps. Decorative: thick block borders, sun-ray motif from corner, geometric retro shapes, location stamp.
+
+**Spirit**: old travel-poster aesthetic — bold flat color blocks, condensed type, geometric sun-ray motifs, mid-century feel.
+**Starting palette**: warm mustard (`#d4a02a`-ish), teal (`#3a7060`-ish), cream (`#f4e8c4`-ish). Adapt to the era you're invoking (1920s travel = teal+mustard; 1950s = mint+coral; 1970s = avocado+orange).
+**Typography**: condensed bold sans (`Bebas Neue`, `Oswald`, `Anton`). All caps. Strong leading.
+**Decoration**: thick block borders; sun-ray motif from corner; geometric retro shapes (circles, triangles); a "location stamp" rectangle.
+**Photo frame**: rectangle with thick mid-century border. Photo color-tinted to match the era.
+**NEVER**: serif body, soft pastels, ornate florals, asymmetric whitespace.
 
 ### ink-flower (水墨花卉)
-Chinese ink-painting feel. Palette: rice paper background, ink black, single accent color (peach pink or plum red). Typography: ZH = `Ma Shan Zheng` (brush) for headlines, `Noto Serif SC` for body. Decorative: a single ink-flower painting at corner (SVG line art or PNG), red seal stamp (could be `{{names.groom_zh.0}}` in a square red box), splashes of ink as wash effects. Asymmetric, soft.
+
+**Spirit**: Chinese ink-painting feel — rice paper, brush strokes, one delicate floral motif. Soft + traditional + literary.
+**Starting palette**: rice paper background (`#fafafa` or `#f5efe1` warm), ink black, one accent color (peach pink / plum red / soft jade — pick ONE).
+**Typography**: ZH = `Ma Shan Zheng` (brush) for headlines; `Noto Serif SC` for body. EN = quiet light serif.
+**Decoration**: a single ink-flower painting at one corner (SVG line art or PNG); a red seal stamp (`{{names.groom_zh.0}}` in a square red box) is iconic; optional ink-wash splash.
+**Photo frame**: irregular soft shape, fan, or no frame (image fades into rice paper).
+**NEVER**: multiple competing accent colors, symmetric heavy ornament, modern sans-serif, glossy effects.
 
 ### indian (印度)
-Regal traditional Indian wedding. Palette: *Indian regal*. Typography: `Cinzel` for English caps headers, `Cormorant Garamond` for body; for Hindi/Devanagari `Tiro Devanagari Hindi` or `Noto Serif Devanagari`. Decorative: a large mandala SVG at top (concentric rings with 8 petals + gold lines), paisley flourishes on the sides (curved drop shapes with inner detail), a row of stylized lotus / marigolds at bottom. Heavy gold-on-maroon palette. Multi-layered ornate frame around photo (gold rings, double border). Mood: regal, abundant, ceremonial.
+
+**Spirit**: regal traditional Indian wedding — abundance, ornate gold-on-maroon, mandala / paisley / marigold motifs. Ceremonial richness.
+**Starting palette**: deep maroon (`#7a1f2e`-ish) or rich red; gold primary (`#d4a02a`-ish); saffron / marigold secondary (`#e8a042`); ivory text. The dress carries warm reds and golds; the design echoes them.
+**Typography**: Latin = `Cinzel` for headers (caps, decorative), `Cormorant Garamond` for body. Hindi/Devanagari = `Tiro Devanagari Hindi` or `Noto Serif Devanagari`.
+**Decoration**: a large mandala SVG at the top (concentric rings with 8 petals + gold lines); paisley flourishes on the sides; a row of stylized lotus / marigolds at bottom. Multi-layered ornate frame around the photo (gold rings, double border).
+**Photo frame**: ornate gold double or triple border; circle or arched top.
+**NEVER**: muted Morandi tones, sans-serif body, minimal decoration, single-color schemes.
+**Hard cultural requirements**: gold-on-maroon dominance; at least one of the iconic motifs (mandala / paisley / marigold) present.
 
 ### arabic (阿拉伯 / Islamic geometric)
-Middle Eastern formal. Palette: *Arabic geometric*. Typography: `Amiri` for Arabic script lines, `Cormorant Garamond` for English; ZH = `Noto Serif SC`. Decorative: photo wrapped in an arched (mihrab-style) frame — flat bottom, curved arch top. Subtle 8-point star tile pattern as background. Arabesque corner ornaments (curling vine + small star at each corner). 8-point star or "✦" as section dividers. Heavy symmetry, gold-on-teal palette.
+
+**Spirit**: Middle Eastern formal — Islamic geometric pattern, mihrab arch, 8-point star tiles. Symmetric, refined, gold-on-teal.
+**Starting palette**: teal / deep green (`#1d6160`-ish) background; gold primary (`#c8a040`); ivory (`#f0e0c0`) for highlights and text. Adapt teal hue toward navy or emerald if the photo suggests.
+**Typography**: Arabic = `Amiri` (proper Arabic typeface). Latin = `Cormorant Garamond`. ZH = `Noto Serif SC`. Right-to-left layout for Arabic with `dir="rtl"` on `<html>`.
+**Decoration**: photo wrapped in a mihrab arch (flat bottom, curved arch top); subtle 8-point star tile pattern as background texture; arabesque corner ornaments; "✦" or 8-point star as section dividers.
+**Photo frame**: **mihrab arch is mandatory** — flat bottom edge, smooth curved top.
+**NEVER**: asymmetric layout, brush scripts, casual photography, muted Morandi tones.
+**Hard cultural requirements**: mihrab arch around the photo; gold-on-teal palette; geometric (not organic) ornament; symmetric layout.
 
 ### latin (拉美 / Mexican folk)
-Vibrant Latin folk art. Palette: *Latin folk*. Typography: `Cinzel` decorative for headers, `Cormorant Garamond` italic for romance lines. Decorative: papel picado-style cut-paper banner at top (rectangle with cut-out shapes in different colors), marigold flower clusters at corners (orange petals + red center, with green stem), Talavera-tile striped border at bottom (alternating coral / turquoise / marigold blocks). Photo with double-color border (gold outer + turquoise inner). Mood: festive, warm, joyful.
+
+**Spirit**: vibrant Mexican / Latin folk art — papel picado, marigolds, Talavera tile, joyful warmth.
+**Starting palette**: warm cream (`#faf2e4`-ish); coral / hot pink primary (`#e7665a`); turquoise + marigold secondary (`#3aa39a`, `#e8a330`); deep warm text. This is the one aesthetic where MORE color is the point.
+**Typography**: `Cinzel` decorative for headers; `Cormorant Garamond` italic for romance lines.
+**Decoration**: papel picado-style cut-paper banner at top (rectangle with cut-out shapes in different colors); marigold flower clusters at corners (orange petals + red center, with green stem); Talavera-tile striped border at bottom (alternating coral / turquoise / marigold blocks).
+**Photo frame**: double-color border (gold outer + turquoise inner).
+**NEVER**: muted tones, single-color schemes, austere minimalism, brush scripts.
+**Hard cultural requirements**: at least one of (papel picado, marigold, Talavera tile) present; vibrant multi-hue palette.
 
 ### french-provence (法式普罗旺斯)
-French countryside romance. Palette: *French Provence*. Typography: `Allura` cursive for monograms / `amour` script, `Cormorant Garamond` for headlines, `EB Garamond` for body. Decorative: lavender sprigs arching over the top (curved branch + small purple ellipse flowers), botanical line-art running down the sides (vine + small leaves), subtle gold dot dividers. Photo with vintage rounded-top frame (50% 50% 4px 4px border-radius). Mood: soft, romantic, countryside elegance.
 
-### korean-hanbok (韩式)
-Traditional Korean Joseon-era formal. Palette: *Korean royal*. Typography: `Nanum Myeongjo` for Korean characters (e.g. 결혼, 신랑, 신부), `Cormorant Garamond` italic for English; ZH = `Noto Serif SC`. Decorative: solid emerald top band, traditional Korean knot (kkwaegi) ornament centered in the band (a 4-loop knot drawn as overlapping curves), persimmon / lotus motifs in vertical strips on the sides (red circles with gold petals), thin rose-gold bottom band. Photo with arched-top frame (matches royal portrait conventions). Mood: ceremonial, jewel-toned, traditional.
+**Spirit**: French countryside romance — lavender fields, olive groves, soft pastels, hand-script monograms. Pastoral elegance.
+**Starting palette**: ivory (`#f5f1e8`-ish); lavender (`#a08fbf`) primary; sage (`#8a9882`) secondary; deep mauve text (`#4a3a4a`-ish). Adapt: cooler lavender for hotter days, warmer mauve for evening venues.
+**Typography**: `Allura` cursive for monograms or "amour" script (small, used as accent); `Cormorant Garamond` for headlines; `EB Garamond` for body.
+**Decoration**: lavender sprigs arching over the top (curved branch + small purple ellipses); botanical line-art running down the sides (vine + leaves); subtle gold dot dividers.
+**Photo frame**: vintage rounded-top frame (`border-radius: 50% 50% 4px 4px`).
+**NEVER**: bold saturated colors, heavy formal layouts, condensed sans, dark backgrounds.
 
-### Adapting any aesthetic to non-CJK languages
-The aesthetic is the **palette + decorative motifs**, not the language. For an English-only morandi invitation: drop the Chinese fonts, use Inter/Manrope throughout, but keep the morandi palette and the asymmetric layout. The cultural aesthetics (`new-chinese`, `red-gold`, `palace`, `wabi-sabi`) have stronger cultural baggage — use them only when the language matches OR the couple explicitly wants that aesthetic.
+### korean-hanbok (韩식)
+
+**Spirit**: Joseon-era Korean royal formal — emerald + rose + gold, kkwaegi knot, ceremonial calm. Traditional jewel-toned.
+**Starting palette**: cream (`#f5ede0`) background; emerald green (`#326b3c`-ish) primary; gold (`#c8a040`) accent; rose (`#c9817e`) tertiary; deep emerald text.
+**Typography**: Korean = `Nanum Myeongjo` for headings (e.g. 결혼, 신랑, 신부). Latin = `Cormorant Garamond` italic. ZH = `Noto Serif SC`.
+**Decoration**: solid emerald top band; traditional Korean kkwaegi knot ornament centered in the band (4-loop knot drawn as overlapping SVG curves); persimmon / lotus motifs in vertical strips on the sides (red circles with gold petals); thin rose-gold bottom band.
+**Photo frame**: arched-top frame (matches royal portrait conventions).
+**NEVER**: casual outdoor energy, muted Morandi tones, brush calligraphy that's not Korean.
+**Hard cultural requirements**: kkwaegi knot or equivalent traditional Korean motif present; jewel-toned palette (not pastel).
+
+### Adapting an aesthetic to a different language
+
+The aesthetic IS the spirit + palette + decoration vocabulary — not the language. For an English-only `morandi` invitation, drop the Chinese fonts and use Inter/Manrope throughout; keep the morandi palette/spirit/asymmetry. For a Chinese `art-deco` invitation, use `Bodoni Moda` for the small EN bits and `Songti SC` for the Chinese names, but keep the gold-on-black symmetry.
+
+The strongly culture-specific aesthetics (`new-chinese`, `red-gold`, `palace`, `ink-flower`, `wabi-sabi`, `indian`, `arabic`, `latin`, `korean-hanbok`) have stronger cultural baggage. Use them only when the language / cultural fit matches, OR the couple explicitly wants that aesthetic. Don't force an English-language wedding into a `red-gold` Chinese banquet aesthetic just because the photo happens to be in red attire.
+
+### When the photo and the aesthetic conflict
+
+Aesthetics aren't fixed cages. Stretch them to match the couple:
+
+- Photo is full-length outdoor casual + couple wants `morandi`: keep the morandi spirit, but loosen — wider rectangle frame instead of oval, larger photo area, less aggressive negative space.
+- Photo is bright vermilion qipao + couple wants `wabi-sabi`: that's a real conflict. Either talk them into `new-chinese` (better photo-aesthetic fit) OR honor the wabi-sabi spirit by treating the photo as a single bold ink-mark on white.
+- Couple is bilingual zh+en + wants `morandi`: keep morandi visual, use a Chinese family-name as a tiny stamp accent if they want a cultural touch — adapt without breaking the spirit.
+
+**The agent uses judgment.** The vocabulary above is a starting point, not a destination.
 
 ## Photo handling
 
