@@ -323,3 +323,46 @@ export const STYLE_META = {
     }
   }
 };
+
+// Photo compatibility — for each template, which of the 20 example photos
+// visually fit the aesthetic. First entry is always the template's own
+// primary photo (rendered by default). Additional entries enable a photo
+// switcher on the detail page. Curated by hand based on tonal palette,
+// subject framing, formality, and cultural register.
+//
+// Cultural-specific templates (indian / arabic / latin / korean-hanbok) and
+// the object-only template (letter, just rings on paper) have only their
+// own photo — there's nothing else that fits without breaking the design.
+export const COMPATIBLE_PHOTOS = {
+  // Warm Chinese formal cluster — refined portraits with traditional outfits
+  'style01-new-chinese':   ['style01-new-chinese', 'style13-ink-flower', 'style09-gugong'],
+  'style04-red-gold':      ['style04-red-gold', 'style01-new-chinese', 'style09-gugong'],
+  'style09-gugong':        ['style09-gugong', 'style13-ink-flower', 'style01-new-chinese'],
+  'style13-ink-flower':    ['style13-ink-flower', 'style09-gugong', 'style11-wabi-sabi', 'style01-new-chinese'],
+
+  // Modern minimalist neutral cluster — clean cream/grey contemporary
+  'style02-modern-minimal': ['style02-modern-minimal', 'style03-morandi', 'style19-french-provence', 'style10-mediterranean'],
+  'style03-morandi':        ['style03-morandi', 'style19-french-provence', 'style10-mediterranean', 'style02-modern-minimal'],
+  'style10-mediterranean':  ['style10-mediterranean', 'style03-morandi', 'style19-french-provence', 'style02-modern-minimal'],
+  'style19-french-provence':['style19-french-provence', 'style03-morandi', 'style10-mediterranean', 'style02-modern-minimal'],
+
+  // Editorial / dark-glamour cluster — dramatic black-tie / fashion shots
+  'style05-vogue':         ['style05-vogue', 'style06-black-gold', 'style12-art-deco'],
+  'style06-black-gold':    ['style06-black-gold', 'style05-vogue', 'style12-art-deco'],
+  'style12-art-deco':      ['style12-art-deco', 'style06-black-gold', 'style05-vogue'],
+  'style15-vintage-stars': ['style15-vintage-stars', 'style12-art-deco', 'style06-black-gold'],
+
+  // Vintage / themed
+  'style07-newspaper':     ['style07-newspaper', 'style14-retro-poster'],
+  'style14-retro-poster':  ['style14-retro-poster', 'style07-newspaper'],
+
+  // Japanese ink — shares ink-painting backdrop with ink-flower
+  'style11-wabi-sabi':     ['style11-wabi-sabi', 'style13-ink-flower'],
+
+  // Single-photo (no alternates fit) — object photo or highly culture-specific outfits
+  'style08-letter':        ['style08-letter'],
+  'style16-indian':        ['style16-indian'],
+  'style17-arabic':        ['style17-arabic'],
+  'style18-latin':         ['style18-latin'],
+  'style20-korean-hanbok': ['style20-korean-hanbok']
+};

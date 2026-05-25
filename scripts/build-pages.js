@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fixtureFor, render } from './fixtures.js';
-import { STYLE_META } from './style-meta.js';
+import { STYLE_META, COMPATIBLE_PHOTOS } from './style-meta.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const EXAMPLES_DIR = path.join(ROOT, 'examples');
@@ -21,6 +21,7 @@ const PHOTOS_DIR = path.join(EXAMPLES_DIR, 'photos');
 const THUMBS_DIR = path.join(EXAMPLES_DIR, 'thumbnails');
 const DOCS_DIR = path.join(ROOT, 'docs');
 const SITE_THUMBS_DIR = path.join(DOCS_DIR, 'thumbnails');
+const SITE_PHOTOS_DIR = path.join(DOCS_DIR, 'photos');
 const INV_DIR = path.join(DOCS_DIR, 'invitations');
 
 const COPY = {
@@ -47,6 +48,8 @@ const COPY = {
     downloadSocialHint: '1080 × 1440 · messaging, email',
     downloadPrintLabel: 'Print',
     downloadPrintHint: '2160 × 2880 · 300 DPI for printing',
+    photoSwitcherLabel: 'Photo',
+    photoSwitcherAriaTemplate: 'Switch to photo NAME',
     footerLead: 'Built with the',
     footerLink: 'wedding-invitation skill',
     footerTail: '· MIT License · No data leaves your machine.'
@@ -74,6 +77,8 @@ const COPY = {
     downloadSocialHint: '1080 × 1440 · 微信 / 邮件',
     downloadPrintLabel: '印刷版',
     downloadPrintHint: '2160 × 2880 · 300 DPI 印刷',
+    photoSwitcherLabel: '换照片',
+    photoSwitcherAriaTemplate: '切换到照片 NAME',
     footerLead: '由',
     footerLink: 'wedding-invitation skill',
     footerTail: '生成 · MIT 许可 · 数据不出本机。'
@@ -348,35 +353,103 @@ const DETAIL_CSS = `
   .preview {
     flex: 0 0 auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 14px;
     min-height: 0;
     position: relative;
   }
-  /* Zoom controls overlay (PC only) — fade in on hover */
-  .zoom-controls {
+  /* Photo switcher: a single horizontal row of thumbs, just below the card.
+     Visible on all viewports (unlike zoom). */
+  .photo-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: calc(var(--tpl-w) * var(--iframe-scale));
+    max-width: 100%;
+  }
+  .photo-switcher-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .photo-switcher-thumbs {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212,184,150,0.35) transparent;
+    padding: 2px 1px;
+  }
+  .photo-switcher-thumbs::-webkit-scrollbar { height: 3px; }
+  .photo-switcher-thumbs::-webkit-scrollbar-thumb { background: rgba(212,184,150,0.35); border-radius: 2px; }
+  .photo-switcher-thumbs::-webkit-scrollbar-track { background: transparent; }
+  .photo-switcher-thumbs button {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1.5px solid transparent;
+    border-radius: 3px;
+    background: var(--bg-elevated);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.18s, transform 0.15s;
+  }
+  .photo-switcher-thumbs button:hover { transform: translateY(-1px); }
+  .photo-switcher-thumbs button.active { border-color: var(--accent); }
+  .photo-switcher-thumbs button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+    pointer-events: none;
+  }
+  /* Zoom controls (PC only).
+     The hover-zone is the BOTTOM strip of the card (the last ~60px). Moving
+     onto the top / middle of the card does NOT show controls — only when the
+     cursor enters the bottom strip near where the controls will render.
+     The strip is inside .frame so it's always accessible regardless of
+     viewport size. When shown, controls are semi-transparent so they don't
+     overpower the design behind; direct hover bumps opacity higher. */
+  .zoom-zone {
     position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .zoom-controls {
     display: flex;
     gap: 2px;
     padding: 4px;
-    background: rgba(14, 11, 7, 0.85);
+    background: rgba(14, 11, 7, 0.72);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(42, 34, 24, 0.6);
     border-radius: 999px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s;
-    z-index: 10;
   }
-  .preview:hover .zoom-controls,
-  .zoom-controls:hover,
+  .zoom-zone:hover .zoom-controls,
   .zoom-controls:focus-within {
-    opacity: 1;
+    opacity: 0.55;
     pointer-events: auto;
+  }
+  .zoom-controls:hover {
+    opacity: 0.95;
   }
   .zoom-btn {
     width: 30px;
@@ -410,7 +483,7 @@ const DETAIL_CSS = `
     justify-content: center;
   }
   @media (max-width: 960px) {
-    .zoom-controls { display: none; }
+    .zoom-zone { display: none; }
   }
   /* The card frame: shadow + thin gold hairline. No outer box. */
   .preview .frame {
@@ -738,11 +811,13 @@ const DETAIL_CSS = `
 
 // --- render helpers ---
 
+// Photo URL written into the rendered invitation HTML. The iframe lives at
+// docs/invitations/<id>.html; photos live at docs/photos/<id>.jpg — relative
+// path from the iframe is "../photos/<id>.jpg".
 function photoUrlFor(templateId) {
   const specific = path.join(PHOTOS_DIR, `${templateId}.jpg`);
-  const fallback = path.join(PHOTOS_DIR, 'placeholder-couple.jpg');
-  const chosen = fs.existsSync(specific) ? specific : fallback;
-  return 'data:image/jpeg;base64,' + fs.readFileSync(chosen).toString('base64');
+  if (fs.existsSync(specific)) return `../photos/${templateId}.jpg`;
+  return `../photos/placeholder-couple.jpg`;
 }
 
 function renderInvitation(templateId) {
@@ -762,11 +837,24 @@ function renderInvitation(templateId) {
   };
 
   let html = render(tpl, { ...fixtureFor(templateId), design: designCtx });
-  // Strip body padding so the iframe sees just the card
+  // Strip body padding so the iframe sees just the card, AND inject a tiny
+  // postMessage listener so the parent gallery's photo-switcher can swap
+  // #main-photo without reloading the iframe.
   const frame = `<style id="__pages_frame__">
     html, body { margin: 0; padding: 0; background: transparent; width: 420px; height: ${height}px; overflow: hidden; }
     body > .card { box-shadow: none; margin: 0; }
-  </style></head>`;
+  </style>
+  <script>
+    (function () {
+      window.addEventListener('message', function (e) {
+        var d = e && e.data;
+        if (!d || d.type !== 'set-photo' || !d.url) return;
+        var img = document.getElementById('main-photo');
+        if (img) img.setAttribute('src', d.url);
+      });
+      try { parent.postMessage({ type: 'photo-iframe-ready', id: ${JSON.stringify(templateId)} }, '*'); } catch (_) {}
+    })();
+  </script></head>`;
   html = html.replace(/<\/head>/, frame);
   return { html, height };
 }
@@ -853,6 +941,23 @@ function detailHtml(templateId, prevId, nextId, height) {
   const prevMeta = STYLE_META[prevId] || {};
   const nextMeta = STYLE_META[nextId] || {};
 
+  // Photo switcher: render the strip only when 2+ compatible photos exist.
+  // data-photo-url is what we send to the iframe via postMessage — relative
+  // to docs/invitations/, so the iframe resolves it correctly.
+  // The <img src> uses photos/ (relative to the detail page) for the thumb itself.
+  const compatible = COMPATIBLE_PHOTOS[templateId] || [templateId];
+  const switcherHtml = compatible.length >= 2 ? `      <div class="photo-switcher">
+        <span class="photo-switcher-label" data-i18n data-en="${COPY.en.photoSwitcherLabel}" data-zh="${COPY.zh.photoSwitcherLabel}">${COPY.en.photoSwitcherLabel}</span>
+        <div class="photo-switcher-thumbs" id="photo-switcher-thumbs">${compatible.map((pid, i) => {
+          const isActive = i === 0;
+          const cls = isActive ? ' class="active"' : '';
+          const ariaEn = COPY.en.photoSwitcherAriaTemplate.replace('NAME', pid);
+          const ariaZh = COPY.zh.photoSwitcherAriaTemplate.replace('NAME', pid);
+          return `<button type="button"${cls} data-photo-url="../photos/${pid}.jpg" data-photo-id="${pid}" data-aria-en="${ariaEn}" data-aria-zh="${ariaZh}" aria-label="${ariaEn}"><img src="photos/${pid}.jpg" alt="" loading="lazy"></button>`;
+        }).join('')}</div>
+      </div>
+` : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -918,16 +1023,18 @@ function detailHtml(templateId, prevId, nextId, height) {
 
   <main class="detail">
     <div class="preview">
-      <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
-        <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
-        <span class="zoom-level" id="zoom-level">100%</span>
-        <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
-        <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
-      </div>
       <div class="frame">
-        <iframe src="invitations/${templateId}.html" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
+        <iframe id="design-iframe" src="invitations/${templateId}.html" frameborder="0" scrolling="no" loading="lazy" title="${meta.name} invitation preview"></iframe>
+        <div class="zoom-zone">
+          <div class="zoom-controls" role="toolbar" aria-label="Zoom invitation">
+            <button class="zoom-btn" data-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" data-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
+            <button class="zoom-btn reset" data-zoom="reset" aria-label="Reset zoom" title="Fit to screen">⤢</button>
+          </div>
+        </div>
       </div>
-    </div>
+${switcherHtml}    </div>
 
     <div class="detail-info">
       <div class="style-header">
@@ -1077,6 +1184,60 @@ function detailHtml(templateId, prevId, nextId, height) {
       window.addEventListener('resize', () => {
         if (levelEl) levelEl.textContent = fmtPct(currentScale());
       });
+
+      // ----- Photo switcher -----
+      const thumbs = document.getElementById('photo-switcher-thumbs');
+      const iframe = document.getElementById('design-iframe');
+      if (thumbs && iframe) {
+        let current = null;
+        let defaultUrl = null;
+        const initial = thumbs.querySelector('button.active');
+        if (initial) {
+          current = initial.getAttribute('data-photo-url');
+          defaultUrl = current;
+        }
+
+        function sendPhoto(url) {
+          if (!iframe.contentWindow) return;
+          try { iframe.contentWindow.postMessage({ type: 'set-photo', url }, '*'); } catch (_) {}
+        }
+
+        // Iframe announces ready via build-pages.js's injected listener; if
+        // the user has clicked a non-default thumb before then, push the
+        // current selection so refreshing the iframe doesn't revert.
+        window.addEventListener('message', e => {
+          const d = e && e.data;
+          if (!d || d.type !== 'photo-iframe-ready') return;
+          if (current && current !== defaultUrl) sendPhoto(current);
+        });
+
+        thumbs.addEventListener('click', e => {
+          const btn = e.target.closest('button[data-photo-url]');
+          if (!btn) return;
+          const url = btn.getAttribute('data-photo-url');
+          if (!url || url === current) return;
+          current = url;
+          thumbs.querySelectorAll('button').forEach(b => {
+            b.classList.toggle('active', b === btn);
+          });
+          sendPhoto(url);
+        });
+
+        // Refresh thumb aria-labels when language toggles
+        document.querySelectorAll('.lang-switch button').forEach(b => {
+          b.addEventListener('click', () => {
+            const l = b.dataset.setLang;
+            thumbs.querySelectorAll('button[data-aria-' + l + ']').forEach(t => {
+              t.setAttribute('aria-label', t.getAttribute('data-aria-' + l));
+            });
+          });
+        });
+        // Initial aria sync to saved language
+        const savedLang = localStorage.getItem('wis-lang') === 'zh' ? 'zh' : 'en';
+        thumbs.querySelectorAll('button[data-aria-' + savedLang + ']').forEach(t => {
+          t.setAttribute('aria-label', t.getAttribute('data-aria-' + savedLang));
+        });
+      }
     })();
   </script>
 </body>
@@ -1089,6 +1250,7 @@ function detailHtml(templateId, prevId, nextId, height) {
 function main() {
   fs.mkdirSync(DOCS_DIR, { recursive: true });
   fs.mkdirSync(SITE_THUMBS_DIR, { recursive: true });
+  fs.mkdirSync(SITE_PHOTOS_DIR, { recursive: true });
   fs.mkdirSync(INV_DIR, { recursive: true });
 
   // Clean stale top-level HTMLs and invitations
@@ -1103,6 +1265,15 @@ function main() {
   for (const f of fs.readdirSync(THUMBS_DIR)) {
     if (f.endsWith('.png')) {
       fs.copyFileSync(path.join(THUMBS_DIR, f), path.join(SITE_THUMBS_DIR, f));
+    }
+  }
+
+  // Copy photos so the photo-switcher can reference them by URL.
+  // (Previously photos were embedded as base64 data URIs, making each
+  // invitation HTML 1-2 MB. URL refs cut each to ~25 KB and enable swap.)
+  for (const f of fs.readdirSync(PHOTOS_DIR)) {
+    if (/\.(jpe?g|png)$/i.test(f)) {
+      fs.copyFileSync(path.join(PHOTOS_DIR, f), path.join(SITE_PHOTOS_DIR, f));
     }
   }
 
