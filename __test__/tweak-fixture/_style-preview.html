@@ -46,7 +46,7 @@
     <div class="wis-pb">由 <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a> 设计制作</div>
   </nav>
   <h1>挑一个风格方向</h1>
-  <p class="note">这些是<strong>方向</strong>，不是成品模板。Agent 会用你的语言、你的照片、你的喜好为你重新设计一张请帖。<br>看哪个最对味就点哪张。都不喜欢？也可以选最后的 <strong>Custom / 自定义</strong>，直接进设计台。</p>
+  <p class="note">这些是<strong>方向</strong>，不是成品模板。Agent 会用你的语言、你的照片、你的喜好为你重新设计一张请帖。<br>看哪个最对味就点哪张（<strong>可多选</strong> — 想让 Agent 一次生成几张备选就多选几个）。都不喜欢？也可以选最后的 <strong>Custom / 自定义</strong>，直接进设计台。</p>
   <p class="back-to-agent">选完点 <strong>复制</strong>，然后回到<strong>对话窗口</strong>把内容粘贴过去。如果想换一批 candidate 风格，在对话里直接说"换一批"。</p>
   <div class="grid">
 
@@ -157,7 +157,7 @@
 
   </div>
   <div class="summary empty" id="summary">
-    <span class="picks-area">未选 · 点击风格选中</span>
+    <span class="picks-area">未选 · 点击风格选中（可多选）</span>
     <button type="button" class="copy-btn" id="copy-btn">复制</button>
   </div>
   <script>
@@ -167,17 +167,16 @@
       var copyBtn = document.getElementById('copy-btn');
       var currentMessage = '';
       function refresh() {
-        var picked = grid.querySelector('.card.selected');
+        var picks = Array.from(grid.querySelectorAll('.card.selected')).map(function (c) { return c.getAttribute('data-name'); });
         var picksEl = summary.querySelector('.picks-area');
-        if (!picked) {
+        if (picks.length === 0) {
           summary.classList.add('empty');
-          picksEl.textContent = '未选 · 点击风格选中';
+          picksEl.textContent = '未选 · 点击风格选中（可多选）';
           currentMessage = '';
         } else {
           summary.classList.remove('empty');
-          var name = picked.getAttribute('data-name');
-          picksEl.innerHTML = '已选 <strong>' + name + '</strong>';
-          currentMessage = '我选 ' + name;
+          picksEl.innerHTML = '已选 <strong>' + picks.join('、') + '</strong>';
+          currentMessage = '我选 ' + picks.join('、');
         }
         copyBtn.classList.remove('copied');
         copyBtn.textContent = '复制';
@@ -185,9 +184,7 @@
       grid.addEventListener('click', function (e) {
         var card = e.target.closest('.card');
         if (!card) return;
-        var wasSelected = card.classList.contains('selected');
-        grid.querySelectorAll('.card.selected').forEach(function (c) { c.classList.remove('selected'); });
-        if (!wasSelected) card.classList.add('selected');
+        card.classList.toggle('selected');
         refresh();
       });
       copyBtn.addEventListener('click', function () {

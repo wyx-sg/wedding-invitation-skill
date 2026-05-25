@@ -229,10 +229,10 @@ This is the most important interaction. **Do not ask "do you want minimal or vin
    - Examples are in their native cultural language; if the user picked a different language, the examples don't match what they'll get.
    - Aesthetics here are **directions**, not finished templates. The picker should communicate direction, not destination.
 
-   Build `_style-preview.html` in the user's working directory. Each card shows: aesthetic name, palette swatches (the suggested starting-point colors from `design-principles.md`), a small typography sample (a few characters in the aesthetic's font family), and one line of spirit / motif description. Cards are **clickable** — clicking selects (single-select; click again to deselect). The page MUST include:
+   Build `_style-preview.html` in the user's working directory. Each card shows: aesthetic name, palette swatches (the suggested starting-point colors from `design-principles.md`), a small typography sample (a few characters in the aesthetic's font family), and one line of spirit / motif description. Cards are **clickable** — clicking toggles selection (**multi-select**; the user may pick one direction OR several if they want a batch of variations). The page MUST include:
    - A centered **two-line header at the top**: brand (婚礼请帖 / Wedding Invitation) on top, "Made with wedding-invitation-skill" / "由 wedding-invitation-skill 设计制作" small below (localized). Linked to https://github.com/wyx-sg/wedding-invitation-skill.
    - A short note near the top reminding the user of the flow: pick → click Copy → paste back into chat (localized). Use a generic phrase ("back to chat" / "回到对话窗口") — don't name a specific agent host.
-   - A sticky bottom summary bar with: current selection (`已选 morandi`), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence like `我选 morandi` to clipboard (uses `navigator.clipboard.writeText` with `document.execCommand('copy')` fallback).
+   - A sticky bottom summary bar with: current selection joined by `、` for zh / `,` for en (`已选 morandi、art-deco`), a **Copy** button (hidden when nothing selected) that writes a chat-ready sentence like `我选 morandi、art-deco` to clipboard (uses `navigator.clipboard.writeText` with `document.execCommand('copy')` fallback).
 
    When telling the user in chat (Stage 3 step 4 below), explicitly tell them: pick → Copy → paste back.
 

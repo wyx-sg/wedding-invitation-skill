@@ -171,72 +171,59 @@ const SHARED_CSS = `
     min-height: 100vh;
   }
   a { color: inherit; }
-  .nav-bar {
-    border-bottom: 1px solid var(--border-soft);
-    background: rgba(10, 9, 7, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 50;
-  }
-  .nav-bar .inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 12px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
+  /* Unified header — matches picker pages (_photo-select.html, _style-preview.html)
+     and the standalone-card header injected by build.js. */
+  .wis-nav {
     position: relative;
+    text-align: center;
+    padding: 22px 16px 10px;
   }
-  .nav-brand {
+  .wis-brand {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 18px;
     letter-spacing: 3px;
     color: var(--accent);
-    text-decoration: none;
     text-transform: uppercase;
   }
-  .nav-back {
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.2s;
-  }
-  .nav-back:hover { color: var(--accent); }
-  .nav-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-  .nav-center .nav-brand {
-    /* same as .nav-brand above */
-  }
-  .nav-center .nav-powered-by {
+  .wis-pb {
     font-size: 9.5px;
     letter-spacing: 1.2px;
     color: var(--text-muted);
+    margin-top: 4px;
     font-family: 'Inter', sans-serif;
   }
-  .nav-center .nav-powered-by a {
+  .wis-pb a {
     color: var(--text-dim);
     text-decoration: none;
     border-bottom: 1px dotted var(--border-soft);
     transition: color 0.18s, border-color 0.18s;
   }
-  .nav-center .nav-powered-by a:hover {
+  .wis-pb a:hover {
     color: var(--accent);
     border-bottom-color: var(--accent);
+  }
+  .wis-nav-back {
+    position: absolute;
+    left: 28px;
+    top: 26px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.18s;
+  }
+  .wis-nav-back:hover { color: var(--accent); }
+  @media (max-width: 600px) {
+    .wis-nav-back {
+      position: static;
+      display: block;
+      margin: 0 auto 8px;
+    }
   }
 `;
 
@@ -325,11 +312,11 @@ const DETAIL_CSS = `
     overflow-x: hidden;
     background: radial-gradient(ellipse at top, #110d08 0%, var(--bg) 60%);
   }
-  .nav-bar { flex: 0 0 auto; }
+  .wis-nav { flex: 0 0 auto; }
 
   main.detail {
     flex: 0 0 auto;
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - 80px);
     width: 100%;
     margin: 0 auto;
     padding: 24px 40px 32px;
@@ -1325,17 +1312,10 @@ function detailHtml(design, index, isMulti) {
   <style>${DETAIL_CSS}</style>
 </head>
 <body>
-  <nav class="nav-bar">
-    <div class="inner">
-      ${isMulti ? `<a class="nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>` : '<span></span>'}
-      <div class="nav-center">
-        <span class="nav-brand">${esc(COPY.brand)}</span>
-        <span class="nav-powered-by">
-          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-        </span>
-      </div>
-      <span></span>
-    </div>
+  <nav class="wis-nav">
+    ${isMulti ? `<a class="wis-nav-back" href="index.html"><span>←</span><span>${esc(COPY.backToGallery)}</span></a>` : ''}
+    <div class="wis-brand">${esc(COPY.brand)}</div>
+    <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
   <main class="detail">
     <div class="preview">
@@ -1472,17 +1452,9 @@ function studioHtml(design, index, isMulti) {
   <script>window.__TWEAK_CONFIG__ = ${tweakConfigJson};</script>
 </head>
 <body>
-  <nav class="nav-bar">
-    <div class="inner">
-      <span></span>
-      <div class="nav-center">
-        <span class="nav-brand">${esc(COPY.brand)}</span>
-        <span class="nav-powered-by">
-          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-        </span>
-      </div>
-      <span></span>
-    </div>
+  <nav class="wis-nav">
+    <div class="wis-brand">${esc(COPY.brand)}</div>
+    <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
 
   <main class="detail">
@@ -1544,17 +1516,9 @@ function galleryHtml() {
   <style>${GALLERY_CSS}</style>
 </head>
 <body>
-  <nav class="nav-bar">
-    <div class="inner">
-      <span></span>
-      <div class="nav-center">
-        <a class="nav-brand" href="index.html">${esc(COPY.brand)}</a>
-        <span class="nav-powered-by">
-          ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-        </span>
-      </div>
-      <span></span>
-    </div>
+  <nav class="wis-nav">
+    <div class="wis-brand">${esc(COPY.brand)}</div>
+    <div class="wis-pb">${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}</div>
   </nav>
   <header class="hero">
     <h1>${esc(COPY.pageTitle)}</h1>
