@@ -8,8 +8,8 @@
     "width": 420,
     "height": 560,
     "meta": {
-      "short": "soft contemporary · tweakable",
-      "long": "Muted Morandi palette — warm grey, sage, and sand. Asymmetric, photographer-friendly. Hairline dividers and an oval portrait keep the whole card quiet so the photo carries the moment.",
+      "short": "柔和当代 · 可调",
+      "long": "莫兰迪柔和色调 — 暖灰、苔绿、沙色。非对称构图，留白驱动。细线分隔加椭圆人像，整张请帖安静下来，把焦点让给照片本身。",
       "palette": [
         "#e8e4dc",
         "#7a8a6d",
@@ -19,7 +19,7 @@
       "fonts": [
         "Inter"
       ],
-      "motifs": "oval photo · hairline dividers"
+      "motifs": "椭圆人像 · 细线分隔"
     },
     "tweak_options": {
       "color_schemes": [
@@ -56,21 +56,9 @@
         ]
       },
       "frames": [
-        {
-          "name": "oval",
-          "radius": "50%",
-          "aspect": "4/5"
-        },
-        {
-          "name": "rounded-rect",
-          "radius": "8px",
-          "aspect": "4/5"
-        },
-        {
-          "name": "arch",
-          "radius": "50% 50% 4px 4px",
-          "aspect": "4/5"
-        }
+        { "name_zh": "椭圆", "name_en": "Oval", "radius": "50%", "aspect": "4/5" },
+        { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px", "aspect": "4/5" },
+        { "name_zh": "拱形", "name_en": "Arch", "radius": "50% 50% 4px 4px", "aspect": "4/5" }
       ],
       "components": [
         {
@@ -104,8 +92,8 @@
     "height": 560,
     "custom": true,
     "meta": {
-      "short": "designed from scratch",
-      "long": "Neutral starting point. Pick your own colors, fonts, frame, and optional elements — the agent and the panel meet in the middle.",
+      "short": "从零自定义",
+      "long": "从中性的起点开始，颜色、字体、照片框、可选组件都自己挑。Agent 和这个面板配合着把设计落地。",
       "palette": [
         "#f5f1e8",
         "#8a9882",
@@ -116,7 +104,7 @@
         "Cormorant Garamond",
         "Inter"
       ],
-      "motifs": "fully tweakable"
+      "motifs": "完全可调"
     },
     "tweak_options": {
       "color_schemes": [
@@ -177,31 +165,11 @@
         ]
       },
       "frames": [
-        {
-          "name": "oval",
-          "radius": "50%",
-          "aspect": "4/5"
-        },
-        {
-          "name": "rounded-rect",
-          "radius": "8px",
-          "aspect": "4/5"
-        },
-        {
-          "name": "arch",
-          "radius": "50% 50% 4px 4px",
-          "aspect": "4/5"
-        },
-        {
-          "name": "circle",
-          "radius": "50%",
-          "aspect": "1/1"
-        },
-        {
-          "name": "rectangle",
-          "radius": "2px",
-          "aspect": "4/5"
-        }
+        { "name_zh": "椭圆", "name_en": "Oval", "radius": "50%", "aspect": "4/5" },
+        { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px", "aspect": "4/5" },
+        { "name_zh": "拱形", "name_en": "Arch", "radius": "50% 50% 4px 4px", "aspect": "4/5" },
+        { "name_zh": "圆形", "name_en": "Circle", "radius": "50%", "aspect": "1/1" },
+        { "name_zh": "方形", "name_en": "Rectangle", "radius": "2px", "aspect": "4/5" }
       ],
       "components": [
         {

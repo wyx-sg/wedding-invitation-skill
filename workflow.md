@@ -429,7 +429,7 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
 
    - `color_schemes` — array of `{ name_en, name_zh, vars: { '--card-bg': '#…', '--card-text': '#…', '--card-accent-1': '#…', ... } }`. At least 2 schemes; each must be a complete override (don't leave hue gaps). Stay within the aesthetic's palette — for morandi, all schemes are muted; for art-deco, all are gold-on-dark with different golds.
    - `fonts` — object keyed by font CSS var (`--font-headline`, `--font-body`); each value is an array of 2–3 font-family strings already loaded by the template's `<link>`. Stay within the aesthetic's typography family (Latin serif for art-deco; sans for morandi; brush for red-gold).
-   - `frames` — array of `{ name, radius, aspect }` for photo-frame variants. Pick shapes that the photo's framing supports (see "Photo crop is template-specific" in `design-principles.md`).
+   - `frames` — array of `{ name_zh, name_en, radius, aspect }` for photo-frame variants (bare `name` also accepted as fallback). Pick shapes that the photo's framing supports (see "Photo crop is template-specific" in `design-principles.md`).
    - `components` — array of `{ id, label_en, label_zh, default }` matching the `.optional` class hooks in the template. `default: false` for elements the user usually wants off (lunar-date for non-traditional couples).
 
    Example for a morandi design:
@@ -447,8 +447,8 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
        "--font-body":     ["Inter", "Manrope"]
      },
      "frames": [
-       { "name": "oval", "radius": "50%", "aspect": "4/5" },
-       { "name": "rounded-rect", "radius": "8px", "aspect": "4/5" }
+       { "name_zh": "椭圆", "name_en": "Oval", "radius": "50%", "aspect": "4/5" },
+       { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px", "aspect": "4/5" }
      ],
      "components": [
        { "id": "tagline",    "label_en": "Tagline",    "label_zh": "寄语", "default": true  },
@@ -456,6 +456,8 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
      ]
    }
    ```
+
+   Frame entries support `name_zh` / `name_en` (plus optional bare `name` fallback) so the labels in the panel match the user's primary language.
 
    **Template contract reminder** — for the tweak panel to do anything useful, the template MUST use CSS variables for tweak-able properties (`var(--card-bg)`, `var(--font-headline)`, `var(--photo-radius)`, `var(--photo-aspect)`) and class hooks for optional components (`.lunar-date.hidden { display: none !important; }`). See `design-principles.md` → "Tweakable templates" for the full contract.
 

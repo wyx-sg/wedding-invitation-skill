@@ -458,7 +458,7 @@ Edit `data/designs.json` and add a `tweak_options` block (see Stage 4 in `workfl
 
 - **Color schemes**: at least 2 (e.g. warm / cool, or palette A / B). Each is a complete vars override — don't ship a "cool" scheme that only swaps the accent and leaves a warm bg.
 - **Fonts**: 2–3 options per font variable, all in the aesthetic's family (see Typography above). Don't put a brush script in the "headline" set of a Morandi card.
-- **Frames** (optional): the shapes that work for the photo (see "Photo handling"). If only oval works for your photo, omit the frame switcher.
+- **Frames** (optional): the shapes that work for the photo (see "Photo handling"). Each frame entry uses `name_zh` / `name_en` (and optionally a bare `name` fallback) so the panel labels match the user's primary language. If only oval works for your photo, omit the frame switcher.
 - **Components**: every element you marked `.optional` should appear in `components`. Pick a sensible default (lunar-date defaults to off for most modern Chinese weddings; tagline defaults to on if you wrote one).
 
 If the design doesn't make sense to tweak (e.g. `red-gold`'s red dominance IS the aesthetic — color schemes don't apply), omit `tweak_options` entirely. The panel just won't render.

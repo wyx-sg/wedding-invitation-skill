@@ -739,7 +739,8 @@ function detailHtml(design, index, isMulti) {
     if (Array.isArray(tweak.frames) && tweak.frames.length) {
       const frameButtons = tweak.frames.map((f, i) => {
         const activeClass = i === 0 ? ' active' : '';
-        return `<button type="button" class="tweak-frame-btn${activeClass}" data-tweak-frame="${i}">${esc(f.name || `#${i+1}`)}</button>`;
+        const frameName = (lang === 'zh' ? f.name_zh : f.name_en) || f.name || `#${i+1}`;
+        return `<button type="button" class="tweak-frame-btn${activeClass}" data-tweak-frame="${i}">${esc(frameName)}</button>`;
       }).join('');
 
       sections.push(`<div class="tweak-group" data-section="frame">

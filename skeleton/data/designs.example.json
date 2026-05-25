@@ -42,9 +42,9 @@
         "--font-body":     ["Inter", "Manrope"]
       },
       "frames": [
-        { "name": "oval",          "radius": "50%",                "aspect": "4/5" },
-        { "name": "rounded-rect",  "radius": "8px",                "aspect": "4/5" },
-        { "name": "arch",          "radius": "50% 50% 4px 4px",    "aspect": "4/5" }
+        { "name_zh": "椭圆",   "name_en": "Oval",    "radius": "50%",             "aspect": "4/5" },
+        { "name_zh": "圆角方形", "name_en": "Rounded", "radius": "8px",             "aspect": "4/5" },
+        { "name_zh": "拱形",   "name_en": "Arch",    "radius": "50% 50% 4px 4px", "aspect": "4/5" }
       ],
       "components": [
         { "id": "tagline",      "label_en": "Tagline",        "label_zh": "寄语",    "default": true  },
