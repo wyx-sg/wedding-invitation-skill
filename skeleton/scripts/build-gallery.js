@@ -1024,6 +1024,101 @@ function detailHtml(design, index, isMulti) {
     })();
   </script>
   <script>
+    (function () {
+      var cfg = window.__TWEAK_CONFIG__;
+      var panel = document.getElementById('tweak-panel');
+      var iframe = document.getElementById('design-iframe');
+      if (!cfg || !panel || !iframe) return;
+
+      function send(msg) {
+        if (!iframe.contentWindow) return;
+        try { iframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      }
+
+      function applyDefaults() {
+        if (Array.isArray(cfg.components)) {
+          cfg.components.forEach(function (c) {
+            if (c && c.id && c.default === false) {
+              send({ type: 'toggle-component', id: c.id, visible: false });
+            }
+          });
+        }
+      }
+
+      // Apply defaults once the iframe announces ready.
+      window.addEventListener('message', function (e) {
+        var d = e && e.data;
+        if (d && d.type === 'photo-iframe-ready') applyDefaults();
+      });
+
+      panel.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-tweak-color],[data-tweak-font-var],[data-tweak-frame],#tweak-reset');
+        if (!t) return;
+
+        if (t.id === 'tweak-reset') {
+          send({ type: 'reset' });
+          applyDefaults();
+          panel.querySelectorAll('.tweak-swatch.active,.tweak-font-btn.active,.tweak-frame-btn.active').forEach(function (b) {
+            b.classList.remove('active');
+          });
+          panel.querySelectorAll('.tweak-checkbox').forEach(function (cb) {
+            var id = cb.getAttribute('data-tweak-component');
+            var def = (cfg.components || []).find(function (c) { return c.id === id; });
+            var on = def ? !!def.default : true;
+            cb.classList.toggle('checked', on);
+            var input = cb.querySelector('input');
+            if (input) input.checked = on;
+          });
+          return;
+        }
+
+        if (t.hasAttribute('data-tweak-color')) {
+          var idx = +t.getAttribute('data-tweak-color');
+          var cs = (cfg.color_schemes || [])[idx];
+          if (!cs) return;
+          send({ type: 'set-css-vars', vars: cs.vars || {} });
+          panel.querySelectorAll('[data-tweak-color]').forEach(function (b) {
+            b.classList.toggle('active', b === t);
+          });
+          return;
+        }
+
+        if (t.hasAttribute('data-tweak-font-var')) {
+          var cssVar = t.getAttribute('data-tweak-font-var');
+          var value = t.getAttribute('data-tweak-font-value');
+          var vars = {}; vars[cssVar] = value;
+          send({ type: 'set-css-vars', vars: vars });
+          panel.querySelectorAll('[data-tweak-font-var="' + cssVar + '"]').forEach(function (b) {
+            b.classList.toggle('active', b === t);
+          });
+          return;
+        }
+
+        if (t.hasAttribute('data-tweak-frame')) {
+          var fi = +t.getAttribute('data-tweak-frame');
+          var fr = (cfg.frames || [])[fi];
+          if (!fr) return;
+          send({ type: 'set-frame', radius: fr.radius || '', aspect: fr.aspect || '' });
+          panel.querySelectorAll('[data-tweak-frame]').forEach(function (b) {
+            b.classList.toggle('active', b === t);
+          });
+          return;
+        }
+      });
+
+      panel.addEventListener('change', function (e) {
+        var input = e.target;
+        if (input.tagName !== 'INPUT') return;
+        var label = input.closest('.tweak-checkbox');
+        if (!label) return;
+        var id = label.getAttribute('data-tweak-component');
+        if (!id) return;
+        label.classList.toggle('checked', input.checked);
+        send({ type: 'toggle-component', id: id, visible: input.checked });
+      });
+    })();
+  </script>
+  <script>
     // Zoom controls — operate on the same --iframe-scale custom property used
     // by the preview frame's calc() sizing. Persist per-tab via sessionStorage.
     (function () {
