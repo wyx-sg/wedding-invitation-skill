@@ -208,6 +208,22 @@ const SHARED_CSS = `
     transition: color 0.2s;
   }
   .nav-back:hover { color: var(--accent); }
+  .nav-powered-by {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-powered-by a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--border-soft);
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .nav-powered-by a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
 `;
 
 const GALLERY_CSS = `
@@ -638,25 +654,6 @@ const DETAIL_CSS = `
     color: var(--accent);
     letter-spacing: 3.5px;
   }
-  .powered-by {
-    text-align: center;
-    padding: 24px 16px;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--text-muted);
-    opacity: 0.7;
-    font-family: 'Inter', sans-serif;
-  }
-  .powered-by a {
-    color: var(--text-dim);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--border-soft);
-    transition: color 0.18s, border-color 0.18s;
-  }
-  .powered-by a:hover {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
 `;
 
 // --- detail page ---
@@ -665,6 +662,18 @@ function detailHtml(design, index, isMulti) {
   const meta = design.meta || {};
   // Hex color is a controlled value; light-validate to avoid CSS injection.
   const safeColor = c => /^#?[0-9a-fA-F]{3,8}$/.test(String(c).replace('#', '')) ? c : '#888';
+
+  // Localized field lookup: tries <field>_<lang>, then <field>_en, then bare <field>,
+  // then the provided fallback. Supports any language code in wedding.json languages[0].
+  function localizedName(obj, fields, fallback) {
+    if (!obj) return fallback;
+    const primaryKey = fields + '_' + lang;
+    const enKey = fields + '_en';
+    if (obj[primaryKey] != null && obj[primaryKey] !== '') return obj[primaryKey];
+    if (obj[enKey] != null && obj[enKey] !== '') return obj[enKey];
+    if (obj[fields] != null && obj[fields] !== '') return obj[fields];
+    return fallback;
+  }
   const tplH = design.height || 560;
   const tplW = design.width || 420;
 
@@ -683,7 +692,7 @@ function detailHtml(design, index, isMulti) {
       <div class="photo-switcher-thumbs" id="photo-switcher-thumbs">${photoThumbs}</div>
     </div>` : '';
 
-  const designName = (lang === 'zh' ? design.name_zh : design.name_en) || design.id;
+  const designName = localizedName(design, 'name', design.id);
 
   // Tweak panel — render only when design declares tweak_options.
   // Each section is omitted if the design didn't declare it.
@@ -697,7 +706,7 @@ function detailHtml(design, index, isMulti) {
     // Colors
     if (Array.isArray(tweak.color_schemes) && tweak.color_schemes.length) {
       const swatches = tweak.color_schemes.map((cs, i) => {
-        const name = (lang === 'zh' ? cs.name_zh : cs.name_en) || cs.name || `#${i + 1}`;
+        const name = localizedName(cs, 'name', `#${i + 1}`);
         const dots = Object.values(cs.vars || {}).slice(0, 4)
           .map(v => `<span class="dot" style="background:${safeColor(v)}"></span>`).join('');
         const activeClass = i === 0 ? ' active' : '';
@@ -739,7 +748,7 @@ function detailHtml(design, index, isMulti) {
     if (Array.isArray(tweak.frames) && tweak.frames.length) {
       const frameButtons = tweak.frames.map((f, i) => {
         const activeClass = i === 0 ? ' active' : '';
-        const frameName = (lang === 'zh' ? f.name_zh : f.name_en) || f.name || `#${i+1}`;
+        const frameName = localizedName(f, 'name', `#${i+1}`);
         return `<button type="button" class="tweak-frame-btn${activeClass}" data-tweak-frame="${i}">${esc(frameName)}</button>`;
       }).join('');
 
@@ -752,7 +761,7 @@ function detailHtml(design, index, isMulti) {
     // Components
     if (Array.isArray(tweak.components) && tweak.components.length) {
       const checkboxes = tweak.components.map(c => {
-        const label = (lang === 'zh' ? c.label_zh : c.label_en) || c.label || c.id;
+        const label = localizedName(c, 'label', c.id);
         const stateAttr = c.default ? ' checked' : '';
         return `<label class="tweak-checkbox${stateAttr}" data-tweak-component="${esc(c.id)}">
           <input type="checkbox"${stateAttr}>
@@ -835,9 +844,10 @@ function detailHtml(design, index, isMulti) {
 <body>
   <nav class="nav-bar">
     <div class="inner">
-      <span></span>
       <span class="nav-brand">${esc(COPY.brand)}</span>
-      <span></span>
+      <span class="nav-powered-by">
+        ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
+      </span>
     </div>
   </nav>
   <main class="detail">
@@ -865,9 +875,6 @@ function detailHtml(design, index, isMulti) {
       ${tweakHtml}
     </div>
   </main>
-  <footer class="powered-by">
-    ${esc(COPY.poweredByLabel)} <a href="https://github.com/wyx-sg/wedding-invitation-skill" target="_blank" rel="noopener">wedding-invitation-skill</a>${esc(COPY.poweredBySuffix)}
-  </footer>
   <script>
     (function () {
       var thumbs = document.getElementById('photo-switcher-thumbs');
@@ -1149,7 +1156,11 @@ function detailHtml(design, index, isMulti) {
 
 function galleryHtml() {
   const cards = designs.map(d => {
-    const name = (lang === 'zh' ? d.name_zh : d.name_en) || d.id;
+    const name = (d['name_' + lang] != null && d['name_' + lang] !== '')
+      ? d['name_' + lang]
+      : (d.name_en != null && d.name_en !== '') ? d.name_en
+      : d.name != null && d.name !== '' ? d.name
+      : d.id;
     const short = d.meta?.short || '';
     return `<a class="card" href="${esc(d.id)}-page.html">
       <div class="thumb"><img src="png/social/${esc(d.id)}.png" alt="${esc(name)}" loading="lazy"></div>

@@ -463,6 +463,8 @@ This is the creative stage. In single mode you design 1 template; in multi mode 
 
    `build.js` also bakes `default: false` components into the rendered HTML — meaning the standalone preview and PNG output match the gallery's initial state.
 
+   **Localization**: every prose field uses `<field>_<lang>` keyed off the primary language in `data/wedding.json` → `languages[0]`. For a Spanish card, write `name_es`, `label_es`. The renderer falls back: `<field>_<lang>` → `<field>_en` → bare `<field>` → a sane default (`#1`, the design id, etc.). Always provide `<field>_en` alongside the localized version as a sanity fallback.
+
 ## Stage 5 — Build, preview, iterate
 
 ```bash
